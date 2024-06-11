@@ -36,16 +36,9 @@ function renderDropdown(
   getQueryIdFromDropdown: (a: string | null) => void
 ) {
   if (dropdownType === "patient") {
-    return (
-      <PatientDropdown
-        label={dropdownType}
-        setPatientId={getQueryIdFromDropdown}
-      />
-    );
+    return <PatientDropdown setPatientId={getQueryIdFromDropdown} />;
   } else if (dropdownType === "group") {
-    return (
-      <GroupDropdown label={dropdownType} setGroupId={getQueryIdFromDropdown} />
-    );
+    return <GroupDropdown setGroupId={getQueryIdFromDropdown} />;
   } else {
     return <></>;
   }

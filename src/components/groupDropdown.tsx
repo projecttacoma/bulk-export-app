@@ -1,17 +1,13 @@
 import { Select, Title } from "@mantine/core";
 import classes from "./componentStyles/patient-dropdown.module.css";
 import { useEffect, useState } from "react";
-import { capitalizeFirstLetter } from "../util/string-utility-functions";
-import { SupportedExportTypes } from "./export-type";
 
 export default function GroupDropdown({
-  label,
   setGroupId,
 }: {
-  label: SupportedExportTypes;
-  setGroupId: (a: string | null) => void;
+  setGroupId: (id: string | null) => void;
 }) {
-  const [data, setData] = useState<string[] | null>(null);
+  const [data, setData] = useState<string[]>([""]);
   const [error, setError] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>("");
 
@@ -45,9 +41,9 @@ export default function GroupDropdown({
             input: classes.input,
             label: classes.label,
           }}
-          label={`${capitalizeFirstLetter(label)} Id`}
+          label={"Group Id"}
           placeholder="Search for an Id"
-          data={data ? data : [" "]}
+          data={data}
           searchable
           nothingFoundMessage="Nothing found..."
           value={selectedId}

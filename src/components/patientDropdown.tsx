@@ -1,15 +1,11 @@
 import { Select, Title } from "@mantine/core";
 import classes from "./componentStyles/patient-dropdown.module.css";
 import { useEffect, useState } from "react";
-import { capitalizeFirstLetter } from "../util/string-utility-functions";
-import { SupportedExportTypes } from "./export-type";
 
 export default function PatientDropdown({
-  label,
   setPatientId,
 }: {
-  label: SupportedExportTypes;
-  setPatientId: (a: string | null) => void;
+  setPatientId: (id: string | null) => void;
 }) {
   const [error, setError] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>("");
@@ -29,7 +25,7 @@ export default function PatientDropdown({
             input: classes.input,
             label: classes.label,
           }}
-          label={`${capitalizeFirstLetter(label)} Id`}
+          label={"Patient Id"}
           placeholder="Search for an Id"
           data={data ? data : [" "]}
           searchable
