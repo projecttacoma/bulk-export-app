@@ -7,9 +7,11 @@ import GroupDropdown from "./groupDropdown";
 import { useState } from "react";
 import PatientDropdown from "./patientDropdown";
 import BuildQueryButton from "./build-query-button";
-import { capitalizeFirstLetter } from "./util/string-utility-functions";
+import { capitalizeFirstLetter } from "../util/string-utility-functions";
 
-export default function ExportType({ name }: { name: string }) {
+export type SupportedExportTypes = "patient" | "group" | "system";
+
+export default function ExportType({ name }: { name: SupportedExportTypes }) {
   const [queryId, setQueryId] = useState<string | null>("");
 
   return (
@@ -30,7 +32,7 @@ export default function ExportType({ name }: { name: string }) {
 }
 
 function renderDropdown(
-  dropdownType: string,
+  dropdownType: SupportedExportTypes,
   getQueryIdFromDropdown: (a: string | null) => void
 ) {
   if (dropdownType === "patient") {

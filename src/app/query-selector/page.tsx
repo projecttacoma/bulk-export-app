@@ -2,7 +2,7 @@
 import { Grid, rem } from "@mantine/core";
 
 import classes from "./page.module.css";
-import ExportType from "../../../components/export-type";
+import ExportType from "../../components/export-type";
 
 export default function querySelector() {
   return (

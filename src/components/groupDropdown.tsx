@@ -1,21 +1,38 @@
 import { Select, Title } from "@mantine/core";
 import classes from "./componentStyles/patient-dropdown.module.css";
 import { useEffect, useState } from "react";
-import { capitalizeFirstLetter } from "./util/string-utility-functions";
+import { capitalizeFirstLetter } from "../util/string-utility-functions";
+import { SupportedExportTypes } from "./export-type";
 
-export default function PatientDropdown({
+export default function GroupDropdown({
   label,
-  setPatientId,
+  setGroupId,
 }: {
-  label: string;
-  setPatientId: (a: string | null) => void;
+  label: SupportedExportTypes;
+  setGroupId: (a: string | null) => void;
 }) {
+  const [data, setData] = useState<string[] | null>(null);
   const [error, setError] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>("");
 
-  useEffect(() => setPatientId(selectedId));
-  // For now staticly generated... will change when patient endpoint exists
-  const data = ["DataNotPopulated:test1", "test2", "test3", "test4", "test5"];
+  useEffect(() => setGroupId(selectedId));
+
+  useEffect(() => {
+    fetch("http://localhost:3000/Group")
+      .then((res: Response) => {
+        if (!res.ok) {
+          setError(true);
+          return;
+        }
+        return res.json();
+      })
+      .then((res) => {
+        setData(res.map((obj: any) => obj._id));
+      })
+      .catch((error) => {
+        setError(true);
+      });
+  }, []);
 
   return (
     <>
