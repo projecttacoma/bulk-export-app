@@ -1,0 +1,13 @@
+
+.title {
+    font-size: 40px;
+    font-weight: 600;
+    font-family: "Inter", sans-serif;
+    margin-left: 10px;
+    color: #3b4d63;
+}
+.header {
+    background-color: #ACCBE1;
+    box-shadow: 10px 5px 5px #637081;
+    border-radius: 5px;
+}

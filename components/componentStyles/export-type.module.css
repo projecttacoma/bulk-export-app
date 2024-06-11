@@ -1,0 +1,16 @@
+
+.card {
+    background-color: #637081;
+    border-radius: 20px;
+    padding: 20px
+}
+.title {
+    color: white;
+    font:600;
+    font-size: 42px;
+    margin-top: 10%;
+    margin-bottom: 10%;
+}
+.queryButton {
+    margin: 10%;
+}
