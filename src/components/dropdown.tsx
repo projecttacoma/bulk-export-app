@@ -1,6 +1,6 @@
 import { SupportedExportTypes } from './export-type';
-import GroupDropdown from './groupDropdown';
-import PatientDropdown from './patientDropdown';
+import GroupDropdown from './group-dropdown';
+import PatientDropdown from './patient-dropdown';
 
 export interface DropdownProps {
   dropdownType: SupportedExportTypes;
