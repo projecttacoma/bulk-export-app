@@ -12,6 +12,9 @@ export interface ExportTypeProps {
   name: SupportedExportTypes;
 }
 
+/*
+ * Component for selecting which type of export the user wants
+ */
 export default function ExportType({ name }: ExportTypeProps) {
   const [queryId, setQueryId] = useState<string | null>('');
 

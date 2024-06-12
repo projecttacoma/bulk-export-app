@@ -6,6 +6,10 @@ export interface PatientDropdownProps {
   setPatientId: (id: string | null) => void;
 }
 
+/*
+ * Component is the selectable dropdown populated with the patient id data. Takes in a function as props
+ * to be able to set id in the query string.
+ */
 export default function PatientDropdown({ setPatientId }: PatientDropdownProps) {
   const [selectedId, setSelectedId] = useState<string | null>('');
 

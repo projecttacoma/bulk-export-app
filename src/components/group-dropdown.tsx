@@ -6,6 +6,10 @@ export interface GroupDropdownProps {
   setGroupId: (id: string | null) => void;
 }
 
+/*
+ * Component is the selectable dropdown populated with the group data. Takes in a function as props
+ * to be able to set id in the query string.
+ */
 export default function GroupDropdown({ setGroupId }: GroupDropdownProps) {
   const [data, setData] = useState<string[]>([]);
   const [error, setError] = useState(false);

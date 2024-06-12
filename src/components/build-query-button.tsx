@@ -8,6 +8,11 @@ export interface BuildQueryButtonProps {
   dropdown: SupportedExportTypes;
 }
 
+/**
+ *  Component for the build query button at the bottom of each export-type component
+ *  navigates to the next page, and creates the query string
+ *
+ */
 export default function BuildQueryButton({ queryId, dropdown }: BuildQueryButtonProps) {
   if (dropdown === 'system') {
     return (

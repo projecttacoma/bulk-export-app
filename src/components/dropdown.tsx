@@ -7,6 +7,9 @@ export interface DropdownProps {
   getQueryIdFromDropdown: (id: string | null) => void;
 }
 
+/*
+ * Wrapper component for each type of dropdown associated with each export type
+ */
 export default function Dropdown({ dropdownType, getQueryIdFromDropdown }: DropdownProps) {
   if (dropdownType === 'patient') {
     return <PatientDropdown setPatientId={getQueryIdFromDropdown} />;
