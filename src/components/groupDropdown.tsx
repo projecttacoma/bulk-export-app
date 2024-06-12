@@ -1,31 +1,33 @@
-import { Select, Title } from "@mantine/core";
-import classes from "./componentStyles/patient-dropdown.module.css";
-import { useEffect, useState } from "react";
+import { Select, Title } from '@mantine/core';
+import classes from './componentStyles/patient-dropdown.module.css';
+import { useEffect, useState } from 'react';
 
-export default function GroupDropdown({
-  setGroupId,
-}: {
+export interface GroupDropdownProps {
   setGroupId: (id: string | null) => void;
-}) {
-  const [data, setData] = useState<string[]>([""]);
+}
+
+export default function GroupDropdown({ setGroupId }: GroupDropdownProps) {
+  const [data, setData] = useState<string[]>([]);
   const [error, setError] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>("");
+  const [selectedId, setSelectedId] = useState<string | null>('');
 
   useEffect(() => setGroupId(selectedId));
 
+  // try to change this to be SSG
   useEffect(() => {
-    fetch("http://localhost:3000/Group")
-      .then((res: Response) => {
+    fetch('http://localhost:3000/Group')
+      .then(res => {
         if (!res.ok) {
           setError(true);
           return;
         }
-        return res.json();
+        return res.json() as Promise<fhir4.Group[]>;
       })
-      .then((res) => {
-        setData(res.map((obj: any) => obj._id));
+      .then(res => {
+        setData(res?.map(obj => obj.id ?? '') ?? []);
       })
-      .catch((error) => {
+      .catch(error => {
+        console.error(error);
         setError(true);
       });
   }, []);
@@ -39,9 +41,11 @@ export default function GroupDropdown({
           classNames={{
             root: classes.root,
             input: classes.input,
-            label: classes.label,
+            label: classes.label
           }}
-          label={"Group Id"}
+          size="lg"
+          radius="lg"
+          label={'Group Id'}
           placeholder="Search for an Id"
           data={data}
           searchable

@@ -1,25 +1,25 @@
-import { Center, Tooltip, Button } from "@mantine/core";
-import Link from "next/link";
-import classes from "./componentStyles/export-type.module.css";
+import { Center, Tooltip, Button } from '@mantine/core';
+import Link from 'next/link';
+import classes from './componentStyles/export-type.module.css';
+import { SupportedExportTypes } from './export-type';
 
-export default function BuildQueryButton({
-  queryId,
-  dropdown,
-}: {
+export interface BuildQueryButtonProps {
   queryId: string | null;
-  dropdown: string;
-}) {
-  if (dropdown === "system") {
+  dropdown: SupportedExportTypes;
+}
+
+export default function BuildQueryButton({ queryId, dropdown }: BuildQueryButtonProps) {
+  if (dropdown === 'system') {
     return (
-      <Center>
+      <Center className={classes.buttonContainer}>
         <Button
           component={Link}
           href={{
-            pathname: "/query-builder",
-            query: { type: dropdown },
+            pathname: '/query-builder',
+            query: { type: dropdown }
           }}
-          radius="md"
           className={classes.queryButton}
+          size="lg"
         >
           Build Query
         </Button>
@@ -27,20 +27,20 @@ export default function BuildQueryButton({
     );
   }
   return (
-    <Center>
+    <Center className={classes.buttonContainer}>
       <Tooltip label="Please select an ID" disabled={queryId ? true : false}>
         <Button
           component={Link}
           href={{
-            pathname: "/query-builder",
-            query: { type: dropdown, id: queryId },
+            pathname: '/query-builder',
+            query: { type: dropdown, id: queryId }
           }}
-          radius="md"
           className={classes.queryButton}
           data-disabled={queryId ? false : true}
-          onClick={(event) => {
+          onClick={event => {
             queryId ? event : event.preventDefault();
           }}
+          size="lg"
         >
           Build Query
         </Button>

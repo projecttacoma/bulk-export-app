@@ -1,15 +1,14 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "@mantine/core/styles.css";
-import { MantineProvider } from "@mantine/core";
+import type { Metadata } from 'next';
+import '@mantine/core/styles.css';
+import { MantineProvider } from '@mantine/core';
 
 export const metadata: Metadata = {
-  title: "bulk-data-app",
-  description: "Interactive query generator",
+  title: 'bulk-data-app',
+  description: 'Interactive query generator'
 };
 
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
   children: React.ReactNode;
 }>) {

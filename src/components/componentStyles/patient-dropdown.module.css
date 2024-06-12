@@ -1,5 +1,6 @@
 .label {
-    size: 30px;
-    color: white;
-    font-size: x-large;
+  padding-left: 10px;
+  font-size: 30px;
+  color: white;
+  font-weight: 600;
 }
