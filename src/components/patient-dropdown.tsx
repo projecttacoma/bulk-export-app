@@ -11,11 +11,30 @@ export interface PatientDropdownProps {
  * to be able to set id in the query string.
  */
 export default function PatientDropdown({ setPatientId }: PatientDropdownProps) {
+  const [data, setData] = useState<string[]>([]);
+  const [error, setError] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>('');
 
   useEffect(() => setPatientId(selectedId));
-  // For now staticly generated... will change when patient endpoint exists
-  const data = ['DataNotPopulated:test1', 'test2', 'test3', 'test4', 'test5'];
+
+  useEffect(() => {
+    fetch('http://localhost:3000/Patient')
+      .then(res => {
+        if (!res.ok) {
+          setError(true);
+          return;
+        }
+        return res.json() as Promise<fhir4.Patient[]>;
+      })
+      .then(res => {
+        setData(res?.map(obj => obj.id ?? '') ?? []);
+      })
+      .catch(error => {
+        console.error(error);
+        setError(true);
+      });
+  }, []);
+  console.log('I have to log this', error);
 
   return (
     <Select

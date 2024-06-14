@@ -1,7 +1,11 @@
+'use client';
 import { Center, Tooltip, Button } from '@mantine/core';
 import Link from 'next/link';
 import classes from './componentStyles/export-type.module.css';
 import { SupportedExportTypes } from './export-type';
+import { useRecoilState } from 'recoil';
+import { baseQueryStringState } from '@/state/selected-query-string';
+import { capitalizeFirstLetter } from '@/util/string-utility-functions';
 
 export interface BuildQueryButtonProps {
   queryId: string | null;
@@ -14,14 +18,18 @@ export interface BuildQueryButtonProps {
  *
  */
 export default function BuildQueryButton({ queryId, dropdown }: BuildQueryButtonProps) {
+  const [baseQueryString, setString] = useRecoilState(baseQueryStringState);
+
   if (dropdown === 'system') {
     return (
       <Center className={classes.buttonContainer}>
         <Button
           component={Link}
-          href={{
-            pathname: '/query-builder',
-            query: { type: dropdown }
+          href="/query-builder"
+          onClick={() => {
+            console.log('button clicked');
+            setString('http://localhost:3000/');
+            console.log(baseQueryString);
           }}
           className={classes.queryButton}
           size="lg"
@@ -31,18 +39,18 @@ export default function BuildQueryButton({ queryId, dropdown }: BuildQueryButton
       </Center>
     );
   }
+
   return (
     <Center className={classes.buttonContainer}>
       <Tooltip label="Please select an ID" disabled={queryId ? true : false}>
         <Button
           component={Link}
-          href={{
-            pathname: '/query-builder',
-            query: { type: dropdown, id: queryId }
-          }}
+          href="/query-builder"
           className={classes.queryButton}
           data-disabled={queryId ? false : true}
           onClick={event => {
+            setString(`http://localhost:3000/${capitalizeFirstLetter(dropdown)}/${queryId}`);
+            console.log(baseQueryString);
             queryId ? event : event.preventDefault();
           }}
           size="lg"

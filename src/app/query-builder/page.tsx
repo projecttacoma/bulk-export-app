@@ -1,13 +1,5 @@
-'use client';
-import { useSearchParams } from 'next/navigation';
+import SelectorTabs from '@/components/query-builder/selector-tabs';
 
-export default function QueryBuilder() {
-  const searchParams = useSearchParams();
-  const type = searchParams.get('type');
-  const id = searchParams.get('id');
-  return (
-    <>
-      {`Type: ${type}`} <br /> {`ID: ${id}`}
-    </>
-  );
+export default function QueryBuiderPage() {
+  return <SelectorTabs></SelectorTabs>;
 }

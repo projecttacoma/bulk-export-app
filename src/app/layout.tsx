@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
+import RecoilContext from './recoilContext';
 
 export const metadata: Metadata = {
   title: 'bulk-data-app',
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <MantineProvider>{children}</MantineProvider>
+        <RecoilContext>
+          <MantineProvider>{children}</MantineProvider>
+        </RecoilContext>
       </body>
     </html>
   );
