@@ -5,15 +5,10 @@
   margin: 5px 20px;
   color: #ffffff;
   display: inline-block;
-  background-color: #216869;
+  background-color: #3a68ff;
   padding: 4px 30px;
   border-radius: 15px;
 }
-.header {
-  background-color: #eeeffb;
-}
-
 .mainPage {
   padding-top: 20px;
-  background-color: #eeeffb;
 }
