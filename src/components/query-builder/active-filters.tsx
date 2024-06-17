@@ -9,20 +9,22 @@ export default function ActiveFilters() {
   const activeTypeFilters: string[] = useRecoilValue(activeTypeParamsState);
 
   return (
-    <Table highlightOnHover>
-      <Table.Thead>
-        <Table.Tr>
-          <Table.Th>Filter Type</Table.Th>
-          <Table.Th>Elements</Table.Th>
-          <Table.Th>Edit</Table.Th>
-          <Table.Th>Remove</Table.Th>
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>
-        {activeTypeFilters.map(ty => (
-          <FilterRow data={ty} />
-        ))}
-      </Table.Tbody>
-    </Table>
+    <Table.ScrollContainer minWidth={500} type="native" mah={300} mx="auto">
+      <Table highlightOnHover stickyHeader>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Filter Type</Table.Th>
+            <Table.Th>Elements</Table.Th>
+            <Table.Th>Edit</Table.Th>
+            <Table.Th>Remove</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {activeTypeFilters.map(ty => (
+            <FilterRow data={ty} />
+          ))}
+        </Table.Tbody>
+      </Table>
+    </Table.ScrollContainer>
   );
 }
