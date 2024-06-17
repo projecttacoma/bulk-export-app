@@ -62,7 +62,10 @@ function getGroupDropdownData(
   setData: Dispatch<SetStateAction<string[]>>,
   setError: Dispatch<SetStateAction<boolean>>
 ) {
-  fetch('http://localhost:3000/Group')
+  const host = process.env.NEXT_PUBLIC_HOST;
+  const port = process.env.NEXT_PUBLIC_PORT;
+
+  fetch(`${host}:${port}/Group`)
     .then(res => {
       if (!res.ok) {
         setError(true);
