@@ -3,9 +3,9 @@
   font-weight: 600;
   font-family: 'Inter', sans-serif;
   margin: 5px 20px;
-  color: #ffffff;
+  color: white;
   display: inline-block;
-  background-color: #3a68ff;
+  background-color: var(--mantine-color-blue-7);
   padding: 4px 30px;
   border-radius: 15px;
 }
