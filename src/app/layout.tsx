@@ -1,25 +1,21 @@
-import type { Metadata } from 'next';
 import '@mantine/core/styles.css';
-import { MantineProvider } from '@mantine/core';
-import { Notifications } from '@mantine/notifications';
+
+import { ColorSchemeScript, MantineProvider } from '@mantine/core';
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'bulk-data-app',
   description: 'Interactive query generator'
 };
 
-export default function RootLayout({
-  children
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <ColorSchemeScript />
+      </head>
       <body>
-        <MantineProvider>
-          <Notifications />
-          {children}
-        </MantineProvider>
+        <MantineProvider>{children}</MantineProvider>
       </body>
     </html>
   );

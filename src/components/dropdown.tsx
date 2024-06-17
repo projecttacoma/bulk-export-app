@@ -34,7 +34,7 @@ export default function Dropdown({ dropdownType, getQueryIdFromDropdown }: Dropd
   if (error) {
     return (
       <Notification color="red" title="Error">
-        An Error occured fetching dropdown data. Make sure bulk-data-server is running.
+        An Error occurred fetching dropdown data. Make sure bulk-data-server is running.
       </Notification>
     );
   }
@@ -62,10 +62,7 @@ function getGroupDropdownData(
   setData: Dispatch<SetStateAction<string[]>>,
   setError: Dispatch<SetStateAction<boolean>>
 ) {
-  const host = process.env.NEXT_PUBLIC_HOST;
-  const port = process.env.NEXT_PUBLIC_PORT;
-
-  fetch(`${host}:${port}/Group`)
+  fetch(`${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}/Group`)
     .then(res => {
       if (!res.ok) {
         setError(true);
@@ -84,7 +81,7 @@ function getGroupDropdownData(
 /*
  * Get data from bulk export server for the patient dropdown
  * Note: could be done with getStaticProps eventually if necessary
- *       Currently this data is filler beacuse there is no patient endpoint to get the data
+ *       Currently this data is filler because there is no patient endpoint to get the data
  */
 function getPatientDropdownData(
   setData: Dispatch<SetStateAction<string[]>>,
