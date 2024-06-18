@@ -78,6 +78,7 @@ function getGroupDropdownData(
       setError(true);
     });
 }
+
 /*
  * Get data from bulk export server for the patient dropdown
  * Note: could be done with getStaticProps eventually if necessary

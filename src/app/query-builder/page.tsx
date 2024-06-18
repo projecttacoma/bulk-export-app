@@ -1,9 +1,8 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
 
-function Search() {
+export default function QueryBuilder() {
   const searchParams = useSearchParams();
   const type = searchParams.get('type');
   const id = searchParams.get('id');
@@ -12,11 +11,4 @@ function Search() {
       {`Type: ${type}`} <br /> {`ID: ${id}`}
     </>
   );
-}
-
-export default function QueryBuilder(){
-
-    return <Suspense>
-      <Search/>
-    </Suspense>
 }
