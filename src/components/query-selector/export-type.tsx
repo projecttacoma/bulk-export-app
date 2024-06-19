@@ -8,7 +8,7 @@ export type SupportedExportTypes = 'patient' | 'group' | 'system';
 
 export interface ExportTypeProps {
   name: SupportedExportTypes;
-  dropdownData: string[];
+  dropdownData?: string[];
 }
 
 /*

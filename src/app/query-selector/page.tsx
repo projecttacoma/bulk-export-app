@@ -6,7 +6,7 @@ export default async function QuerySelector() {
     <Grid justify="center" align="center" gutter={{ base: 5, xs: 'md', md: 'lg', xl: 50 }} style={{ margin: rem(60) }}>
       <ExportType name="patient" dropdownData={await getPatientDropdownData()} />
       <ExportType name="group" dropdownData={await getGroupDropdownData()} />
-      <ExportType name="system" dropdownData={[]} />
+      <ExportType name="system" />
     </Grid>
   );
 }
