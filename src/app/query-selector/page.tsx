@@ -4,26 +4,26 @@ import { Grid, rem } from '@mantine/core';
 export default async function QuerySelector() {
   return (
     <Grid justify="center" align="center" gutter={{ base: 5, xs: 'md', md: 'lg', xl: 50 }} style={{ margin: rem(60) }}>
-      <ExportType name="patient" dropdownData={await getPatientDropdownData()} />
-      <ExportType name="group" dropdownData={await getGroupDropdownData()} />
+      <ExportType name="patient" dropdownData={await getPatientIds()} />
+      <ExportType name="group" dropdownData={await getGroupIds()} />
       <ExportType name="system" />
     </Grid>
   );
 }
 
-async function getPatientDropdownData() {
+async function getPatientIds() {
   const data = await fetch(`${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}/Patient`);
   const patientData: fhir4.Patient[] = await data.json();
-  // patient Id will never be null, according to fhir spec, this is just to make type checker happy
+  // patient.id will never be null, according to fhir spec, this is just to make type checker happy.
   const patientIDs = patientData.map(patient => patient.id ?? '');
 
   return patientIDs;
 }
 
-async function getGroupDropdownData() {
+async function getGroupIds() {
   const data = await fetch(`${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}/Group`);
   const groupData: fhir4.Group[] = await data.json();
-  // Group Id will never be null, according to fhir spec, this is just to make type checker happy
+  // group.id will never be null, according to fhir spec, this is just to make type checker happy.
   const groupIDs = groupData.map(group => group.id ?? '');
 
   return groupIDs;

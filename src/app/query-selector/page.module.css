@@ -7,7 +7,7 @@
   display: inline-block;
   background-color: var(--mantine-color-blue-7);
   padding: 4px 30px;
-  border-radius: 15px;
+  border-radius: 10px;
 }
 .mainPage {
   padding-top: 20px;

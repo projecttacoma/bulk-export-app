@@ -13,41 +13,26 @@ export interface BuildQueryButtonProps {
  *
  */
 export default function BuildQueryButton({ queryId, dropdown }: BuildQueryButtonProps) {
+  const toolTipDisabled = dropdown === 'system' ? true : queryId ? true : false;
+  const buttonDisabled = !toolTipDisabled;
   return (
-    <>
-      {dropdown === 'system' ? (
-        <Center>
-          <Button
-            component={Link}
-            href={{
-              pathname: '/query-builder',
-              query: { type: dropdown }
-            }}
-            size="lg"
-          >
-            Build Query
-          </Button>
-        </Center>
-      ) : (
-        <Center>
-          <Tooltip label="Please select an ID" disabled={queryId ? true : false}>
-            <Button
-              component={Link}
-              href={{
-                pathname: '/query-builder',
-                query: { type: dropdown, id: queryId }
-              }}
-              data-disabled={queryId ? false : true}
-              onClick={event => {
-                queryId ? event : event.preventDefault();
-              }}
-              size="lg"
-            >
-              Build Query
-            </Button>
-          </Tooltip>
-        </Center>
-      )}
-    </>
+    <Center>
+      <Tooltip label="Please select an ID" disabled={toolTipDisabled}>
+        <Button
+          component={Link}
+          href={{
+            pathname: '/query-builder',
+            query: dropdown === 'system' ? { type: dropdown } : { type: dropdown, id: queryId }
+          }}
+          data-disabled={buttonDisabled}
+          onClick={event => {
+            buttonDisabled ? event.preventDefault() : event;
+          }}
+          size="lg"
+        >
+          Build Query
+        </Button>
+      </Tooltip>
+    </Center>
   );
 }
