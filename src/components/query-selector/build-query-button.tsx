@@ -4,17 +4,17 @@ import { SupportedExportTypes } from './export-type';
 
 export interface BuildQueryButtonProps {
   queryId: string | null;
-  dropdown: SupportedExportTypes;
+  exportType: SupportedExportTypes;
 }
 
 /*
  *  Component for the build query button at the bottom of each export-type component
  *  navigates to the next page, and creates the query string
- *
  */
-export default function BuildQueryButton({ queryId, dropdown }: BuildQueryButtonProps) {
-  const toolTipDisabled = dropdown === 'system' ? true : queryId ? true : false;
+export default function BuildQueryButton({ queryId, exportType }: BuildQueryButtonProps) {
+  const toolTipDisabled = exportType === 'system' ? true : queryId ? true : false;
   const buttonDisabled = !toolTipDisabled;
+
   return (
     <Center>
       <Tooltip label="Please select an ID" disabled={toolTipDisabled}>
@@ -22,7 +22,7 @@ export default function BuildQueryButton({ queryId, dropdown }: BuildQueryButton
           component={Link}
           href={{
             pathname: '/query-builder',
-            query: dropdown === 'system' ? { type: dropdown } : { type: dropdown, id: queryId }
+            query: exportType === 'system' ? { type: exportType } : { type: exportType, id: queryId }
           }}
           data-disabled={buttonDisabled}
           onClick={event => {

@@ -7,14 +7,14 @@ import { capitalize } from 'lodash';
 export type SupportedExportTypes = 'patient' | 'group' | 'system';
 
 export interface ExportTypeProps {
-  name: SupportedExportTypes;
+  exportType: SupportedExportTypes;
   dropdownData?: string[];
 }
 
 /*
  * Component for selecting which type of export the user wants.
  */
-export default function ExportType({ name, dropdownData }: ExportTypeProps) {
+export default function ExportType({ exportType, dropdownData }: ExportTypeProps) {
   const [queryId, setQueryId] = useState<string | null>('');
 
   return (
@@ -22,15 +22,15 @@ export default function ExportType({ name, dropdownData }: ExportTypeProps) {
       <Paper shadow="xl" radius="xl" p="xl">
         <Stack>
           <Center>
-            <Title>{`${capitalize(name)}-level Export`}</Title>
+            <Title>{`${capitalize(exportType)}-level Export`}</Title>
           </Center>
-          {name == 'system' ? (
+          {exportType == 'system' ? (
             <></>
           ) : (
             <Select
               size="lg"
               radius="lg"
-              label={`${capitalize(name)} Id`}
+              label={`${capitalize(exportType)} Id`}
               placeholder="Search for an Id"
               data={dropdownData}
               searchable
@@ -39,7 +39,7 @@ export default function ExportType({ name, dropdownData }: ExportTypeProps) {
               onChange={setQueryId}
             />
           )}
-          <BuildQueryButton queryId={queryId} dropdown={name} />
+          <BuildQueryButton queryId={queryId} exportType={exportType} />
         </Stack>
       </Paper>
     </GridCol>
