@@ -11,22 +11,22 @@ export default async function QuerySelector() {
   );
 }
 
-// Function to get all Patient ids from the bulk-data-server patient endpoint
-// Note: in the .map, patient.id will never be null, according to fhir spec. The null check is only needed for type checker.
+// Function to get all Patient ids from the bulk-data-server Patient endpoint
 async function getPatientIds() {
-  const data = await fetch(`${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}/Patient`);
-  const patientData: fhir4.Patient[] = await data.json();
-  const patientIDs = patientData.map(patient => patient.id ?? '');
+  const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}/Patient`);
+  const patientResourceBundle: fhir4.Bundle = await response.json();
+  const patientResources = patientResourceBundle.entry;
+  const patientIDs = patientResources?.map(patient => patient.resource?.id ?? '');
 
   return patientIDs;
 }
 
-// Function to get all Group ids from the bulk-data-server patient endpoint
-// Note: in the .map, group.id will never be null, according to fhir spec. The null check is only needed for type checker.
+// Function to get all Group ids from the bulk-data-server Group endpoint
 async function getGroupIds() {
-  const data = await fetch(`${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}/Group`);
-  const groupData: fhir4.Group[] = await data.json();
-  const groupIDs = groupData.map(group => group.id ?? '');
+  const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}/Group`);
+  const groupResourceBundle: fhir4.Bundle = await response.json();
+  const groupResources = groupResourceBundle.entry;
+  const groupIDs = groupResources?.map(group => group.resource?.id ?? '');
 
   return groupIDs;
 }
