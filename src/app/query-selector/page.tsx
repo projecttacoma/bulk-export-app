@@ -4,29 +4,20 @@ import { Grid, rem } from '@mantine/core';
 export default async function QuerySelector() {
   return (
     <Grid justify="center" align="center" gutter={{ base: 5, xs: 'md', md: 'lg', xl: 50 }} style={{ margin: rem(60) }}>
-      <ExportType exportType="patient" dropdownData={await getPatientIds()} />
-      <ExportType exportType="group" dropdownData={await getGroupIds()} />
+      <ExportType exportType="patient" dropdownData={await getIds('Patient')} />
+      <ExportType exportType="group" dropdownData={await getIds('Group')} />
       <ExportType exportType="system" />
     </Grid>
   );
 }
 
-// Function to get all Patient ids from the bulk-data-server Patient endpoint
-async function getPatientIds() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}/Patient`);
-  const patientResourceBundle: fhir4.Bundle = await response.json();
-  const patientResources = patientResourceBundle.entry;
-  const patientIDs = patientResources?.map(patient => patient.resource?.id ?? '');
+// Function to get Patient or Group Ids from bulk export server
+async function getIds(name: 'Group' | 'Patient') {
+  const url = `${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}/${name}`;
+  const response = await fetch(url);
+  const resourceBundle: fhir4.Bundle = await response.json();
+  const entries = resourceBundle.entry ?? [];
+  const ids = entries.map(entry => entry.resource?.id ?? '');
 
-  return patientIDs;
-}
-
-// Function to get all Group ids from the bulk-data-server Group endpoint
-async function getGroupIds() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}/Group`);
-  const groupResourceBundle: fhir4.Bundle = await response.json();
-  const groupResources = groupResourceBundle.entry;
-  const groupIDs = groupResources?.map(group => group.resource?.id ?? '');
-
-  return groupIDs;
+  return ids;
 }
