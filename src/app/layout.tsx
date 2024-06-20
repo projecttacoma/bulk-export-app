@@ -5,7 +5,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'bulk-data-app',
-  description: 'Interactive query generator'
+  description: 'Interactive bulk-export-server query generator'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
