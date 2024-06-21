@@ -9,10 +9,10 @@ export default function QueryBuilder() {
     <>
       <Center className={classes.main}>
         <InputWrapper
-          label="Bulk Export Query String"
+          label="Bulk Export Request"
           classNames={{ label: classes.inputLabel, root: classes.inputRoot, description: classes.description }}
         >
-          <Suspense fallback={<>Loading String</>}>
+          <Suspense fallback={<>Loading Query String</>}>
             <QueryString />
           </Suspense>
         </InputWrapper>

@@ -1,5 +1,4 @@
 'use client';
-
 import { ActionIcon, CopyButton, rem, TextInput, Tooltip } from '@mantine/core';
 import { useSearchParams } from 'next/navigation';
 import { IconArrowRight, IconCheck, IconCopy } from '@tabler/icons-react';
@@ -38,6 +37,9 @@ export default function QueryString() {
     />
   );
 }
+
+// Builds the query string from a list of type parameters based on the type of query
+// found in the query string of the page.
 function buildQueryString(params: string[]) {
   const baseUrl = `${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}`;
   const searchParams = useSearchParams();
