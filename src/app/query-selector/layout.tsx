@@ -1,4 +1,4 @@
-import { AppShell, AppShellFooter, AppShellHeader, AppShellMain, Text } from '@mantine/core';
+import { AppShell, AppShellFooter, AppShellHeader, AppShellMain, Box, Title } from '@mantine/core';
 import classes from './page.module.css';
 import Link from 'next/link';
 
@@ -6,9 +6,9 @@ export default function QuerySelectorLayout({ children }: { children: React.Reac
   return (
     <AppShell padding="md">
       <AppShellHeader>
-        <Text component={Link} href="/query-selector" className={classes.title}>
-          Bulk-export-app
-        </Text>
+        <Box component={Link} href="/query-selector" className={classes.title}>
+          <Title>Bulk-export-app</Title>
+        </Box>
       </AppShellHeader>
       <AppShellMain>{children}</AppShellMain>
       <AppShellFooter />
