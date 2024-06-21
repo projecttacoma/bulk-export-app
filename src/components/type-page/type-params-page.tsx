@@ -1,15 +1,27 @@
-import fs from 'fs';
-import path from 'path';
-import TypeParamsMultiSelect from './type-params-multiselect';
+'use client';
+import { activeTypeParamsState } from '@/state/type-params-state';
+import { MultiSelect } from '@mantine/core';
+import { useRecoilState } from 'recoil';
+import { resourceTypes } from '../../../data/supportedResources';
 
-export default async function TypeParamsPage() {
-  const typesData = await getTypesForDropdown();
-  return <TypeParamsMultiSelect data={typesData} />;
-}
-
-async function getTypesForDropdown() {
-  const filePath = path.join(process.cwd(), 'data', 'choice-types.json');
-  const jsonData = await fs.promises.readFile(filePath);
-  const data = JSON.parse(jsonData.toString());
-  return Object.keys(data);
+export default function TypeParamsPage() {
+  const [typeParams, setTypeParams] = useRecoilState(activeTypeParamsState);
+  return (
+    <MultiSelect
+      size="lg"
+      radius="md"
+      mt="md"
+      label="Select Types to Query"
+      placeholder="Search for an type"
+      nothingFoundMessage="Nothing found..."
+      searchable
+      clearable
+      data={resourceTypes}
+      value={typeParams}
+      onChange={setTypeParams}
+      withScrollArea={false}
+      styles={{ dropdown: { maxHeight: 350, overflowY: 'auto' } }}
+      comboboxProps={{ transitionProps: { transition: 'fade-down', duration: 200 }, offset: 0 }}
+    />
+  );
 }
