@@ -1,4 +1,4 @@
-import { Center, InputWrapper, Tabs, TabsList, TabsPanel, TabsTab } from '@mantine/core';
+import { Center, Tabs, TabsList, TabsPanel, TabsTab } from '@mantine/core';
 import { Suspense } from 'react';
 import classes from './page.module.css';
 import QueryString from '@/components/query-string';
@@ -8,14 +8,9 @@ export default function QueryBuilder() {
   return (
     <>
       <Center className={classes.main}>
-        <InputWrapper
-          label="Bulk Export Request"
-          classNames={{ label: classes.inputLabel, root: classes.inputRoot, description: classes.description }}
-        >
-          <Suspense fallback={<>Loading Query String</>}>
-            <QueryString />
-          </Suspense>
-        </InputWrapper>
+        <Suspense fallback={<>Loading Query String</>}>
+          <QueryString />
+        </Suspense>
       </Center>
       <Tabs defaultValue="type-tab" classNames={classes}>
         <TabsList grow justify="center">

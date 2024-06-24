@@ -13,15 +13,16 @@ export default function TypeParamsPage() {
       size="lg"
       radius="md"
       label="Select Types to Query"
-      placeholder="Search for an type"
+      placeholder="Search for types"
       nothingFoundMessage="Nothing found..."
       clearable
       searchable
+      hidePickedOptions
       data={resourceTypes}
       value={typeParams}
       onChange={setTypeParams}
       withScrollArea={false}
-      styles={{ dropdown: { maxHeight: 350, overflowY: 'auto' } }}
+      styles={{ dropdown: { maxHeight: 300, overflowY: 'auto' } }}
       comboboxProps={{ transitionProps: { transition: 'fade-down', duration: 200 }, offset: 0 }}
       leftSection={
         <Tooltip
@@ -31,7 +32,7 @@ export default function TypeParamsPage() {
           withArrow
           transitionProps={{ duration: 200 }}
           zIndex={400}
-          label="Use this input to select types that you want to include as parameters in your bulk export server query. By default, if none are selected, all types available to that resource will be included in the query."
+          label="Use this input to select types that you want to include as parameters in your bulk export server query. Only resources of selected types will be returned by the query. By default, if none are selected, all types available to that resource will be included in the query."
         >
           <IconQuestionMark />
         </Tooltip>
