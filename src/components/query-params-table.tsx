@@ -1,3 +1,4 @@
+'use client';
 import { activeTypeParamsState } from '@/state/type-params-state';
 import {
   Table,
@@ -7,12 +8,15 @@ import {
   TableTbody,
   TableTh,
   TableThead,
-  TableTr
+  TableTr,
+  TableTd
 } from '@mantine/core';
 import { useRecoilState } from 'recoil';
 
 export default function ParamsTable() {
   const [typeParams, setTypeParams] = useRecoilState(activeTypeParamsState);
+
+  console.log(typeParams);
 
   return (
     <TableScrollContainer minWidth={500} type="native" mah={300} mx="auto">
@@ -27,19 +31,16 @@ export default function ParamsTable() {
         </TableThead>
         <TableTbody>
           {typeParams.map(ty => (
-            <Table.Tr key={ty}>
-              <Table.Td>{ty}</Table.Td>
-              <Table.Td></Table.Td> {/* will be elements and type filters details */}
-              <Table.Td></Table.Td> {/* will be an edit button only for elements and type filters*/}
-              <Table.Td>
+            <TableTr key={ty}>
+              <TableTd>{ty}</TableTd>
+              <TableTd></TableTd>
+              <TableTd></TableTd>
+              <TableTd>
                 <ActionIcon>
-                  <CloseIcon
-                    size="sm"
-                    onClick={() => setTypeParams(typeParams.filter(filter => ty != filter))}
-                  ></CloseIcon>
+                  <CloseIcon size="sm" onClick={() => setTypeParams(typeParams.filter(filter => ty != filter))} />
                 </ActionIcon>
-              </Table.Td>
-            </Table.Tr>
+              </TableTd>
+            </TableTr>
           ))}
         </TableTbody>
         {typeParams.length < 1 ? (

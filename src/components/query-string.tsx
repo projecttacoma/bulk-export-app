@@ -1,40 +1,45 @@
 'use client';
-import { ActionIcon, CopyButton, rem, TextInput, Tooltip } from '@mantine/core';
+import { ActionIcon, CopyButton, InputWrapper, rem, TextInput, Tooltip } from '@mantine/core';
 import { useSearchParams } from 'next/navigation';
 import { IconArrowRight, IconCheck, IconCopy } from '@tabler/icons-react';
 import { useRecoilValue } from 'recoil';
 import { activeTypeParamsState } from '@/state/type-params-state';
 import { toString } from 'lodash';
 import { SupportedExportTypes } from './query-selector/export-type';
+import classes from '../app/query-builder/page.module.css';
 
 export default function QueryString() {
   const typeParams = useRecoilValue(activeTypeParamsState);
   const placeholder = buildQueryString(typeParams);
 
   return (
-    <TextInput
-      radius="xl"
-      size="lg"
-      placeholder={placeholder}
-      rightSection={
-        <Tooltip label="Continue to run query" withArrow position="right">
-          <ActionIcon size={48} variant="filled" radius="xl">
-            <IconArrowRight style={{ width: rem(24), height: rem(24) }} stroke={1.5} />
-          </ActionIcon>
-        </Tooltip>
-      }
-      leftSection={
-        <CopyButton value={placeholder} timeout={2000}>
-          {({ copied, copy }) => (
-            <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-              <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
-                {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </CopyButton>
-      }
-    />
+    <InputWrapper classNames={{ root: classes.inputRoot, description: classes.description }}>
+      <TextInput
+        classNames={{ label: classes.inputLabel }}
+        label="Bulk Export Request"
+        radius="xl"
+        size="lg"
+        placeholder={placeholder}
+        rightSection={
+          <Tooltip label="Continue to run query" withArrow position="right">
+            <ActionIcon size={48} variant="filled" radius="xl">
+              <IconArrowRight style={{ width: rem(24), height: rem(24) }} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
+        }
+        leftSection={
+          <CopyButton value={placeholder} timeout={2000}>
+            {({ copied, copy }) => (
+              <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+                <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
+                  {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </CopyButton>
+        }
+      />
+    </InputWrapper>
   );
 }
 
