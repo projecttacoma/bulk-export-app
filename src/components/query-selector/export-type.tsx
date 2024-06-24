@@ -15,7 +15,7 @@ export interface ExportTypeProps {
  * Component for selecting which type of export the user wants.
  */
 export default function ExportType({ exportType, dropdownData }: ExportTypeProps) {
-  const [queryId, setQueryId] = useState<string | null>('');
+  const [queryId, setQueryId] = useState<string | null>(null);
 
   return (
     <GridCol span={{ base: 12, md: 6, lg: 3 }} style={{ minWidth: rem(600) }}>
@@ -24,9 +24,7 @@ export default function ExportType({ exportType, dropdownData }: ExportTypeProps
           <Center>
             <Title>{`${capitalize(exportType)}-level Export`}</Title>
           </Center>
-          {exportType == 'system' ? (
-            <></>
-          ) : (
+          {exportType !== 'system' && (
             <Select
               size="lg"
               radius="lg"

@@ -12,21 +12,20 @@ export interface BuildQueryButtonProps {
  *  navigates to the next page, and creates the query string
  */
 export default function BuildQueryButton({ queryId, exportType }: BuildQueryButtonProps) {
-  const toolTipDisabled = exportType === 'system' ? true : queryId ? true : false;
-  const buttonDisabled = !toolTipDisabled;
+  const buttonEnabled = exportType === 'system' || queryId != null;
 
   return (
     <Center>
-      <Tooltip label="Please select an ID" disabled={toolTipDisabled}>
+      <Tooltip label="Please select an ID" disabled={buttonEnabled}>
         <Button
           component={Link}
           href={{
             pathname: '/query-builder',
             query: exportType === 'system' ? { type: exportType } : { type: exportType, id: queryId }
           }}
-          data-disabled={buttonDisabled}
+          data-disabled={!buttonEnabled}
           onClick={event => {
-            buttonDisabled ? event.preventDefault() : event;
+            buttonEnabled ? event : event.preventDefault();
           }}
           size="lg"
         >
