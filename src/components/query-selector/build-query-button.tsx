@@ -12,7 +12,7 @@ export interface BuildQueryButtonProps {
  *  navigates to the next page, and creates the query string
  */
 export default function BuildQueryButton({ queryId, exportType }: BuildQueryButtonProps) {
-  const buttonEnabled = exportType === 'system' || queryId != null;
+  const buttonEnabled = exportType === 'system' || queryId !== null;
 
   return (
     <Center>
