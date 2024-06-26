@@ -8,7 +8,7 @@ import { activeTypeParamsState } from '@/state/type-params-state';
 
 const typeParamsHelpText = `Selected items are added to "_type" parameter of the bulk export request.
    The "_type" parameter is used to select which resource types' data you want to export. By default,
-   data for all resource types is returned a "_type" query is not provided in the export request.`;
+   data for all resource types is returned if a "_type" query is not provided in the export request.`;
 
 export default function TypeParamsPage() {
   const [typeParams, setTypeParams] = useRecoilState(activeTypeParamsState);
