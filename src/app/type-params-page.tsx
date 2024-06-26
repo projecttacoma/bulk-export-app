@@ -1,14 +1,14 @@
 'use client';
-
-import { MultiSelect, Title, Tooltip } from '@mantine/core';
-import { IconInfoCircle } from '@tabler/icons-react';
-import { useRecoilState } from 'recoil';
-import { resourceTypes } from '../../../data/supportedResources';
 import { activeTypeParamsState } from '@/state/type-params-state';
+import { MultiSelect, Title, Tooltip } from '@mantine/core';
+import { useRecoilState } from 'recoil';
+import { resourceTypes } from '../../data/supportedResources';
+import { IconInfoCircle } from '@tabler/icons-react';
 
-const typeParamsHelpText = `Selected items are added to "_type" parameter of the bulk export request.
-   The "_type" parameter is used to select which resource types' data you want to export. By default,
-   data for all resource types is returned a "_type" query is not provided in the export request.`;
+const typeParamsHelpText = `Use this input to select types that you want to 
+  include as parameters in your bulk export server query. Only resources of 
+  selected types will be returned by the query. By default, if none are selected, 
+  all types available to that resource will be included in the query.`;
 
 export default function TypeParamsPage() {
   const [typeParams, setTypeParams] = useRecoilState(activeTypeParamsState);
@@ -20,8 +20,9 @@ export default function TypeParamsPage() {
         ml="sm"
         size="lg"
         radius="md"
+        label="Add types to query"
         placeholder="Search for types"
-        nothingFoundMessage="No types matching search found."
+        nothingFoundMessage="Nothing found..."
         clearable
         searchable
         hidePickedOptions

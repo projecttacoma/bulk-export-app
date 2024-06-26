@@ -1,22 +1,12 @@
-.title {
+.appHeaderTitle {
+  color: white;
   font-size: 40px;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
-  margin: 5px 20px;
-  color: white;
+  text-decoration: none;
   display: inline-block;
-  background-color: var(--mantine-color-blue-7);
+  margin: 5px 20px;
   padding: 4px 30px;
   border-radius: 15px;
-  text-decoration: none;
-}
-.mainPage {
-  padding-top: 20px;
-}
-.tableHead {
   background-color: var(--mantine-color-blue-7);
-  color: white;
-}
-.tableHead:hover {
-  color: black;
 }

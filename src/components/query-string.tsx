@@ -1,34 +1,37 @@
 'use client';
-import { ActionIcon, CopyButton, InputWrapper, rem, TextInput, Tooltip } from '@mantine/core';
-import { useSearchParams } from 'next/navigation';
+
+import { ActionIcon, CopyButton, InputWrapper, rem, TextInput, Title, Tooltip } from '@mantine/core';
 import { IconArrowRight, IconCheck, IconCopy } from '@tabler/icons-react';
+import { useSearchParams } from 'next/navigation';
 import { useRecoilValue } from 'recoil';
 import { activeTypeParamsState } from '@/state/type-params-state';
-import { toString } from 'lodash';
 import { SupportedExportTypes } from './query-selector/export-type';
-import classes from '../app/query-builder/page.module.css';
+import { buildExportRequestString } from '@/util/exportRequestBuilders';
 
 export default function QueryString() {
   const typeParams = useRecoilValue(activeTypeParamsState);
-  const placeholder = buildQueryString(typeParams);
+  const searchParams = useSearchParams();
+
+  const exportType = searchParams.get('type') as SupportedExportTypes;
+  const id = searchParams.get('id');
+  const exportRequestString = buildExportRequestString({ exportType, id, typeParams });
 
   return (
-    <InputWrapper classNames={{ root: classes.inputRoot, description: classes.description }}>
+    <InputWrapper w="75%">
       <TextInput
-        classNames={{ label: classes.inputLabel }}
-        label="Bulk Export Request"
-        radius="xl"
         size="lg"
-        placeholder={placeholder}
+        radius="xl"
+        placeholder={exportRequestString}
+        label={<Title order={1}>Bulk Export Request</Title>}
         rightSection={
           <Tooltip label="Continue to run query" withArrow position="right">
-            <ActionIcon size={48} variant="filled" radius="xl">
-              <IconArrowRight style={{ width: rem(24), height: rem(24) }} stroke={1.5} />
+            <ActionIcon size={48} radius="xl">
+              <IconArrowRight size={32} stroke={2} />
             </ActionIcon>
           </Tooltip>
         }
         leftSection={
-          <CopyButton value={placeholder} timeout={2000}>
+          <CopyButton value={exportRequestString} timeout={2000}>
             {({ copied, copy }) => (
               <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
                 <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
@@ -41,23 +44,4 @@ export default function QueryString() {
       />
     </InputWrapper>
   );
-}
-
-// Builds the query string from a list of type parameters based on the type of query
-// found in the query string of the page.
-function buildQueryString(params: string[]) {
-  const baseUrl = `${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}`;
-  const searchParams = useSearchParams();
-  const exportType = searchParams.get('type') as SupportedExportTypes;
-  const id = searchParams.get('id') ?? '';
-
-  const queryString = params.length == 0 ? '' : '?_type=' + toString(params);
-  if (exportType === 'system') {
-    return baseUrl + '/$export' + queryString;
-  } else if (exportType === 'patient') {
-    return baseUrl + '/Patient/$export' + queryString;
-  } else if (exportType === 'group') {
-    return baseUrl + `/Group/${id}/$export` + queryString;
-  }
-  return '';
 }
