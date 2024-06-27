@@ -2,19 +2,15 @@
 
 import { ActionIcon, CopyButton, InputWrapper, rem, TextInput, Title, Tooltip } from '@mantine/core';
 import { IconArrowRight, IconCheck, IconCopy } from '@tabler/icons-react';
-import { useSearchParams } from 'next/navigation';
 import { useRecoilValue } from 'recoil';
 import { activeTypeParamsState } from '@/state/type-params-state';
-import { SupportedExportTypes } from './query-selector/export-type';
 import { buildExportRequestString } from '@/util/exportRequestBuilders';
+import { SearchParamsProps } from '@/app/query-builder/page';
 
-export default function QueryString() {
+export default function QueryString({ searchParams }: { searchParams: SearchParamsProps }) {
   const typeParams = useRecoilValue(activeTypeParamsState);
-  const searchParams = useSearchParams();
-
-  const exportType = searchParams.get('type') as SupportedExportTypes;
-  const id = searchParams.get('id');
-  const exportRequestString = buildExportRequestString({ exportType, id, typeParams });
+  const { exportType, id } = searchParams;
+  const exportRequestString = buildExportRequestString({ exportType: exportType, id, typeParams });
 
   return (
     <InputWrapper w="75%">

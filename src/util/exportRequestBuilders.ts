@@ -6,7 +6,7 @@ import { SupportedExportTypes } from '@/components/query-selector/export-type';
  */
 export interface BuilderRequest {
   exportType: SupportedExportTypes;
-  id: string | null;
+  id?: string | null;
   typeParams: string[];
   elementParams?: string[]; // may not be string[] in the future
   typeFilterParams?: string[]; // may not be string[] in the future

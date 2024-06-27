@@ -1,18 +1,21 @@
 import { Center, Container, Flex, Paper, Tabs, TabsList, TabsPanel, TabsTab, Title, Tooltip } from '@mantine/core';
-import { Suspense } from 'react';
 import QueryString from '@/components/query-string';
 import TypeParamsPage from '@/components/type-page/type-params-page';
 import { IconInfoCircle } from '@tabler/icons-react';
+import { SupportedExportTypes } from '@/components/query-selector/export-type';
+
+export interface SearchParamsProps {
+  exportType: SupportedExportTypes;
+  id?: string;
+}
 
 const parametersHelpText = `Add parameters to your bulk export query`;
 
-export default function QueryBuilder() {
+export default function QueryBuilder({ searchParams }: { searchParams: SearchParamsProps }) {
   return (
     <>
       <Center mt="xl">
-        <Suspense fallback={<>Loading Query String</>}>
-          <QueryString />
-        </Suspense>
+        <QueryString searchParams={searchParams} />
       </Center>
       <Paper shadow="md" radius="lg" p="sm">
         <Container fluid m="xl">

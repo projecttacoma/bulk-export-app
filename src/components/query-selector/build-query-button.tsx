@@ -21,7 +21,7 @@ export default function BuildQueryButton({ queryId, exportType }: BuildQueryButt
           component={Link}
           href={{
             pathname: '/query-builder',
-            query: exportType === 'system' ? { type: exportType } : { type: exportType, id: queryId }
+            query: exportType === 'system' ? { exportType: exportType } : { exportType: exportType, id: queryId }
           }}
           data-disabled={!buttonEnabled}
           onClick={event => {
