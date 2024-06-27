@@ -7,6 +7,7 @@ import { useRecoilValue } from 'recoil';
 import { activeTypeParamsState } from '@/state/type-params-state';
 import { SupportedExportTypes } from './query-selector/export-type';
 import { buildExportRequestString } from '@/util/exportRequestBuilders';
+import Link from 'next/link';
 
 export default function QueryString() {
   const typeParams = useRecoilValue(activeTypeParamsState);
@@ -25,7 +26,12 @@ export default function QueryString() {
         label={<Title order={1}>Bulk Export Request</Title>}
         rightSection={
           <Tooltip label="Continue to run query" withArrow position="right">
-            <ActionIcon size={48} radius="xl">
+            <ActionIcon
+              size={48}
+              radius="xl"
+              component={Link}
+              href={{ pathname: '/export-execution', query: { exportType, id, typeParams } }}
+            >
               <IconArrowRight size={32} stroke={2} />
             </ActionIcon>
           </Tooltip>

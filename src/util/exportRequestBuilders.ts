@@ -7,7 +7,7 @@ import { SupportedExportTypes } from '@/components/query-selector/export-type';
 export interface BuilderRequest {
   exportType: SupportedExportTypes;
   id: string | null;
-  typeParams: string[];
+  typeParams?: string[];
   elementParams?: string[]; // may not be string[] in the future
   typeFilterParams?: string[]; // may not be string[] in the future
 }
@@ -19,7 +19,8 @@ export interface BuilderRequest {
 export function buildExportRequestString(request: BuilderRequest) {
   const { exportType, id, typeParams } = request;
   const baseUrl = `${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}`;
-  const queryString = typeParams.length === 0 ? '' : `?_type=${typeParams.toString()}`;
+
+  const queryString = buildTypeParamQueryString(typeParams);
 
   let path = '';
 
@@ -31,4 +32,14 @@ export function buildExportRequestString(request: BuilderRequest) {
     path = `/Group/${id}/$export`;
   }
   return baseUrl + path + queryString;
+}
+
+function buildTypeParamQueryString(typeParams: string[] | undefined) {
+  let queryString = '';
+  if (!typeParams || typeParams.length === 0) {
+    queryString = '';
+  } else {
+    queryString = `?_type=${typeParams.toString()}`;
+  }
+  return queryString;
 }
