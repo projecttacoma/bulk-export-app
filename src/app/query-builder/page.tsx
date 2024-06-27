@@ -4,6 +4,13 @@ import TypeParamsPage from '@/components/type-page/type-params-page';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { SupportedExportTypes } from '@/components/query-selector/export-type';
 
+/*
+ * Properties of the query string that can be passed to this page
+ *
+ * exportType - type of export request from query-selector page
+ * id         - possibly undefined in export type is "system."
+ *              Otherwise, either group or patient id to query.
+ */
 export interface SearchParamsProps {
   exportType: SupportedExportTypes;
   id?: string;

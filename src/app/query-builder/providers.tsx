@@ -4,8 +4,9 @@ import { AppShell } from '@mantine/core';
 import React from 'react';
 import { RecoilRoot } from 'recoil';
 
-// Component to wrap layout in Recoil root and AppShell to avoid problems with
-// making the layout a client component.
+/*
+ * Component to wrap layout content in the providers that need to be client components
+ */
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <RecoilRoot>

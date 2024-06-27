@@ -7,6 +7,9 @@ import { activeTypeParamsState } from '@/state/type-params-state';
 import { buildExportRequestString } from '@/util/exportRequestBuilders';
 import { SearchParamsProps } from '@/app/query-builder/page';
 
+/*
+ * Component to visualize the Bulk-export request string.
+ */
 export default function QueryString({ searchParams }: { searchParams: SearchParamsProps }) {
   const typeParams = useRecoilValue(activeTypeParamsState);
   const { exportType, id } = searchParams;
