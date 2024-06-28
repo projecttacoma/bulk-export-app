@@ -6,17 +6,11 @@ import { SupportedExportTypes } from '@/components/query-selector/export-type';
 
 /*
  * Properties of the query string that can be passed to this page
- *
- * exportType - type of export request from query-selector page
- * id         - possibly undefined in export type is "system."
- *              Otherwise, either group or patient id to query.
  */
 export interface SearchParamsProps {
   exportType: SupportedExportTypes;
   id?: string;
 }
-
-const parametersHelpText = `Add parameters to your bulk export query`;
 
 export default function QueryBuilder({ searchParams }: { searchParams: SearchParamsProps }) {
   return (
@@ -28,7 +22,12 @@ export default function QueryBuilder({ searchParams }: { searchParams: SearchPar
         <Container fluid m="xl">
           <Flex align="center" mb="lg">
             <Title mr="sm">Parameters</Title>
-            <Tooltip position="right" withArrow transitionProps={{ duration: 200 }} label={parametersHelpText}>
+            <Tooltip
+              position="right"
+              withArrow
+              transitionProps={{ duration: 200 }}
+              label="Add parameters to your bulk export query"
+            >
               <IconInfoCircle color="gray" />
             </Tooltip>
           </Flex>
