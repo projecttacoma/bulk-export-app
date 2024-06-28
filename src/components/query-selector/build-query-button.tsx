@@ -12,7 +12,7 @@ export interface BuildQueryButtonProps {
  *  navigates to the next page, and creates the query string
  */
 export default function BuildQueryButton({ queryId, exportType }: BuildQueryButtonProps) {
-  const buttonEnabled = exportType === 'system' || queryId !== null;
+  const buttonEnabled = exportType !== 'group' || queryId !== null;
 
   return (
     <Center>
@@ -21,7 +21,7 @@ export default function BuildQueryButton({ queryId, exportType }: BuildQueryButt
           component={Link}
           href={{
             pathname: '/query-builder',
-            query: exportType === 'system' ? { type: exportType } : { type: exportType, id: queryId }
+            query: exportType !== 'group' ? { exportType: exportType } : { exportType: exportType, id: queryId }
           }}
           data-disabled={!buttonEnabled}
           onClick={event => {

@@ -10,6 +10,9 @@ const typeParamsHelpText = `Selected items are added to "_type" parameter of the
    The "_type" parameter is used to select which resource types' data you want to export. By default,
    data for all resource types is returned if a "_type" query is not provided in the export request.`;
 
+/*
+ * Component that is the content for the TypeParams tab of the query-builder page.
+ */
 export default function TypeParamsPage() {
   const [typeParams, setTypeParams] = useRecoilState(activeTypeParamsState);
   return (

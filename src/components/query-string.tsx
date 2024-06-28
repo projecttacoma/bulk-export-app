@@ -2,20 +2,18 @@
 
 import { ActionIcon, CopyButton, InputWrapper, rem, TextInput, Title, Tooltip } from '@mantine/core';
 import { IconArrowRight, IconCheck, IconCopy } from '@tabler/icons-react';
-import { useSearchParams } from 'next/navigation';
 import { useRecoilValue } from 'recoil';
 import { activeTypeParamsState } from '@/state/type-params-state';
-import { SupportedExportTypes } from './query-selector/export-type';
 import { buildExportRequestString } from '@/util/exportRequestBuilders';
-import Link from 'next/link';
+import { SearchParamsProps } from '@/app/query-builder/page';
 
-export default function QueryString() {
+/*
+ * Component to visualize the Bulk-export request string.
+ */
+export default function QueryString({ searchParams }: { searchParams: SearchParamsProps }) {
   const typeParams = useRecoilValue(activeTypeParamsState);
-  const searchParams = useSearchParams();
-
-  const exportType = searchParams.get('type') as SupportedExportTypes;
-  const id = searchParams.get('id');
-  const exportRequestString = buildExportRequestString({ exportType, id, typeParams });
+  const { exportType, id } = searchParams;
+  const exportRequestString = buildExportRequestString({ exportType: exportType, id, typeParams });
 
   return (
     <InputWrapper w="75%">
@@ -26,12 +24,7 @@ export default function QueryString() {
         label={<Title order={1}>Bulk Export Request</Title>}
         rightSection={
           <Tooltip label="Continue to run query" withArrow position="right">
-            <ActionIcon
-              size={48}
-              radius="xl"
-              component={Link}
-              href={{ pathname: '/export-execution', query: { exportType, id, typeParams } }}
-            >
+            <ActionIcon size={48} radius="xl">
               <IconArrowRight size={32} stroke={2} />
             </ActionIcon>
           </Tooltip>

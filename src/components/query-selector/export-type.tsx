@@ -24,7 +24,7 @@ export default function ExportType({ exportType, dropdownData }: ExportTypeProps
           <Center>
             <Title>{`${capitalize(exportType)}-level Export`}</Title>
           </Center>
-          {exportType !== 'system' && (
+          {exportType === 'group' && (
             <Select
               size="lg"
               radius="lg"
