@@ -6,7 +6,7 @@ import { useRecoilValue } from 'recoil';
 import { activeTypeParamsState } from '@/state/type-params-state';
 import { buildExportRequestString } from '@/util/exportRequestBuilders';
 import { SearchParamsProps } from '@/app/query-builder/page';
-
+import Link from 'next/link';
 /*
  * Component to visualize the Bulk-export request string.
  */
@@ -24,7 +24,12 @@ export default function QueryString({ searchParams }: { searchParams: SearchPara
         label={<Title order={1}>Bulk Export Request</Title>}
         rightSection={
           <Tooltip label="Continue to run query" withArrow position="right">
-            <ActionIcon size={48} radius="xl">
+            <ActionIcon
+              size={48}
+              radius="xl"
+              component={Link}
+              href={{ pathname: '/export-execution', query: { exportType, id, typeParams } }}
+            >
               <IconArrowRight size={32} stroke={2} />
             </ActionIcon>
           </Tooltip>
