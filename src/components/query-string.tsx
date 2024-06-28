@@ -28,7 +28,10 @@ export default function QueryString({ searchParams }: { searchParams: SearchPara
               size={48}
               radius="xl"
               component={Link}
-              href={{ pathname: '/export-execution', query: { exportType, id, typeParams } }}
+              href={{
+                pathname: '/export-execution',
+                query: exportType === 'group' ? { exportType, id, typeParams } : { exportType, typeParams }
+              }}
             >
               <IconArrowRight size={32} stroke={2} />
             </ActionIcon>
