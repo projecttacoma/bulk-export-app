@@ -4,7 +4,7 @@ export default function Loading() {
   return (
     <Stack>
       <Center>
-        <Title>Bulk export Kickoff request is being processed...</Title>
+        <Title>Bulk export request is being processed...</Title>
       </Center>
       <Center>
         <Title order={3} c="gray">
