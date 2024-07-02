@@ -1,6 +1,7 @@
 'use client';
 import ExportType from '@/components/query-selector/export-type';
-import { Grid, rem, Notification } from '@mantine/core';
+import { Grid, rem, Alert } from '@mantine/core';
+import { IconExclamationCircle } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 
 export default function QuerySelector() {
@@ -26,9 +27,9 @@ export default function QuerySelector() {
     <>
       {error ? (
         <>
-          <Notification color="red" title="Error" withCloseButton={false} fw={700}>
+          <Alert color="red" title="Error" radius="lg" fw={700} icon={<IconExclamationCircle />}>
             {error.message} -- Make sure you have the bulk export server running.
-          </Notification>
+          </Alert>
           ,
         </>
       ) : (
