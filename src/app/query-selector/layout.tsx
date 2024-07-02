@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function QuerySelectorLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AppShell padding="md">
+    <AppShell padding="md" header={{ height: '60px' }}>
       <AppShellHeader>
         <Box component={Link} href="/query-selector" className={classes.title}>
           <Title>Bulk-export-app</Title>

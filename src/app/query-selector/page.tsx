@@ -1,10 +1,11 @@
 'use client';
 import ExportType from '@/components/query-selector/export-type';
-import { Grid, rem } from '@mantine/core';
+import { Grid, rem, Notification } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 export default function QuerySelector() {
   const [dropdownData, setDropdownData] = useState<string[]>();
+  const [error, setError] = useState<Error>();
   const groupUrl = `${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}/Group`;
 
   useEffect(() => {
@@ -16,15 +17,32 @@ export default function QuerySelector() {
         setDropdownData(ids);
       })
       .catch(error => {
-        console.error('Error: ', error);
+        setError(error);
+        console.error(error);
       });
   }, []);
 
   return (
-    <Grid justify="center" align="center" gutter={{ base: 5, xs: 'md', md: 'lg', xl: 50 }} style={{ margin: rem(60) }}>
-      <ExportType exportType="patient" />
-      <ExportType exportType="group" dropdownData={dropdownData} />
-      <ExportType exportType="system" />
-    </Grid>
+    <>
+      {error ? (
+        <>
+          <Notification color="red" title="Error" withCloseButton={false} fw={700}>
+            {error.message} -- Make sure you have the bulk export server running.
+          </Notification>
+          ,
+        </>
+      ) : (
+        <Grid
+          justify="center"
+          align="center"
+          gutter={{ base: 5, xs: 'md', md: 'lg', xl: 50 }}
+          style={{ margin: rem(60) }}
+        >
+          <ExportType exportType="patient" />
+          <ExportType exportType="group" dropdownData={dropdownData} />
+          <ExportType exportType="system" />
+        </Grid>
+      )}
+    </>
   );
 }
