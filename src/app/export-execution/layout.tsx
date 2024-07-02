@@ -1,6 +1,6 @@
 import { AppShell, AppShellHeader, AppShellMain, Box, Title } from '@mantine/core';
 import Link from 'next/link';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import classes from '../query-builder/layout.module.css';
 export default function ExecutionLayout({ children }: { children: React.ReactNode }) {
@@ -11,7 +11,9 @@ export default function ExecutionLayout({ children }: { children: React.ReactNod
           <Title>Bulk-export-app</Title>
         </Box>
       </AppShellHeader>
-      <AppShellMain>{children}</AppShellMain>
+      <AppShellMain>
+        <Suspense>{children}</Suspense>
+      </AppShellMain>
     </AppShell>
   );
 }
