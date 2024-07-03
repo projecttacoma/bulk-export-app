@@ -24,10 +24,14 @@ export default function QueryString() {
   const exportRequestString = buildExportRequestString({ exportType, id, typeParams });
 
   const kickoffRequest = () => {
-    fetch(exportRequestString).then(response => {
-      setContentLocation(response.headers.get('content-location'));
-      setStatus(response.status);
-    });
+    fetch(exportRequestString)
+      .then(response => {
+        setContentLocation(response.headers.get('content-location'));
+        setStatus(response.status);
+      })
+      .catch(err => {
+        console.error(err);
+      });
   };
   return (
     <>
@@ -35,6 +39,7 @@ export default function QueryString() {
         <TextInput
           size="lg"
           radius="xl"
+          disabled
           placeholder={exportRequestString}
           label={<Title order={1}>Bulk Export Request</Title>}
           rightSection={
