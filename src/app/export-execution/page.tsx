@@ -13,11 +13,6 @@ export default function ExecutionPage() {
   return (
     <Stack>
       <Flex>
-        <Title order={3} mr="lg">
-          Status:
-        </Title>
-      </Flex>
-      <Flex>
         <Title mr="lg" order={3}>
           Content Location:
         </Title>
