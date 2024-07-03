@@ -3,6 +3,7 @@ import QueryString from '@/components/query-string';
 import TypeParamsPage from '@/components/type-page/type-params-page';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { SupportedExportTypes } from '@/components/query-selector/export-type';
+import { Suspense } from 'react';
 
 /*
  * Properties of the query string that can be passed to this page
@@ -12,11 +13,13 @@ export interface SearchParamsProps {
   id?: string;
 }
 
-export default function QueryBuilder({ searchParams }: { searchParams: SearchParamsProps }) {
+export default function QueryBuilder() {
   return (
     <>
       <Center mt="xl">
-        <QueryString searchParams={searchParams} />
+        <Suspense>
+          <QueryString />
+        </Suspense>
       </Center>
       <Paper shadow="md" radius="lg" p="sm">
         <Container fluid m="xl">
