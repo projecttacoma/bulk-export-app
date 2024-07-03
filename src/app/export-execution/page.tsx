@@ -1,6 +1,6 @@
 'use client';
 
-import { Anchor, Flex, Pill, Stack, Title } from '@mantine/core';
+import { Anchor, Flex, Stack, Title } from '@mantine/core';
 import { useSearchParams } from 'next/navigation';
 
 export default function ExecutionPage() {
@@ -16,9 +16,6 @@ export default function ExecutionPage() {
         <Title order={3} mr="lg">
           Status:
         </Title>
-        <Pill size="xl" bg="green" c="white" fw={700}>
-          202
-        </Pill>
       </Flex>
       <Flex>
         <Title mr="lg" order={3}>

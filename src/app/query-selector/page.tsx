@@ -17,10 +17,7 @@ export default function QuerySelector() {
         const ids = entries?.map(entry => entry.resource?.id ?? '');
         setDropdownData(ids);
       })
-      .catch(error => {
-        setError(error);
-        console.error(error);
-      });
+      .catch(error => setError(error));
   }, []);
 
   return (
