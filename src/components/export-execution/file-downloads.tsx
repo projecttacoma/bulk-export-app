@@ -16,6 +16,7 @@ export interface FileDownloadCollapseProps {
   opened: boolean;
 }
 
+// Component for the collapsible section with the filenames and buttons to download them.
 export default function FileDownloadCollapse({ files, opened }: FileDownloadCollapseProps) {
   const [fileSizeData, setFileSizeData] = useState<FileSizeNameUrl[]>([]);
   const [totalFileSize, setTotalFileSize] = useState<number>(0);
@@ -45,40 +46,30 @@ export default function FileDownloadCollapse({ files, opened }: FileDownloadColl
   }, []);
 
   return (
-    <>
-      <Collapse in={opened}>
-        <Stack>
-          {fileSizeData.map((file, index) => {
-            return (
-              <>
-                <Group justify="space-between" key={`group ${index}`}>
-                  <Title order={4} key={`title ${index}`}>
-                    {file.name}
-                  </Title>
-                  <Button
-                    component="a"
-                    href={file.url}
-                    key={`button ${index}`}
-                    rightSection={<IconDownload size={14} />}
-                    w={225}
-                  >
-                    Download ({filesize(file.size)})
-                  </Button>
-                </Group>
-                <Divider key={`divider ${index}`}></Divider>
-              </>
-            );
-          })}
-          {noFilesFound ? <Center>No Files Found...</Center> : <></>}
-          <Center mt="lg">
-            <Tooltip label="Not yet implemented...">
-              <Button size="lg" rightSection={<IconDownload size={24} />} disabled={true}>
-                Download All Files ({filesize(totalFileSize)})
-              </Button>
-            </Tooltip>
-          </Center>
-        </Stack>
-      </Collapse>
-    </>
+    <Collapse in={opened}>
+      <Stack>
+        {fileSizeData.map(file => {
+          return (
+            <Stack key={file.name}>
+              <Group justify="space-between">
+                <Title order={4}>{file.name}</Title>
+                <Button component="a" href={file.url} rightSection={<IconDownload size={14} />} w={225}>
+                  Download ({filesize(file.size)})
+                </Button>
+              </Group>
+              <Divider />
+            </Stack>
+          );
+        })}
+        {noFilesFound ? <Center>No Files Found...</Center> : <></>}
+        <Center mt="lg">
+          <Tooltip label="Not yet implemented...">
+            <Button size="lg" rightSection={<IconDownload size={24} />} disabled={true}>
+              Download All Files ({filesize(totalFileSize)})
+            </Button>
+          </Tooltip>
+        </Center>
+      </Stack>
+    </Collapse>
   );
 }

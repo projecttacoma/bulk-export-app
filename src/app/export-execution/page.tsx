@@ -1,6 +1,6 @@
 'use client';
 
-import { Anchor, Flex, Text, Stack, Title } from '@mantine/core';
+import { Anchor, Group, Stack, Title, Center, Loader } from '@mantine/core';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import FileDownloadCollapse from '@/components/export-execution/file-downloads';
@@ -21,7 +21,7 @@ export default function ExecutionPage() {
   const [bulkExportData, setBulkExportData] = useState<BulkExportResponse[]>([]);
   const [pollingLogs, setPollingLogs] = useState<PollingLog[]>([]);
   const [bulkDataLoading, setBulkDataLoading] = useState(true);
-  const [filesOpened, { toggle }] = useDisclosure(true);
+  const [requestedFilesOpened, { toggle }] = useDisclosure(true);
 
   const searchParams = useSearchParams();
   const encodedContentLocation = searchParams.get('contentLocation');
@@ -57,20 +57,26 @@ export default function ExecutionPage() {
   return (
     <Stack>
       <Title>Bulk Export Request Accepted</Title>
-      <Flex>
+      <Group>
         <Title mr="lg" order={3}>
           Content Location:
         </Title>
         <Anchor href={contentLocation}>{contentLocation}</Anchor>
-      </Flex>
-      <Flex onClick={toggle}>
+      </Group>
+      <Group gap="xs" onClick={toggle}>
         <Title>Requested Files</Title>
-        {filesOpened ? <IconChevronUp size={50}></IconChevronUp> : <IconChevronDown size={50}></IconChevronDown>}
-      </Flex>
+        {requestedFilesOpened ? (
+          <IconChevronUp size={50}></IconChevronUp>
+        ) : (
+          <IconChevronDown size={50}></IconChevronDown>
+        )}
+      </Group>
       {bulkDataLoading ? (
-        <Text>No data yet...</Text>
+        <Center>
+          <Loader />
+        </Center>
       ) : (
-        <FileDownloadCollapse files={bulkExportData} opened={filesOpened} />
+        <FileDownloadCollapse files={bulkExportData} opened={requestedFilesOpened} />
       )}
       <PollingLogsList logs={pollingLogs} bulkDataCompleted={!bulkDataLoading}></PollingLogsList>
     </Stack>
