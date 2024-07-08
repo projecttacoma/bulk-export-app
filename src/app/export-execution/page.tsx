@@ -29,7 +29,11 @@ export default function ExecutionPage() {
   const contentLocation = decodeURIComponent(encodedContentLocation);
 
   useEffect(() => {
-    const getBulkStatus = async () => {
+    const getBulkStatus = async (retryLimit: number) => {
+      if (retryLimit <= 0) {
+        console.log('Retry limit of 10 hit. Stopping export...');
+        return;
+      }
       const response = await fetch(contentLocation);
       const xProgress = response.headers.get('x-progress');
       const retryAfterString = response.headers.get('retry-after');
@@ -44,14 +48,14 @@ export default function ExecutionPage() {
         const retryDelayMS = parseInt(retryAfterString, 10) * 1000;
         await new Promise(resolve => setTimeout(resolve, retryDelayMS));
 
-        getBulkStatus();
+        getBulkStatus(retryLimit - 1);
       } else {
         const data = await response.json();
         setBulkExportData(data.output);
         setBulkDataLoading(false);
       }
     };
-    getBulkStatus();
+    getBulkStatus(10);
   }, []);
 
   return (
