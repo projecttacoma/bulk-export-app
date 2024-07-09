@@ -8,6 +8,11 @@ import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import PollingLogsList from '@/components/export-execution/polling-logs';
 
+/*
+ * Limit for the number of times the app can send a request to the bulk-export-server to try to get data at a content location.
+ */
+const FETCH_RETRY_LIMIT = 10;
+
 export interface BulkExportResponse {
   type: string;
   url: string;
@@ -55,7 +60,7 @@ export default function ExecutionPage() {
         setBulkDataLoading(false);
       }
     };
-    getBulkStatus(10);
+    getBulkStatus(FETCH_RETRY_LIMIT);
   }, []);
 
   return (

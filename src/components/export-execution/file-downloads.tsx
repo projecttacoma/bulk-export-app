@@ -1,4 +1,5 @@
 'use client';
+
 import { BulkExportResponse } from '@/app/export-execution/page';
 import { Button, Center, Group, Title, Collapse, Tooltip, Stack, Divider } from '@mantine/core';
 import { useEffect, useState } from 'react';
@@ -61,7 +62,7 @@ export default function FileDownloadCollapse({ files, opened }: FileDownloadColl
             </Stack>
           );
         })}
-        {noFilesFound ? <Center>No Files Found...</Center> : <></>}
+        {noFilesFound && <Center>No Files Found...</Center>}
         <Center mt="lg">
           <Tooltip label="Not yet implemented...">
             <Button size="lg" rightSection={<IconDownload size={24} />} disabled={true}>
