@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { filesize } from 'filesize';
 import { IconDownload } from '@tabler/icons-react';
 
-export interface FileSizeNameUrl {
+export interface FileInfo {
   name: string;
   url: string;
   size: number;
@@ -19,8 +19,8 @@ export interface FileDownloadCollapseProps {
 
 // Component for the collapsible section with the filenames and buttons to download them.
 export default function FileDownloadCollapse({ files, opened }: FileDownloadCollapseProps) {
-  const [fileSizeData, setFileSizeData] = useState<FileSizeNameUrl[]>([]);
-  const [totalFileSize, setTotalFileSize] = useState<number>(0);
+  const [fileSizeData, setFileSizeData] = useState<FileInfo[]>([]);
+  const [totalFileSize, setTotalFileSize] = useState(0);
 
   const noFilesFound = files.length === 0;
 
@@ -31,7 +31,7 @@ export default function FileDownloadCollapse({ files, opened }: FileDownloadColl
         fetch(file.url)
           .then(response => response.blob())
           .then(data => {
-            const fileSizeData: FileSizeNameUrl = { name: file.type, size: data.size, url: file.url };
+            const fileSizeData: FileInfo = { name: file.type, size: data.size, url: file.url };
 
             totalFileBytes += data.size;
 
@@ -43,7 +43,7 @@ export default function FileDownloadCollapse({ files, opened }: FileDownloadColl
         setFileSizeData(fileSizes);
         setTotalFileSize(totalFileBytes);
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => console.error('Error: ', error));
   }, []);
 
   return (

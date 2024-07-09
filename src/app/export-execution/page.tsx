@@ -87,7 +87,7 @@ export default function ExecutionPage() {
       ) : (
         <FileDownloadCollapse files={bulkExportData} opened={requestedFilesOpened} />
       )}
-      <PollingLogsList logs={pollingLogs} bulkDataCompleted={!bulkDataLoading}></PollingLogsList>
+      <PollingLogsList logs={pollingLogs} bulkDataCompleted={!bulkDataLoading} />
     </Stack>
   );
 }
