@@ -11,7 +11,7 @@ export interface ExportStatusInfoProps {
 // Component for the collapsible section with the polling logs
 export default function ExportStatusInfo({ logs, bulkDataCompleted }: ExportStatusInfoProps) {
   const [opened, { toggle }] = useDisclosure(true);
-  
+
   return (
     <>
       <Group onClick={toggle} justify="space-between">

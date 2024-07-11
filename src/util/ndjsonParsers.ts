@@ -8,7 +8,7 @@ function parseNdjson(ndjsonString: string): unknown[] {
 }
 
 /*
- * Function to stringify an array of javascript objects into a string of new line delimitated 
+ * Function to stringify an array of javascript objects into a string of new line delimitated
  * json strings. Default has numValues set to 1 to just json.stringify one element of the passed in array
  */
 function stringifyJsonArray(jsonObjectArray: unknown[], start: number, numValues: number = 1) {
