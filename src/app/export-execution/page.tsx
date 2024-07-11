@@ -28,10 +28,46 @@ export default function ExecutionPage() {
   const [bulkDataLoading, setBulkDataLoading] = useState(true);
   const [requestedFilesOpened, { toggle }] = useDisclosure(true);
 
+  const [bulkExportData, setBulkExportData] = useState<BulkExportResponse[]>([]);
+  const [pollingLogs, setPollingLogs] = useState<PollingLog[]>([]);
+  const [bulkDataLoading, setBulkDataLoading] = useState(true);
+  const [requestedFilesOpened, { toggle }] = useDisclosure(true);
+
   const searchParams = useSearchParams();
   const encodedContentLocation = searchParams.get('contentLocation');
   if (!encodedContentLocation) return <Title>Error: Bad contentLocation</Title>;
+  if (!encodedContentLocation) return <Title>Error: Bad contentLocation</Title>;
   const contentLocation = decodeURIComponent(encodedContentLocation);
+
+  useEffect(() => {
+    const getBulkStatus = async (retryLimit: number) => {
+      if (retryLimit <= 0) {
+        console.log('Retry limit of 10 hit. Stopping export...');
+        return;
+      }
+      const response = await fetch(contentLocation);
+      const xProgress = response.headers.get('x-progress');
+      const retryAfterString = response.headers.get('retry-after');
+
+      if (xProgress && retryAfterString) {
+        const newLog: PollingLog = {
+          retryAfter: retryAfterString,
+          xProgress: xProgress
+        };
+        setPollingLogs(prevLogs => [...prevLogs, newLog]);
+
+        const retryDelayMS = parseInt(retryAfterString, 10) * 1000;
+        await new Promise(resolve => setTimeout(resolve, retryDelayMS));
+
+        getBulkStatus(retryLimit - 1);
+      } else {
+        const data = await response.json();
+        setBulkExportData(data.output);
+        setBulkDataLoading(false);
+      }
+    };
+    getBulkStatus(FETCH_RETRY_LIMIT);
+  }, []);
 
   useEffect(() => {
     const getBulkStatus = async (retryLimit: number) => {
