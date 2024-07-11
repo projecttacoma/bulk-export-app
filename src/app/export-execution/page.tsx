@@ -1,12 +1,12 @@
 'use client';
 
-import { Anchor, Group, Stack, Title, Center, Loader } from '@mantine/core';
+import { Anchor, Group, Title, Center, Loader, Card, Grid, GridCol } from '@mantine/core';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import FileDownloadCollapse from '@/components/export-execution/file-downloads';
+import RequestedFiles from '@/components/export-execution/requested-files';
 import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
-import PollingLogsList from '@/components/export-execution/polling-logs';
+import ExportStatusInfo from '@/components/export-execution/export-status-info';
 
 /*
  * Limit for the number of times the app can send a request to the bulk-export-server to try to get data at a content location.
@@ -64,30 +64,38 @@ export default function ExecutionPage() {
   }, []);
 
   return (
-    <Stack>
-      <Title>Bulk Export Request Accepted</Title>
-      <Group>
-        <Title mr="lg" order={3}>
-          Content Location:
-        </Title>
-        <Anchor href={contentLocation}>{contentLocation}</Anchor>
-      </Group>
-      <Group gap="xs" onClick={toggle}>
-        <Title>Requested Files</Title>
-        {requestedFilesOpened ? (
-          <IconChevronUp size={50}></IconChevronUp>
-        ) : (
-          <IconChevronDown size={50}></IconChevronDown>
-        )}
-      </Group>
-      {bulkDataLoading ? (
-        <Center>
-          <Loader />
-        </Center>
-      ) : (
-        <FileDownloadCollapse files={bulkExportData} opened={requestedFilesOpened} />
-      )}
-      <PollingLogsList logs={pollingLogs} bulkDataCompleted={!bulkDataLoading} />
-    </Stack>
+    <Grid>
+      <GridCol span={12}>
+        <Card padding="xl" radius="md">
+          <Title>Bulk Export Request Accepted</Title>
+          <Group>
+            <Title mr="lg" order={3} m="lg">
+              Content Location:
+            </Title>
+            <Anchor href={contentLocation}>{contentLocation}</Anchor>
+          </Group>
+        </Card>
+      </GridCol>
+      <GridCol span="auto">
+        <Card padding="xl" radius="md">
+          <Group onClick={toggle} justify="space-between">
+            <Title>Requested Files</Title>
+            {requestedFilesOpened ? <IconChevronUp size={50} /> : <IconChevronDown size={50} />}
+          </Group>
+          {bulkDataLoading ? (
+            <Center>
+              <Loader />
+            </Center>
+          ) : (
+            <RequestedFiles files={bulkExportData} opened={requestedFilesOpened} />
+          )}
+        </Card>
+      </GridCol>
+      <GridCol span={6}>
+        <Card padding="xl" radius="md">
+          <ExportStatusInfo logs={pollingLogs} bulkDataCompleted={!bulkDataLoading} />
+        </Card>
+      </GridCol>
+    </Grid>
   );
 }

@@ -1,5 +1,5 @@
 .appHeaderTitle {
-  color: white;
+  color: var(--mantine-color-blue-9);
   font-size: 40px;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
@@ -8,5 +8,10 @@
   margin: 5px 20px;
   padding: 4px 30px;
   border-radius: 15px;
-  background-color: var(--mantine-color-blue-7);
+  background-color: white;
+}
+
+.resourceTitle {
+  color: var(--mantine-color-blue-8);
+  background-color: transparent;
 }

@@ -12,13 +12,14 @@
     "check": "npm run lint && npm run prettier"
   },
   "dependencies": {
+    "@mantine/code-highlight": "^7.11.1",
     "@mantine/core": "^7.10.1",
     "@mantine/hooks": "^7.10.1",
-    "@mantine/notifications": "^7.10.2",
     "@tabler/icons-react": "^3.6.0",
     "dotenv": "^16.4.5",
     "eslint-config-prettier": "^9.1.0",
     "filesize": "^10.1.2",
+    "ndjson": "^2.0.0",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
@@ -30,6 +31,7 @@
     "@types/eslint__js": "^8.42.3",
     "@types/fhir": "^0.0.41",
     "@types/lodash": "^4.17.5",
+    "@types/ndjson": "^2.0.4",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
