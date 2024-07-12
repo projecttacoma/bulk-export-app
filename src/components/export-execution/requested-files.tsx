@@ -7,13 +7,14 @@ import ResourceFilePreview from './resource-file-preview';
 import { BulkExportResponse } from '@/app/export-execution/page';
 import { parseNdjson } from '@/util/ndjsonParsers';
 import { useDisclosure } from '@mantine/hooks';
+import { Resource } from 'fhir/r4';
 
 export interface ResourceFileInfo {
   name: string;
   url: string;
   size: number;
   numResources: number;
-  objectArray: unknown[];
+  objectArray: Resource[];
 }
 
 export interface RequestedFilesProps {
@@ -24,7 +25,7 @@ export interface RequestedFilesProps {
 // Component for the collapsible section with the filenames and buttons to download them.
 export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
   const [fileSizeData, setFileSizeData] = useState<ResourceFileInfo[]>([]);
-  const [totalFileSize, setTotalFileSize] = useState<number>(0);
+  const [totalFileSize, setTotalFileSize] = useState(0);
   const [previewedFile, setPreviewedFile] = useState<ResourceFileInfo>();
   const [jsonModalOpened, { open, close }] = useDisclosure(false);
 
@@ -120,7 +121,7 @@ export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
         })}
       </Stack>
       <Modal opened={jsonModalOpened} onClose={close} size="50%" radius="md">
-        <ResourceFilePreview file={previewedFile} />
+        {previewedFile && <ResourceFilePreview file={previewedFile} />}
       </Modal>
     </Collapse>
   );

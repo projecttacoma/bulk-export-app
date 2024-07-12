@@ -27,7 +27,7 @@ export default function ExportStatusInfo({ logs, bulkDataCompleted }: ExportStat
             </Badge>
           )}
         </Group>
-        {opened ? <IconChevronUp size={50}></IconChevronUp> : <IconChevronDown size={50}></IconChevronDown>}
+        {opened ? <IconChevronUp size={50} /> : <IconChevronDown size={50} />}
       </Group>
       <Collapse in={opened}>
         {logs.map((log, index) => {

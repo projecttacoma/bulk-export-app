@@ -1,22 +1,17 @@
-/*
- * Function to parse ndjson data into an array of javascript objects
- */
-function parseNdjson(ndjsonString: string): unknown[] {
-  const jsonObjectArray = ndjsonString.split('\n').map(data => JSON.parse(data));
+import { Resource } from 'fhir/r4';
 
-  return jsonObjectArray;
+/*
+ * Function to parse ndjson data into an array of Fhir4 Resources
+ */
+function parseNdjson(ndjsonString: string): Resource[] {
+  return ndjsonString.split('\n').map(data => JSON.parse(data));
 }
 
 /*
- * Function to stringify an array of javascript objects into a string of new line delimitated
- * json strings. Default has numValues set to 1 to just json.stringify one element of the passed in array
+ * Function to stringify a single element of an array of Fhir4 Resources
  */
-function stringifyJsonArray(jsonObjectArray: unknown[], start: number, numValues: number = 1) {
-  const subset = jsonObjectArray.slice(start, start + numValues);
-  const jsonStrings = subset.map(data => JSON.stringify(data, null, 2));
-  const joinedJsonString = jsonStrings.join('\n');
-
-  return joinedJsonString;
+function stringifyResource(jsonObjectArray: Resource[], resourceIndex: number) {
+  return JSON.stringify(jsonObjectArray[resourceIndex], null, 2);
 }
 
-export { parseNdjson, stringifyJsonArray };
+export { parseNdjson, stringifyResource };
