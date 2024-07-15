@@ -1,17 +1,22 @@
 .appHeaderTitle {
   color: var(--mantine-color-blue-9);
-  font-size: 40px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
   text-decoration: none;
-  display: inline-block;
-  margin: 5px 20px;
-  padding: 4px 30px;
-  border-radius: 15px;
-  background-color: white;
 }
 
-.resourceTitle {
+.blueText {
   color: var(--mantine-color-blue-8);
   background-color: transparent;
+}
+
+.titlePageTitle {
+  text-align: center;
+  font-size: 80px;
+  margin-top: 15%;
+}
+.titlePageSubtitle {
+  text-align: center;
+  font-size: 32px;
+  color: grey;
+  font-weight: 500;
+  margin-bottom: 5%;
 }

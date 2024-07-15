@@ -21,7 +21,7 @@ export default function ResourceFilePreview({ file }: ResourceFilePreviewProps) 
   return (
     <>
       <Title order={1} mb="lg" ta="center">
-        Exported <Mark className={classes.resourceTitle}>{file.name}</Mark> Resources
+        Exported <Mark className={classes.blueText}>{file.name}</Mark> Resources
       </Title>
       <ScrollArea.Autosize mah={600} mx="auto" scrollbars="y" bd="1px solid gray.2" mr="lg" ml="lg">
         <CodeHighlight withCopyButton={false} code={code} language="json" />

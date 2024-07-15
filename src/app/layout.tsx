@@ -1,12 +1,16 @@
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import { Metadata } from 'next';
+import dynamic from 'next/dynamic';
 
 export const metadata: Metadata = {
   title: 'bulk-data-app',
   description: 'Interactive bulk-export-server query generator'
 };
+
+const DynamicProviders = dynamic(() => import('./providers'), { ssr: false });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,7 +19,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider>{children}</MantineProvider>
+        <MantineProvider>
+          <DynamicProviders>{children}</DynamicProviders>
+        </MantineProvider>
       </body>
     </html>
   );

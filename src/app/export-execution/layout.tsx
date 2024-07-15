@@ -1,15 +1,14 @@
-import { AppShell, AppShellHeader, AppShellMain, Box, Title } from '@mantine/core';
-import Link from 'next/link';
+'use client';
+
+import { AppShell, AppShellHeader, AppShellMain } from '@mantine/core';
 import React, { Suspense } from 'react';
-import classes from '@/app/global.module.css';
+import ApplicationHeader from '@/components/header';
 
 export default function ExecutionLayout({ children }: { children: React.ReactNode }) {
   return (
     <AppShell p="md" bg="gray.1" header={{ height: 63 }}>
       <AppShellHeader>
-        <Box component={Link} href="/query-selector" className={classes.appHeaderTitle}>
-          <Title>Bulk-export-app</Title>
-        </Box>
+        <ApplicationHeader />
       </AppShellHeader>
       <AppShellMain>
         <Suspense>{children}</Suspense>
