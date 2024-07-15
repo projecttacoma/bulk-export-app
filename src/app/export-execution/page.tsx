@@ -91,7 +91,7 @@ export default function ExecutionPage() {
           )}
         </Card>
       </GridCol>
-      <GridCol span={6}>
+      <GridCol span={{ base: 12, lg: 6 }}>
         <Card padding="xl" radius="md">
           <ExportStatusInfo logs={pollingLogs} bulkDataCompleted={!bulkDataLoading} />
         </Card>
