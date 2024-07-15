@@ -2,7 +2,7 @@
 
 import { AppShell, AppShellHeader, AppShellMain, Box, Title } from '@mantine/core';
 import Link from 'next/link';
-import classes from './layout.module.css';
+import classes from '@/app/global.module.css';
 import { RecoilRoot } from 'recoil';
 
 export default function BuilderLayout({ children }: { children: React.ReactNode }) {
