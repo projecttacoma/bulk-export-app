@@ -27,7 +27,7 @@ export default function ExportType({ exportType, dropdownData }: ExportTypeProps
           {exportType === 'group' && (
             <Select
               size="lg"
-              radius="lg"
+              radius="md"
               label={`${capitalize(exportType)} Id`}
               placeholder="Search for an Id"
               data={dropdownData}

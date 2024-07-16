@@ -1,4 +1,6 @@
 import { SupportedExportTypes } from '@/components/query-selector/export-type';
+import { bulkServerURLState } from '@/state/bulk-server-url-state';
+import { useRecoilValue } from 'recoil';
 
 /**
  * Parameters to build export request string. Will need to add more fields in the future
@@ -18,7 +20,7 @@ export interface BuilderRequest {
  */
 export function buildExportRequestString(request: BuilderRequest) {
   const { exportType, id, typeParams } = request;
-  const baseUrl = `${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}`;
+  const bulkExportURL = useRecoilValue(bulkServerURLState);
 
   const queryString = buildTypeParamQueryString(typeParams);
 
@@ -31,7 +33,7 @@ export function buildExportRequestString(request: BuilderRequest) {
   } else if (exportType === 'group') {
     path = `/Group/${id}/$export`;
   }
-  return baseUrl + path + queryString;
+  return bulkExportURL + path + queryString;
 }
 
 function buildTypeParamQueryString(typeParams: string[] | undefined) {

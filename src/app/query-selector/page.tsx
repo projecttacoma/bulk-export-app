@@ -1,13 +1,17 @@
 'use client';
+
 import ExportType from '@/components/query-selector/export-type';
+import { bulkServerURLState } from '@/state/bulk-server-url-state';
 import { Grid, rem, Alert } from '@mantine/core';
 import { IconExclamationCircle } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 
 export default function QuerySelector() {
   const [dropdownData, setDropdownData] = useState<string[]>();
   const [error, setError] = useState<Error>();
-  const groupUrl = `${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}/Group`;
+  const bulkServerUrl = useRecoilValue(bulkServerURLState);
+  const groupUrl = `${bulkServerUrl}/Group`;
 
   useEffect(() => {
     fetch(groupUrl)
@@ -23,12 +27,9 @@ export default function QuerySelector() {
   return (
     <>
       {error ? (
-        <>
-          <Alert color="red" title="Error" radius="lg" fw={700} icon={<IconExclamationCircle />}>
-            {error.message} -- Make sure you have the bulk export server running.
-          </Alert>
-          ,
-        </>
+        <Alert color="red" title="Error" radius="lg" fw={700} icon={<IconExclamationCircle />}>
+          {error.message} -- Make sure you have the bulk export server running.
+        </Alert>
       ) : (
         <Grid
           justify="center"
