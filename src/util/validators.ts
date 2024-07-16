@@ -3,11 +3,14 @@
  */
 async function validateServerHasExportOperation(bulkExportServerUrl: string) {
   const response = await fetch(bulkExportServerUrl + '/metadata');
-  const data = await response.json();
-  const serverOperations: object[] = data.rest[0].operation;
-  const hasExportOperation = serverOperations.some(obj => 'name' in obj && obj.name === 'export');
+  const capabilityStatement: fhir4.CapabilityStatement = await response.json();
+  const restCapabilityStatements = capabilityStatement.rest;
+  const serverHasExportOperation =
+    restCapabilityStatements?.some(restCapabilityStatement =>
+      restCapabilityStatement.operation?.some(restOperation => restOperation.name === 'export')
+    ) ?? false;
 
-  return hasExportOperation;
+  return serverHasExportOperation;
 }
 
 export { validateServerHasExportOperation };

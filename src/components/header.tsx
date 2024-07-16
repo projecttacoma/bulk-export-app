@@ -5,7 +5,7 @@ import { bulkServerURLState } from '@/state/bulk-server-url-state';
 import { useRecoilValue } from 'recoil';
 
 /*
- * Component for the application header shared across all pages.
+ * Component for the application header to be shared across all pages.
  */
 export default function ApplicationHeader() {
   const bulkServerUrl = useRecoilValue(bulkServerURLState);

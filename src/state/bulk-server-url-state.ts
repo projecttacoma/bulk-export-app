@@ -6,8 +6,8 @@ const { persistAtom } = recoilPersist();
 /*
  * State for managing the bulk export server url
  */
-export const bulkServerURLState = atom<string | null>({
+export const bulkServerURLState = atom<string>({
   key: 'bulkServerURLState',
-  default: null,
+  default: '',
   effects: [persistAtom]
 });
