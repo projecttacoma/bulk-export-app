@@ -14,7 +14,7 @@ const theme = createTheme({
         clearable: true,
         searchable: true,
         withScrollArea: false,
-        styles: { dropdown: { maxHeight: 400  , overflowY: 'auto' } },
+        styles: { dropdown: { maxHeight: 400, overflowY: 'auto' } },
         comboboxProps: { transitionProps: { transition: 'fade-down', duration: 200 }, offset: 0, shadow: 'lg' }
       }
     })
