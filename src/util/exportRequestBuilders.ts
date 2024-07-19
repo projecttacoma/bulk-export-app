@@ -1,47 +1,104 @@
 import { SupportedExportTypes } from '@/components/query-selector/export-type';
-import { bulkServerURLState } from '@/state/bulk-server-url-state';
-import { useRecoilValue } from 'recoil';
+import { TypeElement } from '@/state/type-element-params-state';
 
-/**
- * Parameters to build export request string. Will need to add more fields in the future
- * for element parameters and type filter parameters.
+/*
+ * Parameters to build export request string.
  */
 export interface BuilderRequest {
+  baseUrl: string;
   exportType: SupportedExportTypes;
-  id?: string | null;
-  typeParams?: string[];
-  elementParams?: string[]; // may not be string[] in the future
-  typeFilterParams?: string[]; // may not be string[] in the future
+  id?: string;
+  queryParams: BuilderRequestQueryParams;
 }
 
-/**
+/*
+ * Query parameters that modify the export request.
+ */
+export interface BuilderRequestQueryParams {
+  type: string[];
+  element: string[];
+  typeElement: TypeElement[];
+  typeFilter?: string[]; // may not be string[] in the future
+}
+
+/*
  * Builds bulk export request string from a list of parameters, a SupportedExportType, and an id.
- * Note: currently only supports type parameters.
+ * Note: currently only supports type parameters and elements.
  */
 export function buildExportRequestString(request: BuilderRequest) {
-  const { exportType, id, typeParams } = request;
-  const bulkExportURL = useRecoilValue(bulkServerURLState);
+  const { baseUrl, exportType, id, queryParams } = request;
 
-  const queryString = buildTypeParamQueryString(typeParams);
+  const exportPath = buildExportPath(exportType, id);
 
-  let path = '';
+  const queryString = buildQueryString(queryParams);
 
-  if (exportType === 'system') {
-    path = '/$export';
-  } else if (exportType === 'patient') {
-    path = '/Patient/$export';
-  } else if (exportType === 'group') {
-    path = `/Group/${id}/$export`;
-  }
-  return bulkExportURL + path + queryString;
+  return baseUrl + exportPath + queryString;
 }
 
-function buildTypeParamQueryString(typeParams: string[] | undefined) {
-  let queryString = '';
-  if (!typeParams || typeParams.length === 0) {
-    queryString = '';
-  } else {
-    queryString = `?_type=${typeParams.toString()}`;
-  }
-  return queryString;
+/*
+ * Builds the export path based on type of export
+ */
+function buildExportPath(exportType: SupportedExportTypes, id?: string) {
+  if (exportType === 'system') return '/$export';
+  else if (exportType === 'patient') return '/Patient/$export';
+  else if (exportType === 'group') return `/Group/${id}/$export`;
+}
+
+/*
+ * Builds the query string for the request
+ */
+function buildQueryString(queryParams: BuilderRequestQueryParams) {
+  if (!hasQueryParams(queryParams)) return '';
+
+  const paramsArray: string[] = [];
+
+  if (hasTypeParams(queryParams)) paramsArray.push(buildTypeParamQueryString(queryParams.type));
+  if (hasSomeElementParams(queryParams))
+    paramsArray.push(buildElementsQueryString(queryParams.typeElement, queryParams.element));
+
+  return '?' + paramsArray.join('&');
+}
+
+/*
+ * Builds the "_type" parameter part of query string
+ */
+function buildTypeParamQueryString(typeParams: string[]) {
+  return `_type=${typeParams.toString()}`;
+}
+
+/*
+ * Builds the "_elements" parameter part of query string
+ */
+function buildElementsQueryString(typeElements: TypeElement[], elements: string[]) {
+  const paramsArray: string[] = typeElements.map(typeElement => typeElementToString(typeElement)).concat(elements);
+
+  return '_elements=' + paramsArray.toString();
+}
+
+/*
+ * Converts an object of type TypeElements to a string
+ */
+function typeElementToString(typeElement: TypeElement) {
+  return typeElement.elements.map(element => `${typeElement.type}.${element}`).toString();
+}
+
+/*
+ * Checks if incoming request has query parameters
+ */
+function hasQueryParams(params: BuilderRequestQueryParams) {
+  return hasTypeParams(params) || hasSomeElementParams(params);
+}
+
+/*
+ * Checks if incoming request has "_type" query parameters
+ */
+function hasTypeParams(params: BuilderRequestQueryParams) {
+  return params.type.length !== 0;
+}
+
+/*
+ * Checks if incoming request has "_elements" query parameters
+ */
+function hasSomeElementParams(params: BuilderRequestQueryParams) {
+  return params.typeElement.length !== 0 || params.element.length !== 0;
 }

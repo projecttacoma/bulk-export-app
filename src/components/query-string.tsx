@@ -4,11 +4,14 @@ import { ActionIcon, CopyButton, InputWrapper, rem, TextInput, Title, Tooltip } 
 import { IconArrowRight, IconCheck, IconCopy, IconRefresh, IconSearch } from '@tabler/icons-react';
 import { useRecoilValue } from 'recoil';
 import { activeTypeParamsState } from '@/state/type-params-state';
-import { buildExportRequestString } from '@/util/exportRequestBuilders';
+import { BuilderRequestQueryParams, buildExportRequestString } from '@/util/exportRequestBuilders';
 import { useSearchParams } from 'next/navigation';
 import { SupportedExportTypes } from './query-selector/export-type';
 import { useState } from 'react';
 import Link from 'next/link';
+import { activeElementParamsState } from '@/state/element-params-state';
+import { activeTypeElementParamsState } from '@/state/type-element-params-state';
+import { bulkServerURLState } from '@/state/bulk-server-url-state';
 
 /*
  * Component to visualize the Bulk-export request string.
@@ -16,12 +19,26 @@ import Link from 'next/link';
 export default function QueryString() {
   const [contentLocation, setContentLocation] = useState<string | null>();
   const [status, setStatus] = useState<number>();
+  const bulkExportBaseURL = useRecoilValue(bulkServerURLState);
   const typeParams = useRecoilValue(activeTypeParamsState);
+  const typeElementParams = useRecoilValue(activeTypeElementParamsState);
+  const elementParams = useRecoilValue(activeElementParamsState);
+
   const searchParams = useSearchParams();
   const exportType = searchParams.get('exportType') as SupportedExportTypes;
   const id = searchParams.get('id');
 
-  const exportRequestString = buildExportRequestString({ exportType, id, typeParams });
+  const queryParams: BuilderRequestQueryParams = {
+    type: typeParams,
+    element: elementParams,
+    typeElement: typeElementParams
+  };
+  const exportRequestString = buildExportRequestString({
+    baseUrl: bulkExportBaseURL,
+    exportType: exportType,
+    id: id ?? undefined,
+    queryParams: queryParams
+  });
 
   const kickoffRequest = () => {
     fetch(exportRequestString)
@@ -39,7 +56,7 @@ export default function QueryString() {
         <TextInput
           size="lg"
           radius="xl"
-          disabled
+          readOnly
           placeholder={exportRequestString}
           label={<Title order={1}>Bulk Export Request</Title>}
           rightSection={

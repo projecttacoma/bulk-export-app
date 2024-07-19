@@ -1,10 +1,9 @@
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
-import { ColorSchemeScript, MantineProvider } from '@mantine/core';
+import { ColorSchemeScript } from '@mantine/core';
 import { Metadata } from 'next';
 import dynamic from 'next/dynamic';
-import { Notifications } from '@mantine/notifications';
 
 export const metadata: Metadata = {
   title: 'bulk-data-app',
@@ -20,10 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider>
-          <Notifications />
-          <DynamicProviders>{children}</DynamicProviders>
-        </MantineProvider>
+        <DynamicProviders>{children}</DynamicProviders>
       </body>
     </html>
   );
