@@ -1,6 +1,6 @@
 'use client';
 
-import { Text, Modal, MultiSelect, Title, ComboboxLikeRenderOptionInput, ComboboxItem, Stack } from '@mantine/core';
+import { Text, Modal, MultiSelect, Title, Stack, MultiSelectProps } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { resourceTypes } from '../../../data/supportedResources';
 import { ReactNode, useState } from 'react';
@@ -11,7 +11,7 @@ import { IconPencil } from '@tabler/icons-react';
 import { activeElementParamsState } from '@/state/element-params-state';
 
 import classes from '@/app/global.module.css';
-import { supportedElements } from '../../../data/supportedElements';
+import { allSupportedElements } from '../../../data/allSupportedElements';
 
 const resourceTypesDropdownData = resourceTypes.map(value => {
   return {
@@ -40,13 +40,13 @@ export default function ElementParamsPage() {
     open();
   };
 
-  const renderOption = (item: ComboboxLikeRenderOptionInput<ComboboxItem>) => {
-    const isActive = activeTypeElements.some(type => type.type === item.option.value);
+  const renderOption: MultiSelectProps['renderOption'] = ({ option }) => {
+    const isActive = activeTypeElements.some(type => type.type === option.value);
 
     return (
       <>
         {isActive && <IconPencil />}
-        <Text>{item.option.value}</Text>
+        <Text>{option.value}</Text>
         {isActive && <Text c="blue.6">- Active</Text>}
       </>
     );
@@ -68,14 +68,14 @@ export default function ElementParamsPage() {
         onClear={() => setActiveTypeElementParams([])}
       />
       <MultiSelect
-        data={supportedElements}
-        value={activeElements}
-        onChange={setActiveElements}
         label="Select Elements to Query on all Resource Types"
+        className={classes.MultiSelectStyles}
         placeholder="Search for elements"
         nothingFoundMessage="No elements matching search found."
+        data={allSupportedElements}
+        value={activeElements}
+        onChange={setActiveElements}
         hidePickedOptions
-        className={classes.MultiSelectStyles}
       />
       <Modal.Root opened={opened} onClose={close} size="75%" radius="md">
         <Modal.Overlay />

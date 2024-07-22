@@ -1,6 +1,6 @@
 'use client';
 
-import { createTheme, MantineProvider, MultiSelect } from '@mantine/core';
+import { Card, createTheme, MantineProvider, MultiSelect } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import React from 'react';
 import { RecoilRoot } from 'recoil';
@@ -16,6 +16,12 @@ const theme = createTheme({
         withScrollArea: false,
         styles: { dropdown: { maxHeight: 400, overflowY: 'auto' } },
         comboboxProps: { transitionProps: { transition: 'fade-down', duration: 200 }, offset: 0, shadow: 'lg' }
+      }
+    }),
+    Card: Card.extend({
+      defaultProps: {
+        radius: 'md',
+        padding: 'xl'
       }
     })
   }

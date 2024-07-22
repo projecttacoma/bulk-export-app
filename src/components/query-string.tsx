@@ -1,6 +1,17 @@
 'use client';
 
-import { ActionIcon, CopyButton, InputWrapper, rem, TextInput, Title, Tooltip } from '@mantine/core';
+import {
+  ActionIcon,
+  Card,
+  Center,
+  CopyButton,
+  Input,
+  InputWrapper,
+  rem,
+  TextInput,
+  Title,
+  Tooltip
+} from '@mantine/core';
 import { IconArrowRight, IconCheck, IconCopy, IconRefresh, IconSearch } from '@tabler/icons-react';
 import { useRecoilValue } from 'recoil';
 import { activeTypeParamsState } from '@/state/type-params-state';
@@ -51,14 +62,18 @@ export default function QueryString() {
       });
   };
   return (
-    <>
-      <InputWrapper w="75%">
+    <Card w="75%">
+      <InputWrapper>
+        <Center mb="md">
+          <Input.Label>
+            <Title order={1}>Bulk Export Request</Title>
+          </Input.Label>
+        </Center>
         <TextInput
           size="lg"
           radius="xl"
           readOnly
           placeholder={exportRequestString}
-          label={<Title order={1}>Bulk Export Request</Title>}
           rightSection={
             <>
               {status ? (
@@ -106,6 +121,6 @@ export default function QueryString() {
           }
         />
       </InputWrapper>
-    </>
+    </Card>
   );
 }

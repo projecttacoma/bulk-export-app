@@ -52,18 +52,11 @@ function buildQueryString(queryParams: BuilderRequestQueryParams) {
 
   const paramsArray: string[] = [];
 
-  if (hasTypeParams(queryParams)) paramsArray.push(buildTypeParamQueryString(queryParams.type));
+  if (hasTypeParams(queryParams)) paramsArray.push(`_type=${queryParams.type.toString()}`);
   if (hasSomeElementParams(queryParams))
     paramsArray.push(buildElementsQueryString(queryParams.typeElement, queryParams.element));
 
   return '?' + paramsArray.join('&');
-}
-
-/*
- * Builds the "_type" parameter part of query string
- */
-function buildTypeParamQueryString(typeParams: string[]) {
-  return `_type=${typeParams.toString()}`;
 }
 
 /*

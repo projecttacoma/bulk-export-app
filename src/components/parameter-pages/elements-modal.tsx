@@ -6,21 +6,22 @@ import {
   Divider,
   Text,
   MultiSelect,
-  ComboboxLikeRenderOptionInput,
   ComboboxItem,
   Tooltip,
   Title,
   Badge,
   Grid,
-  Card
+  Card,
+  MultiSelectProps,
+  GridCol
 } from '@mantine/core';
 import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { activeTypeElementParamsState, TypeElement } from '@/state/type-element-params-state';
 
 import globalClasses from '@/app/global.module.css';
-import { supportedElements } from '../../../data/supportedElements';
 import { mandatoryElements } from '../../../data/mandatoryElements';
+import { supportedElements } from '../../../data/supportedElements';
 
 export interface ElementsModalProps {
   resourceType: string;
@@ -37,7 +38,7 @@ function MandatoryElementList({ resourceType }: { resourceType: string }) {
       disabled={noMandatoryElements}
       withArrow
       openDelay={1000}
-      position="bottom"
+      position="left"
     >
       <Grid align="center" bg="white">
         <Grid.Col span="content">
@@ -48,7 +49,9 @@ function MandatoryElementList({ resourceType }: { resourceType: string }) {
         <Grid.Col span={'auto'}>
           <Group>
             {mandatoryElements[resourceType].map(element => (
-              <Badge size="md">{element}</Badge>
+              <Badge key={element} size="md">
+                {element}
+              </Badge>
             ))}
             {noMandatoryElements && 'There are no mandatory elements on this resource type.'}
           </Group>
@@ -63,24 +66,24 @@ export default function ElementsModal({ resourceType, closeModal, editing }: Ele
   const previousSelectedOptions = activeTypeElements.find(value => value.type === resourceType);
   const [selectedOptions, setSelectedOptions] = useState<string[]>(previousSelectedOptions?.elements ?? []);
 
-  const multiselectData = createMultiselectData(resourceType);
+  const multiselectData = createComboBoxData(resourceType);
 
-  const renderData = (item: ComboboxLikeRenderOptionInput<ComboboxItem>) =>
-    item.option.disabled ? (
+  const renderData: MultiSelectProps['renderOption'] = ({ option }) =>
+    option.disabled ? (
       <Tooltip
         position="right"
         withArrow
         label={
           <>
-            <Mark className={globalClasses.blueText}>{item.option.label}</Mark> is a Mandatory Element on
+            <Mark className={globalClasses.blueText}>{option.label}</Mark> is a Mandatory Element on
             <Mark className={globalClasses.blueText}> {resourceType}</Mark> resource.
           </>
         }
       >
-        <Text>{item.option.label}</Text>
+        <Text>{option.label}</Text>
       </Tooltip>
     ) : (
-      <Text>{item.option.label}</Text>
+      <Text>{option.label}</Text>
     );
   return (
     <>
@@ -92,77 +95,82 @@ export default function ElementsModal({ resourceType, closeModal, editing }: Ele
       </Modal.Header>
       <Divider />
       <Modal.Body bg="gray.0" p="xl">
-        <Card shadow="sm" radius="md" mb="xl">
-          <MandatoryElementList resourceType={resourceType} />
-        </Card>
-        <Card shadow="sm" radius="md">
-          <Group grow gap={0} preventGrowOverflow={false} align="flex-end">
-            <MultiSelect
-              w="70%"
-              label="Select Elements"
-              description="Use this input to search and select elements to add to the export query"
-              placeholder="Search for elements"
-              nothingFoundMessage="No elements matching search found."
-              hidePickedOptions
-              data={multiselectData}
-              value={selectedOptions}
-              onChange={setSelectedOptions}
-              renderOption={renderData}
-            />
-            <Button
-              size="lg"
-              variant="subtle"
-              disabled={selectedOptions.length === 0}
-              onClick={() => {
-                const newTypeElement: TypeElement = {
-                  type: resourceType,
-                  elements: selectedOptions
-                };
-                const removedOthers = activeTypeElements.filter(value => value.type !== newTypeElement.type);
-
-                removedOthers.push(newTypeElement);
-
-                setActiveTypeElements(removedOthers);
-                closeModal();
-              }}
-            >
-              {editing ? 'Confirm Update' : 'Add Elements'}
-            </Button>
-            {editing && (
+        <Grid align="center">
+          <GridCol span={12}>
+            <Card>
+              <MandatoryElementList resourceType={resourceType} />
+            </Card>
+          </GridCol>
+          <Grid.Col span="auto">
+            <Card>
+              <MultiSelect
+                label="Select Elements"
+                description="Use this input to search and select elements to add to the export query"
+                placeholder="Search for elements"
+                nothingFoundMessage="No elements matching search found."
+                hidePickedOptions
+                data={multiselectData}
+                value={selectedOptions}
+                onChange={setSelectedOptions}
+                renderOption={renderData}
+              />
+            </Card>
+          </Grid.Col>
+          <GridCol span={{ base: 12, lg: 3 }}>
+            <Card p={0}>
               <Button
                 size="lg"
                 variant="subtle"
-                color="red"
+                disabled={selectedOptions.length === 0}
                 onClick={() => {
-                  const removedOthers = activeTypeElements.filter(value => value.type !== resourceType);
+                  const newTypeElement: TypeElement = {
+                    type: resourceType,
+                    elements: selectedOptions
+                  };
+                  const removedOthers = activeTypeElements.filter(value => value.type !== newTypeElement.type);
+
+                  removedOthers.push(newTypeElement);
+
                   setActiveTypeElements(removedOthers);
                   closeModal();
                 }}
               >
-                Remove
+                {editing ? 'Confirm Update' : 'Add Elements'}
               </Button>
-            )}
-          </Group>
-        </Card>
+              {editing && (
+                <Button
+                  size="lg"
+                  variant="subtle"
+                  color="red"
+                  onClick={() => {
+                    const removedOthers = activeTypeElements.filter(value => value.type !== resourceType);
+                    setActiveTypeElements(removedOthers);
+                    closeModal();
+                  }}
+                >
+                  Remove
+                </Button>
+              )}
+            </Card>
+          </GridCol>
+        </Grid>
       </Modal.Body>
     </>
   );
 }
 
-function createMultiselectData(resourceType: string) {
-  const createComboData = (element: string, disabled: boolean) => {
-    return {
-      value: element,
-      disabled: disabled,
-      label: element
-    };
+function createComboBoxData(resourceType: string) {
+  const compareComboBoxItems = (a: ComboboxItem, b: ComboboxItem) => {
+    return Number(a.disabled) - Number(b.disabled);
   };
 
-  const optionalElementsData = supportedElements.map(element => createComboData(element, false));
-
-  const mandatoryElementsData = mandatoryElements[resourceType].map(mandatoryElement =>
-    createComboData(mandatoryElement, true)
-  );
-
-  return optionalElementsData.concat(mandatoryElementsData);
+  return supportedElements[resourceType]
+    .map((element: string) => {
+      return {
+        value: element,
+        disabled: mandatoryElements[resourceType].includes(element),
+        label: element
+      } as ComboboxItem;
+    })
+    .sort((a: ComboboxItem, b: ComboboxItem) => compareComboBoxItems(a, b));
 }
