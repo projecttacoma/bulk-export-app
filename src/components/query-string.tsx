@@ -15,7 +15,7 @@ import {
 import { IconArrowRight, IconCheck, IconCopy, IconRefresh, IconSearch } from '@tabler/icons-react';
 import { useRecoilValue } from 'recoil';
 import { activeTypeParamsState } from '@/state/type-params-state';
-import { BuilderRequestQueryParams, buildExportRequestString } from '@/util/exportRequestBuilders';
+import { BuilderRequestQueryParams, buildExportRequestString } from '@/util/exportRequestBuilder';
 import { useSearchParams } from 'next/navigation';
 import { SupportedExportTypes } from './query-selector/export-type';
 import { useState } from 'react';
