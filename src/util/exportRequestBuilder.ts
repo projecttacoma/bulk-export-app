@@ -18,7 +18,7 @@ export interface BuilderRequestQueryParams {
   type: string[];
   element: string[];
   typeElement: TypeElement[];
-  typeFilter?: string[]; // may not be string[] in the future
+  typeFilter: string[];
 }
 
 /*
@@ -55,6 +55,7 @@ function buildQueryString(queryParams: BuilderRequestQueryParams) {
   if (hasTypeParams(queryParams)) paramsArray.push(`_type=${queryParams.type.toString()}`);
   if (hasSomeElementParams(queryParams))
     paramsArray.push(buildElementsQueryString(queryParams.typeElement, queryParams.element));
+  if (hasTypeFilterParams(queryParams)) paramsArray.push(buildTypeFilterQueryString(queryParams.typeFilter));
 
   return '?' + paramsArray.join('&');
 }
@@ -69,6 +70,13 @@ function buildElementsQueryString(typeElements: TypeElement[], elements: string[
 }
 
 /*
+ * Builds the "_typeFilter" parameter part of query string
+ */
+function buildTypeFilterQueryString(typeFilters: string[]) {
+  return `_typeFilter=${typeFilters.toString()}`;
+}
+
+/*
  * Converts an object of type TypeElements to a string
  */
 function typeElementToString(typeElement: TypeElement) {
@@ -79,7 +87,7 @@ function typeElementToString(typeElement: TypeElement) {
  * Checks if incoming request has query parameters
  */
 function hasQueryParams(params: BuilderRequestQueryParams) {
-  return hasTypeParams(params) || hasSomeElementParams(params);
+  return hasTypeParams(params) || hasSomeElementParams(params) || hasTypeFilterParams(params);
 }
 
 /*
@@ -94,4 +102,8 @@ function hasTypeParams(params: BuilderRequestQueryParams) {
  */
 function hasSomeElementParams(params: BuilderRequestQueryParams) {
   return params.typeElement.length !== 0 || params.element.length !== 0;
+}
+
+function hasTypeFilterParams(params: BuilderRequestQueryParams) {
+  return params.typeFilter.length !== 0;
 }

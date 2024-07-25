@@ -1,5 +1,5 @@
 'use client';
-import { Center, GridCol, Paper, rem, Select, Stack, Title } from '@mantine/core';
+import { Card, Center, GridCol, Paper, rem, Select, Stack, Title } from '@mantine/core';
 import { useState } from 'react';
 import BuildQueryButton from './build-query-button';
 import { capitalize } from 'lodash';
@@ -19,7 +19,7 @@ export default function ExportType({ exportType, dropdownData }: ExportTypeProps
 
   return (
     <GridCol span={{ base: 12, md: 6, lg: 3 }} style={{ minWidth: rem(600) }}>
-      <Paper shadow="xl" radius="xl" p="xl">
+      <Card radius="xl">
         <Stack>
           <Center>
             <Title>{`${capitalize(exportType)}-level Export`}</Title>
@@ -39,7 +39,7 @@ export default function ExportType({ exportType, dropdownData }: ExportTypeProps
           )}
           <BuildQueryButton queryId={queryId} exportType={exportType} />
         </Stack>
-      </Paper>
+      </Card>
     </GridCol>
   );
 }
