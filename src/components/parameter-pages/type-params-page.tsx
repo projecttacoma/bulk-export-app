@@ -3,8 +3,8 @@
 import { MultiSelect, Stack, Title, Tooltip } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { useRecoilState } from 'recoil';
-import { resourceTypes } from '../../../data/supportedResources';
 import { activeTypeParamsState } from '@/state/type-params-state';
+import { resourceTypesDropdownData } from '@/util/multiselectUtil';
 
 import classes from '@/app/global.module.css';
 
@@ -26,7 +26,7 @@ export default function TypeParamsPage() {
         placeholder="Search for types"
         nothingFoundMessage="No types matching search found."
         hidePickedOptions
-        data={resourceTypes}
+        data={resourceTypesDropdownData}
         value={typeParams}
         onChange={setTypeParams}
         leftSection={
