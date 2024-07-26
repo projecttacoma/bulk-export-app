@@ -1,7 +1,20 @@
 'use client';
 
 import { activeTypeFilterParamsState } from '@/state/type-filter-params-state';
-import { ActionIcon, Button, Card, Divider, Grid, GridCol, Group, Input, Mark, Stack, Title } from '@mantine/core';
+import {
+  ActionIcon,
+  Button,
+  Card,
+  Divider,
+  Grid,
+  GridCol,
+  Group,
+  Mark,
+  Stack,
+  TextInput,
+  Title,
+  Tooltip
+} from '@mantine/core';
 import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import classes from '@/app/global.module.css';
@@ -17,15 +30,14 @@ export default function TypeFilterParamsPage() {
 
   const addTypeFilter = () => {
     const encodedFilter = encodeURIComponent(inputValue);
+    const duplicateFilter = typeFilters.some(ty => ty === encodedFilter);
 
-    if (typeFilters.some(ty => ty === encodedFilter)) return;
+    if (duplicateFilter) return;
 
     setTypeFilters([...typeFilters, encodedFilter]);
   };
 
-  const removeTypeFilter = (filter: string) => {
-    setTypeFilters(typeFilters.filter(val => val !== filter));
-  };
+  const removeTypeFilter = (filter: string) => setTypeFilters(typeFilters.filter(val => val !== filter));
 
   const removeAllTypeFilters = () => setTypeFilters([]);
 
@@ -34,14 +46,17 @@ export default function TypeFilterParamsPage() {
       <GridCol span="auto">
         <Stack gap="lg">
           <Title order={2}>Type Filter Parameter Selection</Title>
-          <Input
+          <TextInput
+            label="Write type filters"
+            description="Use this input to manually create type filters. Multiple filters are combined as 'OR' expressions"
             placeholder="Input type filter"
+            className={classes.MultiSelectStyles}
+            size="md"
+            radius="md"
             value={inputValue}
             onChange={event => setInputValue(event.currentTarget.value)}
-            rightSectionPointerEvents="all"
-            mt="md"
           />
-          <Group>
+          <Group justify="center" className={classes.MultiSelectStyles}>
             <Button onClick={addTypeFilter} disabled={inputValue.trim() === ''}>
               Add Filter
             </Button>
@@ -51,34 +66,35 @@ export default function TypeFilterParamsPage() {
           </Group>
         </Stack>
       </GridCol>
-      <GridCol span={{ base: 12, xl: 7 }}>
+      <GridCol span={{ base: 12, xl: 6 }}>
         <Stack gap="sm">
           <Title order={3}>Active Type Filters</Title>
           <Divider />
           {typeFilters.map(typeFilter => (
-            <Card
-              padding="xs"
-              shadow="none"
-              key={typeFilter}
-              withBorder
-              onClick={() => setInputValue(decodeURIComponent(typeFilter))}
-            >
-              <Group justify="space-between">
-                <Group gap="xl" justify="flex-end" align="flex-end">
+            <Tooltip openDelay={1000} label={'Click to add new filter based on this one'} position="top-start">
+              <Card
+                style={{ cursor: 'pointer' }}
+                padding="xs"
+                shadow="none"
+                key={typeFilter}
+                withBorder
+                onClick={() => setInputValue(decodeURIComponent(typeFilter))}
+              >
+                <Group justify="space-between">
                   <TypeFilterText typeFilter={typeFilter} />
+                  <ActionIcon
+                    variant="transparent"
+                    color="dark"
+                    value={typeFilter}
+                    onClick={event => removeTypeFilter(event.currentTarget.value)}
+                  >
+                    <IconBackspace />
+                  </ActionIcon>
                 </Group>
-                <ActionIcon
-                  variant="transparent"
-                  color="dark"
-                  value={typeFilter}
-                  onClick={event => removeTypeFilter(event.currentTarget.value)}
-                >
-                  <IconBackspace />
-                </ActionIcon>
-              </Group>
-            </Card>
+              </Card>
+            </Tooltip>
           ))}
-          {typeFilters.length === 0 && <>No type filters yet</>}
+          {typeFilters.length === 0 && <>No type filters set</>}
         </Stack>
       </GridCol>
     </Grid>
@@ -93,11 +109,11 @@ function TypeFilterText({ typeFilter }: { typeFilter: string }) {
   const decodedAndSplit = decoded.split('?');
 
   if (decodedAndSplit.length !== 2) {
-    return <Title order={4}>{decoded}</Title>;
+    return <Title order={5}>{decoded}</Title>;
   }
 
   return (
-    <Title order={4}>
+    <Title order={5}>
       <Mark className={classes.blueText}>{decodedAndSplit[0]}</Mark>?{decodedAndSplit[1]}
     </Title>
   );
