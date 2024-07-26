@@ -7,8 +7,8 @@ import { TypeElement } from '@/state/type-element-params-state';
 export interface BuilderRequest {
   baseUrl: string;
   exportType: SupportedExportTypes;
-  id?: string;
   queryParams: BuilderRequestQueryParams;
+  id?: string;
 }
 
 /*
