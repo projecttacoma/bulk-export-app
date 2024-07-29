@@ -27,9 +27,7 @@ export interface BuilderRequestQueryParams {
  */
 export function buildExportRequestString(request: BuilderRequest) {
   const { baseUrl, exportType, id, queryParams } = request;
-
   const exportPath = buildExportPath(exportType, id);
-
   const queryString = buildQueryString(queryParams) ?? '';
 
   return baseUrl + exportPath + queryString;
