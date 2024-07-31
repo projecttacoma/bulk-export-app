@@ -1,6 +1,19 @@
 import '@mantine/code-highlight/styles.css';
-import { Button, Center, Group, Title, Collapse, Tooltip, Stack, ActionIcon, Badge, Card, Modal } from '@mantine/core';
-import { IconDownload, IconFileDownload, IconFileSearch } from '@tabler/icons-react';
+import {
+  Center,
+  Group,
+  Title,
+  Collapse,
+  Tooltip,
+  Stack,
+  ActionIcon,
+  Badge,
+  Card,
+  Modal,
+  Loader,
+  Text
+} from '@mantine/core';
+import { IconFileDownload, IconFileSearch } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { filesize } from 'filesize';
 import ResourceFilePreview from './resource-file-preview';
@@ -29,9 +42,12 @@ export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
   const [previewedFile, setPreviewedFile] = useState<ResourceFileInfo>();
   const [jsonModalOpened, { open, close }] = useDisclosure(false);
 
+  const [loading, setLoading] = useState(false);
+
   const noFilesFound = files.length === 0;
 
   useEffect(() => {
+    setLoading(true);
     let totalFileBytes = 0;
     Promise.all(
       files.map(file =>
@@ -54,6 +70,7 @@ export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
       .then(fileSizes => {
         setFileSizeData(fileSizes);
         setTotalFileSize(totalFileBytes);
+        setLoading(false);
       })
       .catch(error => console.error('Error: ', error));
   }, []);
@@ -71,13 +88,25 @@ export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
             </Title>
           </>
         )}
-        <Center>
-          <Tooltip label="Not yet implemented...">
-            <Button size="lg" rightSection={<IconDownload size={24} />} disabled={true}>
-              Download All Files ({filesize(totalFileSize)})
-            </Button>
-          </Tooltip>
-        </Center>
+        {loading ? (
+          <Center>
+            <Title order={3} mr="lg" c="gray.6">
+              Loading content
+            </Title>
+            <Loader />
+          </Center>
+        ) : (
+          <Center>
+            <Card>
+              <Title order={4}>
+                Total Size of Exported Files:{' '}
+                <Text span inherit c="blue.9" inline>
+                  {filesize(totalFileSize)}
+                </Text>
+              </Title>
+            </Card>
+          </Center>
+        )}
         {fileSizeData.map(file => {
           return (
             <Card key={file.name} p="md" ml="sm" mr="sm" radius="lg" shadow="sm" withBorder>
@@ -120,7 +149,7 @@ export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
           );
         })}
       </Stack>
-      <Modal opened={jsonModalOpened} onClose={close} size="50%" radius="md">
+      <Modal opened={jsonModalOpened} onClose={close} size={1000} radius="md">
         {previewedFile && <ResourceFilePreview file={previewedFile} />}
       </Modal>
     </Collapse>

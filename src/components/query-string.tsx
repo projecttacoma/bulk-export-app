@@ -1,14 +1,32 @@
 'use client';
 
-import { ActionIcon, CopyButton, InputWrapper, rem, TextInput, Title, Tooltip } from '@mantine/core';
-import { IconArrowRight, IconCheck, IconCopy, IconRefresh, IconSearch } from '@tabler/icons-react';
+import {
+  ActionIcon,
+  Box,
+  Card,
+  Center,
+  CopyButton,
+  Group,
+  Input,
+  InputWrapper,
+  Popover,
+  rem,
+  ScrollArea,
+  TextInput,
+  Title,
+  Tooltip
+} from '@mantine/core';
+import { IconArrowRight, IconCheck, IconCopy, IconRefresh, IconSearch, IconZoomScan } from '@tabler/icons-react';
 import { useRecoilValue } from 'recoil';
 import { activeTypeParamsState } from '@/state/type-params-state';
-import { buildExportRequestString } from '@/util/exportRequestBuilders';
+import { BuilderRequestQueryParams, buildExportRequestString } from '@/util/exportRequestBuilder';
 import { useSearchParams } from 'next/navigation';
 import { SupportedExportTypes } from './query-selector/export-type';
 import { useState } from 'react';
 import Link from 'next/link';
+import { activeElementParamsState } from '@/state/element-params-state';
+import { activeTypeElementParamsState } from '@/state/type-element-params-state';
+import { bulkServerURLState } from '@/state/bulk-server-url-state';
 
 /*
  * Component to visualize the Bulk-export request string.
@@ -16,12 +34,27 @@ import Link from 'next/link';
 export default function QueryString() {
   const [contentLocation, setContentLocation] = useState<string | null>();
   const [status, setStatus] = useState<number>();
+  const bulkExportBaseURL = useRecoilValue(bulkServerURLState);
   const typeParams = useRecoilValue(activeTypeParamsState);
+  const typeElementParams = useRecoilValue(activeTypeElementParamsState);
+  const elementParams = useRecoilValue(activeElementParamsState);
+
   const searchParams = useSearchParams();
   const exportType = searchParams.get('exportType') as SupportedExportTypes;
   const id = searchParams.get('id');
 
-  const exportRequestString = buildExportRequestString({ exportType, id, typeParams });
+  const queryParams: BuilderRequestQueryParams = {
+    type: typeParams,
+    element: elementParams,
+    typeElement: typeElementParams
+  };
+
+  const exportRequestString = buildExportRequestString({
+    baseUrl: bulkExportBaseURL,
+    exportType: exportType,
+    id: id ?? undefined,
+    queryParams: queryParams
+  });
 
   const kickoffRequest = () => {
     fetch(exportRequestString)
@@ -33,15 +66,20 @@ export default function QueryString() {
         console.error(err);
       });
   };
+
   return (
-    <>
-      <InputWrapper w="75%">
+    <Card w="75%">
+      <InputWrapper>
+        <Center mb="md">
+          <Input.Label>
+            <Title order={1}>Bulk Export Request</Title>
+          </Input.Label>
+        </Center>
         <TextInput
           size="lg"
           radius="xl"
-          disabled
+          readOnly
           placeholder={exportRequestString}
-          label={<Title order={1}>Bulk Export Request</Title>}
           rightSection={
             <>
               {status ? (
@@ -76,19 +114,36 @@ export default function QueryString() {
               )}
             </>
           }
+          leftSectionWidth={80}
           leftSection={
-            <CopyButton value={exportRequestString} timeout={2000}>
-              {({ copied, copy }) => (
-                <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-                  <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
-                    {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
-                  </ActionIcon>
-                </Tooltip>
-              )}
-            </CopyButton>
+            <Group gap="xs">
+              <CopyButton value={exportRequestString} timeout={2000}>
+                {({ copied, copy }) => (
+                  <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+                    <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
+                      {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </CopyButton>
+              <Popover withArrow position="top" radius="md" shadow="xl">
+                <Popover.Dropdown w="50%">
+                  <ScrollArea offsetScrollbars>
+                    <Box>{exportRequestString.split('_').join('\n')}</Box>
+                  </ScrollArea>
+                </Popover.Dropdown>
+                <Popover.Target>
+                  <Tooltip label="View export url" withArrow position="right">
+                    <ActionIcon variant="subtle" color="gray">
+                      <IconZoomScan />
+                    </ActionIcon>
+                  </Tooltip>
+                </Popover.Target>
+              </Popover>
+            </Group>
           }
         />
       </InputWrapper>
-    </>
+    </Card>
   );
 }
