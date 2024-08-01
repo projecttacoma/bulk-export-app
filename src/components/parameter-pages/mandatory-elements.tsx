@@ -1,7 +1,14 @@
-import { Tooltip, Grid, Title, Group, Badge } from '@mantine/core';
+import { Tooltip, Grid, Title, Group, Badge, GridCol } from '@mantine/core';
 import { mandatoryElements } from 'fhir-spec-tools/build/data/mandatoryElements';
 
-export default function MandatoryElementList({ resourceType }: { resourceType: string }) {
+export interface MandatoryElementListProps {
+  resourceType: string;
+}
+
+/*
+ * Component for displaying the mandatory elements that are exported on a given resourceType
+ */
+export function MandatoryElementList({ resourceType }: MandatoryElementListProps) {
   const noMandatoryElements = mandatoryElements[resourceType].length === 0;
 
   return (
@@ -10,15 +17,15 @@ export default function MandatoryElementList({ resourceType }: { resourceType: s
       disabled={noMandatoryElements}
       withArrow
       openDelay={1000}
-      position="left"
+      position="top"
     >
       <Grid align="center" bg="white">
-        <Grid.Col span="content">
+        <GridCol span="content">
           <Title order={4} fw={600}>
             Mandatory Elements:
           </Title>
-        </Grid.Col>
-        <Grid.Col span={'auto'}>
+        </GridCol>
+        <GridCol span={'auto'}>
           <Group>
             {mandatoryElements[resourceType].map(element => (
               <Badge key={element} size="md">
@@ -27,7 +34,7 @@ export default function MandatoryElementList({ resourceType }: { resourceType: s
             ))}
             {noMandatoryElements && 'There are no mandatory elements on this resource type.'}
           </Group>
-        </Grid.Col>
+        </GridCol>
       </Grid>
     </Tooltip>
   );

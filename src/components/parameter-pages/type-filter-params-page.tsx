@@ -2,14 +2,14 @@
 
 import { Button, Divider, Grid, GridCol, Group, Modal, Select, Stack, TextInput, Title } from '@mantine/core';
 import { ReactNode, useState } from 'react';
-import classes from '@/app/global.module.css';
 import TypeFilterTable from './type-filter-table';
 import { notifications } from '@mantine/notifications';
 import { useRecoilState } from 'recoil';
 import { activeTypeFilterParamsState } from '@/state/type-filter-params-state';
 import { useDisclosure } from '@mantine/hooks';
-import { resourceTypes } from '../../../data/supportedResources';
 import TypeFilterModal from './type-filter-modal';
+import { PropertyPaths } from 'fhir-spec-tools';
+import classes from '@/app/global.module.css';
 
 /*
  * Component that displays input to create type filters, and shows active type filters.
@@ -67,7 +67,7 @@ export default function TypeFilterParamsPage() {
               placeholder="Search for types"
               nothingFoundMessage="No types matching search found."
               description="Add type filters to selected type"
-              data={resourceTypes}
+              data={Object.keys(PropertyPaths.parsedPropertyPaths)}
               value=""
               className={classes.MultiSelectStyles}
               onOptionSubmit={handleSubmitValue}

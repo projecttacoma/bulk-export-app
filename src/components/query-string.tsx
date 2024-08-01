@@ -1,7 +1,20 @@
 'use client';
 
-import { ActionIcon, CopyButton, Input, InputWrapper, rem, TextInput, Title, Tooltip } from '@mantine/core';
-import { IconArrowRight, IconCheck, IconCopy, IconRefresh, IconSearch } from '@tabler/icons-react';
+import {
+  ActionIcon,
+  Box,
+  CopyButton,
+  Group,
+  Input,
+  InputWrapper,
+  Popover,
+  rem,
+  ScrollArea,
+  TextInput,
+  Title,
+  Tooltip
+} from '@mantine/core';
+import { IconArrowRight, IconCheck, IconCopy, IconRefresh, IconSearch, IconZoomScan } from '@tabler/icons-react';
 import { useRecoilValue } from 'recoil';
 import { activeTypeParamsState } from '@/state/type-params-state';
 import { BuilderRequestQueryParams, buildExportRequestString } from '@/util/exportRequestBuilder';
@@ -53,6 +66,7 @@ export default function QueryString() {
         console.error(err);
       });
   };
+
   return (
     <InputWrapper w="75%">
       <Input.Label>
@@ -97,16 +111,33 @@ export default function QueryString() {
             )}
           </>
         }
+        leftSectionWidth={80}
         leftSection={
-          <CopyButton value={exportRequestString} timeout={2000}>
-            {({ copied, copy }) => (
-              <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-                <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
-                  {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
-                </ActionIcon>
-              </Tooltip>
-            )}
-          </CopyButton>
+          <Group gap="xs">
+            <CopyButton value={exportRequestString} timeout={2000}>
+              {({ copied, copy }) => (
+                <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+                  <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
+                    {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
+                  </ActionIcon>
+                </Tooltip>
+              )}
+            </CopyButton>
+            <Popover withArrow position="top" radius="md" shadow="xl">
+              <Popover.Dropdown w="50%">
+                <ScrollArea offsetScrollbars>
+                  <Box>{exportRequestString.split('_').join('\n')}</Box>
+                </ScrollArea>
+              </Popover.Dropdown>
+              <Popover.Target>
+                <Tooltip label="View export url" withArrow position="right">
+                  <ActionIcon variant="subtle" color="gray">
+                    <IconZoomScan />
+                  </ActionIcon>
+                </Tooltip>
+              </Popover.Target>
+            </Popover>
+          </Group>
         }
       />
     </InputWrapper>

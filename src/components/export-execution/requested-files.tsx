@@ -1,6 +1,5 @@
 import '@mantine/code-highlight/styles.css';
 import {
-  Button,
   Center,
   Group,
   Title,
@@ -11,9 +10,10 @@ import {
   Badge,
   Card,
   Modal,
-  Loader
+  Loader,
+  Text
 } from '@mantine/core';
-import { IconDownload, IconFileDownload, IconFileSearch } from '@tabler/icons-react';
+import { IconFileDownload, IconFileSearch } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { filesize } from 'filesize';
 import ResourceFilePreview from './resource-file-preview';
@@ -97,11 +97,14 @@ export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
           </Center>
         ) : (
           <Center>
-            <Tooltip label="Not yet implemented...">
-              <Button size="lg" rightSection={<IconDownload size={24} />} disabled={true}>
-                Download All Files ({filesize(totalFileSize)})
-              </Button>
-            </Tooltip>
+            <Card>
+              <Title order={4}>
+                Total Size of Exported Files:{' '}
+                <Text span inherit c="blue.9" inline>
+                  {filesize(totalFileSize)}
+                </Text>
+              </Title>
+            </Card>
           </Center>
         )}
         {fileSizeData.map(file => {
