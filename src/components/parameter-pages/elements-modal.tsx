@@ -2,14 +2,11 @@ import {
   Button,
   Mark,
   Modal,
-  Group,
   Divider,
   Text,
   MultiSelect,
   ComboboxItem,
   Tooltip,
-  Title,
-  Badge,
   Grid,
   Card,
   MultiSelectProps,
@@ -22,43 +19,12 @@ import { activeTypeElementParamsState, TypeElement } from '@/state/type-element-
 import globalClasses from '@/app/global.module.css';
 import { mandatoryElements } from '../../../data/mandatoryElements';
 import { supportedElements } from '../../../data/supportedElements';
+import MandatoryElementList from './mandatory-elements';
 
 export interface ElementsModalProps {
   resourceType: string;
   closeModal: () => void;
   editing: boolean;
-}
-
-function MandatoryElementList({ resourceType }: { resourceType: string }) {
-  const noMandatoryElements = mandatoryElements[resourceType].length === 0;
-
-  return (
-    <Tooltip
-      label="Mandatory elements will always be exported from the server"
-      disabled={noMandatoryElements}
-      withArrow
-      openDelay={1000}
-      position="left"
-    >
-      <Grid align="center" bg="white">
-        <Grid.Col span="content">
-          <Title order={4} fw={600}>
-            Mandatory Elements:
-          </Title>
-        </Grid.Col>
-        <Grid.Col span={'auto'}>
-          <Group>
-            {mandatoryElements[resourceType].map(element => (
-              <Badge key={element} size="md">
-                {element}
-              </Badge>
-            ))}
-            {noMandatoryElements && 'There are no mandatory elements on this resource type.'}
-          </Group>
-        </Grid.Col>
-      </Grid>
-    </Tooltip>
-  );
 }
 
 export default function ElementsModal({ resourceType, closeModal, editing }: ElementsModalProps) {

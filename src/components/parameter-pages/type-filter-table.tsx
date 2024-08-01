@@ -13,13 +13,25 @@ import {
   TableTr,
   ActionIcon,
   Tooltip,
-  Flex
+  Flex,
+  Group
 } from '@mantine/core';
-import { IconCopy } from '@tabler/icons-react';
-import { Dispatch, SetStateAction } from 'react';
+import { IconCopy, IconEdit } from '@tabler/icons-react';
+import { Dispatch, ReactNode, SetStateAction } from 'react';
 import { useRecoilState } from 'recoil';
+import TypeFilterModal from './type-filter-modal';
 
-export default function TypeFilterTable({ setFilterInput }: { setFilterInput: Dispatch<SetStateAction<string>> }) {
+export default function TypeFilterTable({
+  setFilterInput,
+  setModalContext,
+  closeModal,
+  openModal
+}: {
+  setFilterInput: Dispatch<SetStateAction<string>>;
+  setModalContext: Dispatch<SetStateAction<ReactNode>>;
+  closeModal: () => void;
+  openModal: () => void;
+}) {
   const [activeTypeFilters, setActiveTypeFilters] = useRecoilState(activeTypeFilterParamsState);
 
   const toggleCheckbox = (thisTypeFilter: TypeFilter) => {
@@ -51,21 +63,22 @@ export default function TypeFilterTable({ setFilterInput }: { setFilterInput: Di
   return (
     <Table withTableBorder>
       <TableThead bg="gray.2">
-        <TableTh>
-          <Checkbox
-            checked={activeTypeFilters.filter(val => !val.active).length === 0 && activeTypeFilters.length !== 0}
-            disabled={activeTypeFilters.length === 0}
-            indeterminate={
-              activeTypeFilters.filter(val => val.active).length >= 1 &&
-              activeTypeFilters.filter(val => !val.active).length !== 0
-            }
-            onClick={() => toggleAll()}
-          />
-        </TableTh>
-        <TableTh>Resource Type</TableTh>
-        <TableTh>Type Filter</TableTh>
-        <TableTh></TableTh>
-        <TableTh></TableTh>
+        <TableTr>
+          <TableTh>
+            <Checkbox
+              checked={activeTypeFilters.filter(val => !val.active).length === 0 && activeTypeFilters.length !== 0}
+              disabled={activeTypeFilters.length === 0}
+              indeterminate={
+                activeTypeFilters.filter(val => val.active).length >= 1 &&
+                activeTypeFilters.filter(val => !val.active).length !== 0
+              }
+              onClick={() => toggleAll()}
+            />
+          </TableTh>
+          <TableTh>Resource Type</TableTh>
+          <TableTh>Type Filter</TableTh>
+          <TableTh></TableTh>
+        </TableTr>
       </TableThead>
       <TableTbody>
         {activeTypeFilters.map(typeFilter => (
@@ -82,20 +95,35 @@ export default function TypeFilterTable({ setFilterInput }: { setFilterInput: Di
             </TableTd>
             <TableTd>{typeFilter.filter.split('?')[1]}</TableTd>
             <TableTd>
-              <Tooltip label="Create new filter based on this one" openDelay={1500}>
+              <Group>
+                <Tooltip label="Create new filter based on this one" openDelay={1500}>
+                  <ActionIcon variant="transparent">
+                    <IconCopy onClick={() => setFilterInput(typeFilter.filter)}></IconCopy>
+                  </ActionIcon>
+                </Tooltip>
                 <ActionIcon variant="transparent">
-                  <IconCopy onClick={() => setFilterInput(typeFilter.filter)}></IconCopy>
+                  <IconEdit
+                    color="blue"
+                    onClick={() => {
+                      setModalContext(
+                        <TypeFilterModal
+                          resourceType={typeFilter.filter.split('?')[0]}
+                          closeModal={closeModal}
+                          editingTypeFilter={typeFilter.filter}
+                        />
+                      );
+                      openModal();
+                    }}
+                  ></IconEdit>
                 </ActionIcon>
-              </Tooltip>
-            </TableTd>
-            <TableTd>
-              <CloseButton
-                onClick={() =>
-                  setActiveTypeFilters(
-                    activeTypeFilters.filter(activeFilter => activeFilter.filter !== typeFilter.filter)
-                  )
-                }
-              />
+                <CloseButton
+                  onClick={() =>
+                    setActiveTypeFilters(
+                      activeTypeFilters.filter(activeFilter => activeFilter.filter !== typeFilter.filter)
+                    )
+                  }
+                />
+              </Group>
             </TableTd>
           </TableTr>
         ))}
