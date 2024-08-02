@@ -1,5 +1,19 @@
-import { Select, TextInput, Text, Title, Card, Group } from '@mantine/core';
+import { Select, TextInput, Text, Title, Card, Group, MultiSelectProps, Tooltip } from '@mantine/core';
 import { DateValue, DateTimePicker } from '@mantine/dates';
+import { choiceTypes } from 'fhir-spec-tools/build/data/choiceTypes';
+import { parsedPrimaryDatePaths } from 'fhir-spec-tools/build/data/primaryDatePaths';
+
+const comparatorsKeyValue: Record<string, string> = {
+  eq: 'Equals',
+  ne: 'Not equals',
+  gt: 'Greater than',
+  lt: 'Less than',
+  ge: 'Greater than or equal',
+  le: 'Less than or equal',
+  sa: 'Starts after (used for date period specification)',
+  eb: 'Ends before (used for date period specification)',
+  ap: 'Approximately'
+};
 
 export abstract class TypeFilterParam {
   elementName: string;
@@ -9,24 +23,48 @@ export abstract class TypeFilterParam {
   }
   abstract render(): React.ReactElement;
   abstract toTypeFilterString(): string;
+
+  static createParameter(type: string, element: string, value?: string, date?: DateValue, comparator?: string) {
+    if (this.check(type, element)) return new DateTimeParam(element, comparator ?? 'eq', date ?? null);
+    else return new OtherParam(element, value);
+  }
+
+  private static check(type: string, element: string): boolean {
+    // If the element is a date and not a choice type
+    if (parsedPrimaryDatePaths[type][element]) return true;
+
+    const choiceTypeElementsOnType = Object.keys(choiceTypes[type]).map(elem => elem.split('[')[0]);
+    const baseChoiceTypeElem = choiceTypeElementsOnType.find(choiceTypeElem => element.includes(choiceTypeElem));
+
+    // Element is not a choice type and not a date
+    if (!baseChoiceTypeElem) return false;
+
+    const baseElemIsDate = parsedPrimaryDatePaths[type][baseChoiceTypeElem];
+
+    if (baseElemIsDate) return true;
+
+    return false;
+  }
 }
 
 export class DateTimeParam extends TypeFilterParam {
+  comparators = ['eq', 'ne', 'gt', 'lt', 'ge', 'le', 'sa', 'eb', 'ap'];
   compare: string;
   date: DateValue;
-  comparators?: Array<'eq' | 'ne' | 'gt' | 'lt' | 'ge' | 'le' | 'sa' | 'eb' | 'ap'>;
-  constructor(
-    elem: string,
-    compare: string,
-    date: DateValue,
-    comparators?: Array<'eq' | 'ne' | 'gt' | 'lt' | 'ge' | 'le' | 'sa' | 'eb' | 'ap'>
-  ) {
+  constructor(elem: string, compare: string, date: DateValue) {
     super(elem);
     this.compare = compare;
     this.date = date;
-    this.comparators = comparators;
   }
   public render() {
+    const renderOption: MultiSelectProps['renderOption'] = ({ option }) => {
+      return (
+        <Tooltip label={comparatorsKeyValue[option.value]} position="right" withArrow>
+          <Text inherit>{option.value}</Text>
+        </Tooltip>
+      );
+    };
+
     return (
       <Card pl="sm" pr="sm" mt="sm" mb="sm" pt="xs" pb="xs" shadow="none" withBorder>
         <Group grow align="center">
@@ -39,6 +77,15 @@ export class DateTimeParam extends TypeFilterParam {
             </Text>
           </Title>
           <Group grow>
+            <Select
+              renderOption={renderOption}
+              defaultValue={this.compare}
+              allowDeselect={false}
+              radius="md"
+              size="md"
+              data={Object.keys(comparatorsKeyValue)}
+              onChange={value => (this.compare = value ?? '')}
+            />
             <DateTimePicker
               valueFormat="DD MMM YYYY hh:mm A"
               defaultValue={this.date}
@@ -47,29 +94,22 @@ export class DateTimeParam extends TypeFilterParam {
               onChange={value => (this.date = value)}
               placeholder="Pick date and time"
             />
-            <Select
-              defaultValue={this.compare}
-              allowDeselect={false}
-              radius="md"
-              size="md"
-              data={this.comparators}
-              onChange={value => (this.compare = value ?? '')}
-            />
           </Group>
         </Group>
       </Card>
     );
   }
+
   public toTypeFilterString() {
-    return `${this.elementName}=${this.compare} ${this.date?.toString()}`;
+    return `${this.elementName}=${this.compare}${this.date?.toISOString()}`;
   }
 }
 
 export class OtherParam extends TypeFilterParam {
   value: string;
-  constructor(elem: string, value: string) {
+  constructor(elem: string, value?: string) {
     super(elem);
-    this.value = value;
+    this.value = value ?? '';
   }
   public render() {
     return (

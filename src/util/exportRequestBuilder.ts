@@ -19,7 +19,7 @@ export interface BuilderRequestQueryParams {
   type: string[];
   element: string[];
   typeElement: TypeElement[];
-  typeFilter: TypeFilter[]; // may not be string[] in the future
+  typeFilter: TypeFilter[];
 }
 
 /*
@@ -58,19 +58,13 @@ function buildQueryString(queryParams: BuilderRequestQueryParams) {
 
     paramsArray.push('_elements=' + combinedElementStringArray.toString());
   }
-  if (queryParams.typeFilter.some(val => val.active))
-    paramsArray.push(buildTypeFilterQueryString(queryParams.typeFilter));
+  if (queryParams.typeFilter.some(val => val.active)) {
+    const activeTypeFilters = queryParams.typeFilter.filter(typeFilter => typeFilter.active);
+    const encodedTypeFilters = activeTypeFilters.map(typeFilter => encodeURIComponent(typeFilter.filter));
+    paramsArray.push(`_typeFilter=${encodedTypeFilters.toString()}`);
+  }
 
   if (paramsArray.length === 0) return;
 
   return '?' + paramsArray.join('&');
-}
-/*
- * Builds the "_typeFilter" parameter part of query string
- */
-function buildTypeFilterQueryString(typeFilters: TypeFilter[]) {
-  const activeTypeFilters = typeFilters.filter(typeFilter => typeFilter.active);
-  const encodedTypeFilters = activeTypeFilters.map(typeFilter => encodeURIComponent(typeFilter.filter));
-
-  return `_typeFilter=${encodedTypeFilters.toString()}`;
 }
