@@ -34,7 +34,19 @@ export default function TypeFilterModal({ resourceType, closeModal, editingTypeF
   const [typeFilters, setTypeFilters] = useRecoilState(activeTypeFilterParamsState);
 
   const createTypeFilter = () => {
-    const filter = `${resourceType}?${createdTypeParams.map(filter => filter.toTypeFilterString()).join('&')}`;
+    const elementFilters = createdTypeParams.map(filter => filter.toTypeFilterString());
+    const nonEmptyElementFilters = elementFilters.filter(ty => ty !== '');
+
+    if (nonEmptyElementFilters.length === 0) {
+      notifications.show({
+        title: 'Type filter not created',
+        color: 'red',
+        message: 'Type filter was not created because there were no values specified.'
+      });
+      return;
+    }
+
+    const filter = `${resourceType}?${nonEmptyElementFilters.join('&')}`;
 
     setTypeFilters([...typeFilters.filter(tyf => tyf.filter !== editingTypeFilter), { filter: filter, active: true }]);
     if (editingTypeFilter)

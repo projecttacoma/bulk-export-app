@@ -54,7 +54,7 @@ export default function TypeFilterParamsPage() {
             radius="md"
             value={filterInputValue}
             onChange={event => setFilterInputValue(event.currentTarget.value)}
-            rightSectionWidth="content"
+            rightSectionWidth={105}
             rightSection={
               <Button onClick={addTypeFilter} disabled={filterInputValue.trim() === ''} radius="md" mr={2}>
                 Add Filter

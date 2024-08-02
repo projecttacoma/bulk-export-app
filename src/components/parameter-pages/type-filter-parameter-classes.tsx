@@ -101,6 +101,7 @@ export class DateTimeParam extends TypeFilterParam {
   }
 
   public toTypeFilterString() {
+    if (!this.date) return '';
     return `${this.elementName}=${this.compare}${this.date?.toISOString()}`;
   }
 }
@@ -133,6 +134,8 @@ export class OtherParam extends TypeFilterParam {
     );
   }
   public toTypeFilterString() {
+    if (this.value === '') return '';
+
     return `${this.elementName}=${this.value.trim()}`;
   }
 }
