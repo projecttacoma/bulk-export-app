@@ -13,5 +13,4 @@ async function validateServerHasExportOperation(bulkExportServerUrl: string) {
   return serverHasExportOperation;
 }
 
-
 export { validateServerHasExportOperation };
