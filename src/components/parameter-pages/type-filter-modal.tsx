@@ -14,10 +14,10 @@ import {
 import { useState } from 'react';
 import { activeTypeFilterParamsState } from '@/state/type-filter-params-state';
 import { useRecoilState } from 'recoil';
-import { parsedPropertyPaths } from 'fhir-spec-tools/build/data/propertyPaths';
 import { notifications } from '@mantine/notifications';
 import { TypeFilterParam } from './type-filter-parameter-classes';
 import React from 'react';
+import { SearchParameters } from '../../../data/searchParameters';
 
 export interface TypeFilterModalProps {
   resourceType: string;
@@ -81,10 +81,13 @@ export default function TypeFilterModal({ resourceType, closeModal, editingTypeF
               nothingFoundMessage="No elements matching search found."
               hidePickedOptions
               value={activeElements}
-              data={parsedPropertyPaths[resourceType]}
+              data={Object.keys(SearchParameters[resourceType])}
               onChange={setActiveElements}
               onOptionSubmit={element =>
-                setCreatedTypeParams([...createdTypeParams, TypeFilterParam.createParameter(resourceType, element)])
+                setCreatedTypeParams([
+                  ...createdTypeParams,
+                  TypeFilterParam.createTypeFilterParam(resourceType, element)
+                ])
               }
               onClear={() => setCreatedTypeParams([])}
               onRemove={value => setCreatedTypeParams(createdTypeParams.filter(filter => filter.elementName !== value))}
@@ -149,7 +152,7 @@ function createPreviouslyCreatedFilters(type: string, typeFilter: string) {
   const elementsWithTypeFilters = Object.keys(queryParams);
 
   const previouslyCreatedParameters = elementsWithTypeFilters.map(element =>
-    TypeFilterParam.createParameter(
+    TypeFilterParam.createTypeFilterParam(
       type,
       element,
       queryParams[element],

@@ -2,18 +2,7 @@ import { Select, TextInput, Text, Title, Card, Group, MultiSelectProps, Tooltip 
 import { DateValue, DateTimePicker } from '@mantine/dates';
 import { choiceTypes } from 'fhir-spec-tools/build/data/choiceTypes';
 import { parsedPrimaryDatePaths } from 'fhir-spec-tools/build/data/primaryDatePaths';
-
-const comparatorsKeyValue: Record<string, string> = {
-  eq: 'Equals',
-  ne: 'Not equals',
-  gt: 'Greater than',
-  lt: 'Less than',
-  ge: 'Greater than or equal',
-  le: 'Less than or equal',
-  sa: 'Starts after (used for date period specification)',
-  eb: 'Ends before (used for date period specification)',
-  ap: 'Approximately'
-};
+import { SearchParameters } from '../../../data/searchParameters';
 
 export abstract class TypeFilterParam {
   elementName: string;
@@ -21,45 +10,53 @@ export abstract class TypeFilterParam {
   constructor(element: string) {
     this.elementName = element;
   }
+
+  /* Method to render the input option for each type filter type */
   abstract render(): React.ReactElement;
+
+  /* Method to get the string representation of the type filter */
   abstract toTypeFilterString(): string;
 
-  static createParameter(type: string, element: string, value?: string, date?: DateValue, comparator?: string) {
-    if (this.check(type, element)) return new DateTimeParam(element, comparator ?? 'eq', date ?? null);
+  /* Method to create child classes based on parameters */
+  static createTypeFilterParam(type: string, element: string, value?: string, date?: DateValue, comparator?: string) {
+    if (this.isDateInput(type, element)) return new DateTimeParam(element, comparator ?? 'eq', date ?? null);
     else return new OtherParam(element, value);
   }
 
-  private static check(type: string, element: string): boolean {
-    // If the element is a date and not a choice type
-    if (parsedPrimaryDatePaths[type][element]) return true;
+  /* Method to check if the given type, element pairing is a date input*/
+  private static isDateInput(type: string, element: string): boolean {
+    const codesAndTypes = SearchParameters[type];
+    const searchType = codesAndTypes[element];
 
-    const choiceTypeElementsOnType = Object.keys(choiceTypes[type]).map(elem => elem.split('[')[0]);
-    const baseChoiceTypeElem = choiceTypeElementsOnType.find(choiceTypeElem => element.includes(choiceTypeElem));
-
-    // Element is not a choice type and not a date
-    if (!baseChoiceTypeElem) return false;
-
-    const baseElemIsDate = parsedPrimaryDatePaths[type][baseChoiceTypeElem];
-
-    if (baseElemIsDate) return true;
-
-    return false;
+    return searchType === 'date';
   }
 }
 
 export class DateTimeParam extends TypeFilterParam {
-  comparators = ['eq', 'ne', 'gt', 'lt', 'ge', 'le', 'sa', 'eb', 'ap'];
+  comparatorsKeyValue: Record<string, string> = {
+    eq: 'Equals',
+    ne: 'Not equals',
+    gt: 'Greater than',
+    lt: 'Less than',
+    ge: 'Greater than or equal',
+    le: 'Less than or equal',
+    sa: 'Starts after (used for date period specification)',
+    eb: 'Ends before (used for date period specification)',
+    ap: 'Approximately'
+  };
   compare: string;
   date: DateValue;
+
   constructor(elem: string, compare: string, date: DateValue) {
     super(elem);
     this.compare = compare;
     this.date = date;
   }
+
   public render() {
     const renderOption: MultiSelectProps['renderOption'] = ({ option }) => {
       return (
-        <Tooltip label={comparatorsKeyValue[option.value]} position="right" withArrow>
+        <Tooltip label={this.comparatorsKeyValue[option.value]} position="right" withArrow>
           <Text inherit>{option.value}</Text>
         </Tooltip>
       );
@@ -83,7 +80,7 @@ export class DateTimeParam extends TypeFilterParam {
               allowDeselect={false}
               radius="md"
               size="md"
-              data={Object.keys(comparatorsKeyValue)}
+              data={Object.keys(this.comparatorsKeyValue)}
               onChange={value => (this.compare = value ?? '')}
             />
             <DateTimePicker
@@ -108,10 +105,12 @@ export class DateTimeParam extends TypeFilterParam {
 
 export class OtherParam extends TypeFilterParam {
   value: string;
+
   constructor(elem: string, value?: string) {
     super(elem);
     this.value = value ?? '';
   }
+
   public render() {
     return (
       <Card pl="sm" pr="sm" mt="sm" mb="sm" pt="xs" pb="xs" shadow="none" withBorder>
@@ -133,6 +132,7 @@ export class OtherParam extends TypeFilterParam {
       </Card>
     );
   }
+
   public toTypeFilterString() {
     if (this.value === '') return '';
 
