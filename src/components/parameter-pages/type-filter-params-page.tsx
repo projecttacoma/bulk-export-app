@@ -6,7 +6,7 @@ import classes from '@/app/global.module.css';
 import TypeFilterTable from './type-filter-table';
 import { notifications } from '@mantine/notifications';
 import { useRecoilState } from 'recoil';
-import { activeTypeFilterParamsState } from '@/state/type-filter-params-state';
+import { activeTypeFilterParamsState, TypeFilter } from '@/state/type-filter-params-state';
 
 /*
  * Component that displays input to create type filters, and shows active type filters.
@@ -26,7 +26,7 @@ export default function TypeFilterParamsPage() {
       return;
     }
 
-    setActiveTypeFilters([...activeTypeFilters, { filter: filterInputValue, active: true }]);
+    setActiveTypeFilters([...activeTypeFilters, { filter: filterInputValue, active: true } as TypeFilter]);
   };
 
   return (

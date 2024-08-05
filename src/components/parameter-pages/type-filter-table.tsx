@@ -20,29 +20,29 @@ import { Dispatch, SetStateAction } from 'react';
 import { useRecoilState } from 'recoil';
 
 export default function TypeFilterTable({ setFilterInput }: { setFilterInput: Dispatch<SetStateAction<string>> }) {
-  const [activeTypeFilters, setActiveTypeFilters] = useRecoilState(activeTypeFilterParamsState);
+  const [typeFilters, setTypeFilters] = useRecoilState(activeTypeFilterParamsState);
 
   const toggleCheckbox = (thisTypeFilter: TypeFilter) => {
-    const toggledList: TypeFilter[] = activeTypeFilters.map(activeFilter => {
+    const toggledList = typeFilters.map(typeFilter => {
       return {
-        filter: activeFilter.filter,
-        active: activeFilter.filter === thisTypeFilter.filter ? !activeFilter.active : activeFilter.active
-      };
+        filter: typeFilter.filter,
+        active: typeFilter.filter === thisTypeFilter.filter ? !typeFilter.active : typeFilter.active
+      } as TypeFilter;
     });
 
-    setActiveTypeFilters(toggledList);
+    setTypeFilters(toggledList);
   };
 
   const toggleAll = () => {
-    if (activeTypeFilters.filter(typeFilter => !typeFilter.active).length === 0)
-      setActiveTypeFilters(
-        activeTypeFilters.map(typeFilter => {
+    if (typeFilters.filter(typeFilter => !typeFilter.active).length === 0)
+      setTypeFilters(
+        typeFilters.map(typeFilter => {
           return { filter: typeFilter.filter, active: false };
         })
       );
     else
-      setActiveTypeFilters(
-        activeTypeFilters.map(typeFilter => {
+      setTypeFilters(
+        typeFilters.map(typeFilter => {
           return { filter: typeFilter.filter, active: true };
         })
       );
@@ -53,11 +53,10 @@ export default function TypeFilterTable({ setFilterInput }: { setFilterInput: Di
       <TableThead bg="gray.2">
         <TableTh>
           <Checkbox
-            checked={activeTypeFilters.filter(val => !val.active).length === 0 && activeTypeFilters.length !== 0}
-            disabled={activeTypeFilters.length === 0}
+            checked={typeFilters.filter(val => !val.active).length === 0 && typeFilters.length !== 0}
+            disabled={typeFilters.length === 0}
             indeterminate={
-              activeTypeFilters.filter(val => val.active).length >= 1 &&
-              activeTypeFilters.filter(val => !val.active).length !== 0
+              typeFilters.filter(val => val.active).length >= 1 && typeFilters.filter(val => !val.active).length !== 0
             }
             onClick={() => toggleAll()}
           />
@@ -68,7 +67,7 @@ export default function TypeFilterTable({ setFilterInput }: { setFilterInput: Di
         <TableTh></TableTh>
       </TableThead>
       <TableTbody>
-        {activeTypeFilters.map(typeFilter => (
+        {typeFilters.map(typeFilter => (
           <TableTr key={typeFilter.filter} bg={typeFilter.active ? 'var(--mantine-color-blue-light)' : undefined}>
             <TableTd>
               <Checkbox
@@ -91,9 +90,7 @@ export default function TypeFilterTable({ setFilterInput }: { setFilterInput: Di
             <TableTd>
               <CloseButton
                 onClick={() =>
-                  setActiveTypeFilters(
-                    activeTypeFilters.filter(activeFilter => activeFilter.filter !== typeFilter.filter)
-                  )
+                  setTypeFilters(typeFilters.filter(activeFilter => activeFilter.filter !== typeFilter.filter))
                 }
               />
             </TableTd>
@@ -101,13 +98,13 @@ export default function TypeFilterTable({ setFilterInput }: { setFilterInput: Di
         ))}
       </TableTbody>
       <TableCaption>
-        {activeTypeFilters.length === 0 && (
+        {typeFilters.length === 0 && (
           <Text mb="lg" c="gray">
             No type filters created
           </Text>
         )}
         <Flex justify="right">
-          <Button color="red" onClick={() => setActiveTypeFilters([])} disabled={activeTypeFilters.length === 0}>
+          <Button color="red" onClick={() => setTypeFilters([])} disabled={typeFilters.length === 0}>
             Remove All
           </Button>
         </Flex>
