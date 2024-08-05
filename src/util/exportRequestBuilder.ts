@@ -8,8 +8,8 @@ import { TypeFilter } from '@/state/type-filter-params-state';
 export interface BuilderRequest {
   baseUrl: string;
   exportType: SupportedExportTypes;
-  id?: string;
   queryParams: BuilderRequestQueryParams;
+  id?: string;
 }
 
 /*
@@ -28,10 +28,8 @@ export interface BuilderRequestQueryParams {
  */
 export function buildExportRequestString(request: BuilderRequest) {
   const { baseUrl, exportType, id, queryParams } = request;
-
   const exportPath = buildExportPath(exportType, id);
-
-  const queryString = buildQueryString(queryParams);
+  const queryString = buildQueryString(queryParams) ?? '';
 
   return baseUrl + exportPath + queryString;
 }
@@ -49,65 +47,24 @@ function buildExportPath(exportType: SupportedExportTypes, id?: string) {
  * Builds the query string for the request
  */
 function buildQueryString(queryParams: BuilderRequestQueryParams) {
-  if (!hasQueryParams(queryParams)) return '';
-
   const paramsArray: string[] = [];
 
-  if (hasTypeParams(queryParams)) paramsArray.push(`_type=${queryParams.type.toString()}`);
-  if (hasSomeElementParams(queryParams))
-    paramsArray.push(buildElementsQueryString(queryParams.typeElement, queryParams.element));
-  if (hasTypeFilterParams(queryParams)) paramsArray.push(buildTypeFilterQueryString(queryParams.typeFilter));
+  if (queryParams.type.length !== 0) paramsArray.push(`_type=${queryParams.type.toString()}`);
+  if (queryParams.typeElement.length !== 0 || queryParams.element.length !== 0) {
+    const typeElementStringArray = queryParams.typeElement.map(typeElement =>
+      typeElement.elements.map(element => `${typeElement.type}.${element}`).toString()
+    );
+    const combinedElementStringArray = typeElementStringArray.concat(queryParams.element);
+
+    paramsArray.push('_elements=' + combinedElementStringArray.toString());
+  }
+  if (queryParams.typeFilter.some(val => val.active)) {
+    const activeTypeFilters = queryParams.typeFilter.filter(typeFilter => typeFilter.active);
+    const encodedTypeFilters = activeTypeFilters.map(typeFilter => encodeURIComponent(typeFilter.filter));
+    paramsArray.push(`_typeFilter=${encodedTypeFilters.toString()}`);
+  }
+
+  if (paramsArray.length === 0) return;
 
   return '?' + paramsArray.join('&');
-}
-
-/*
- * Builds the "_elements" parameter part of query string
- */
-function buildElementsQueryString(typeElements: TypeElement[], elements: string[]) {
-  const paramsArray: string[] = typeElements.map(typeElement => typeElementToString(typeElement)).concat(elements);
-
-  return '_elements=' + paramsArray.toString();
-}
-
-/*
- * Builds the "_typeFilter" parameter part of query string
- */
-function buildTypeFilterQueryString(typeFilters: TypeFilter[]) {
-  const activeTypeFilters = typeFilters.filter(typeFilter => typeFilter.active);
-  const encodedTypeFilters = activeTypeFilters.map(typeFilter => encodeURIComponent(typeFilter.filter));
-
-  return `_typeFilter=${encodedTypeFilters.toString()}`;
-}
-
-/*
- * Converts an object of type TypeElements to a string
- */
-function typeElementToString(typeElement: TypeElement) {
-  return typeElement.elements.map(element => `${typeElement.type}.${element}`).toString();
-}
-
-/*
- * Checks if incoming request has query parameters
- */
-function hasQueryParams(params: BuilderRequestQueryParams) {
-  return hasTypeParams(params) || hasSomeElementParams(params) || hasTypeFilterParams(params);
-}
-
-/*
- * Checks if incoming request has "_type" query parameters
- */
-function hasTypeParams(params: BuilderRequestQueryParams) {
-  return params.type.length !== 0;
-}
-
-/*
- * Checks if incoming request has "_elements" query parameters
- */
-function hasSomeElementParams(params: BuilderRequestQueryParams) {
-  return params.typeElement.length !== 0 || params.element.length !== 0;
-}
-
-function hasTypeFilterParams(params: BuilderRequestQueryParams) {
-  return params.typeFilter.some(val => val.active);
 }

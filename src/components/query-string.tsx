@@ -70,7 +70,7 @@ export default function QueryString() {
   };
 
   return (
-    <Card w="75%">
+    <Card w="75%" shadow="none">
       <InputWrapper>
         <Center mb="md">
           <Input.Label>

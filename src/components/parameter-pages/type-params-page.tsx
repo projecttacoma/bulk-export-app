@@ -8,8 +8,6 @@ import { resourceTypesDropdownData } from '@/util/multiselectUtil';
 
 import classes from '@/app/global.module.css';
 
-import classes from '@/app/global.module.css';
-
 const typeParamsHelpText = `Selected items are added to "_type" parameter of the bulk export request.
    The "_type" parameter is used to select which resource types' data you want to export. By default,
    data for all resource types is returned if a "_type" query is not provided in the export request.`;

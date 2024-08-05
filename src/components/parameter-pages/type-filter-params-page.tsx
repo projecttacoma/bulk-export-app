@@ -36,19 +36,20 @@ export default function TypeFilterParamsPage() {
           <Title order={2}>Type Filter Parameter Selection</Title>
           <TextInput
             label="Write type filters"
-            description="Use this input to manually create type filters. Multiple filters are combined as 'OR' expressions"
+            description="Use this input to manually create type filters"
             placeholder="Input type filter"
             className={classes.MultiSelectStyles}
             size="md"
             radius="md"
             value={filterInputValue}
             onChange={event => setFilterInputValue(event.currentTarget.value)}
+            rightSectionWidth={105}
+            rightSection={
+              <Button onClick={addTypeFilter} disabled={filterInputValue.trim() === ''} radius="md" mr={2}>
+                Add Filter
+              </Button>
+            }
           />
-          <Group justify="center" className={classes.MultiSelectStyles}>
-            <Button onClick={addTypeFilter} disabled={filterInputValue.trim() === ''}>
-              Add Filter
-            </Button>
-          </Group>
         </Stack>
       </GridCol>
       <GridCol span={{ base: 12, xl: 7 }}>
