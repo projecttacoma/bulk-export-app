@@ -2,24 +2,19 @@
 
 import { Text, Modal, MultiSelect, Title, Stack, MultiSelectProps } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { resourceTypes } from '../../../data/supportedResources';
 import { ReactNode, useState } from 'react';
 import ElementsModal from './elements-modal';
 import { useRecoilState } from 'recoil';
 import { activeTypeElementParamsState } from '@/state/type-element-params-state';
 import { IconPencil } from '@tabler/icons-react';
 import { activeElementParamsState } from '@/state/element-params-state';
+import { allSupportedElements, resourceTypesDropdownData } from '@/util/multiselectUtil';
 
 import classes from '@/app/global.module.css';
-import { allSupportedElements } from '../../../data/allSupportedElements';
 
-const resourceTypesDropdownData = resourceTypes.map(value => {
-  return {
-    label: value,
-    value: value
-  };
-});
-
+/*
+ * Component for the Element tab on the query-builder page to select _element filters.
+ */
 export default function ElementParamsPage() {
   const [opened, { open, close }] = useDisclosure(false);
   const [modalContent, setModalContent] = useState<ReactNode>();

@@ -1,7 +1,22 @@
 'use client';
 
-import { ActionIcon, CopyButton, Input, InputWrapper, rem, TextInput, Title, Tooltip } from '@mantine/core';
-import { IconArrowRight, IconCheck, IconCopy, IconRefresh, IconSearch } from '@tabler/icons-react';
+import {
+  ActionIcon,
+  Box,
+  Card,
+  Center,
+  CopyButton,
+  Group,
+  Input,
+  InputWrapper,
+  Popover,
+  rem,
+  ScrollArea,
+  TextInput,
+  Title,
+  Tooltip
+} from '@mantine/core';
+import { IconArrowRight, IconCheck, IconCopy, IconRefresh, IconSearch, IconZoomScan } from '@tabler/icons-react';
 import { useRecoilValue } from 'recoil';
 import { activeTypeParamsState } from '@/state/type-params-state';
 import { BuilderRequestQueryParams, buildExportRequestString } from '@/util/exportRequestBuilder';
@@ -53,62 +68,84 @@ export default function QueryString() {
         console.error(err);
       });
   };
+
   return (
-    <InputWrapper w="75%">
-      <Input.Label>
-        <Title order={1}>Bulk Export Request</Title>
-      </Input.Label>
-      <TextInput
-        size="lg"
-        radius="xl"
-        readOnly
-        placeholder={exportRequestString}
-        rightSection={
-          <>
-            {status ? (
-              status === 202 ? (
-                <Tooltip label="Success: view status of query" withArrow position="right">
-                  <ActionIcon
-                    component={Link}
-                    href={{
-                      pathname: '/export-execution',
-                      query: { contentLocation: encodeURIComponent(contentLocation ?? '') }
-                    }}
-                    size={48}
-                    radius="xl"
-                    color="green"
-                  >
-                    <IconSearch size={32} stroke={2} />
-                  </ActionIcon>
-                </Tooltip>
+    <Card w="75%">
+      <InputWrapper>
+        <Center mb="md">
+          <Input.Label>
+            <Title order={1}>Bulk Export Request</Title>
+          </Input.Label>
+        </Center>
+        <TextInput
+          size="lg"
+          radius="xl"
+          readOnly
+          placeholder={exportRequestString}
+          rightSection={
+            <>
+              {status ? (
+                status === 202 ? (
+                  <Tooltip label="Success: view status of query" withArrow position="right">
+                    <ActionIcon
+                      component={Link}
+                      href={{
+                        pathname: '/export-execution',
+                        query: { contentLocation: encodeURIComponent(contentLocation ?? '') }
+                      }}
+                      size={48}
+                      radius="xl"
+                      color="green"
+                    >
+                      <IconSearch size={32} stroke={2} />
+                    </ActionIcon>
+                  </Tooltip>
+                ) : (
+                  <Tooltip label="Failure: fix query" withArrow position="right">
+                    <ActionIcon size={48} radius="xl" onClick={kickoffRequest} color="red">
+                      <IconRefresh size={32} stroke={2} />
+                    </ActionIcon>
+                  </Tooltip>
+                )
               ) : (
-                <Tooltip label="Failure: fix query" withArrow position="right">
-                  <ActionIcon size={48} radius="xl" onClick={kickoffRequest} color="red">
-                    <IconRefresh size={32} stroke={2} />
+                <Tooltip label="Click to run kickoff" withArrow position="right">
+                  <ActionIcon size={48} radius="xl" onClick={kickoffRequest}>
+                    <IconArrowRight size={32} stroke={2} />
                   </ActionIcon>
                 </Tooltip>
-              )
-            ) : (
-              <Tooltip label="Click to run kickoff" withArrow position="right">
-                <ActionIcon size={48} radius="xl" onClick={kickoffRequest}>
-                  <IconArrowRight size={32} stroke={2} />
-                </ActionIcon>
-              </Tooltip>
-            )}
-          </>
-        }
-        leftSection={
-          <CopyButton value={exportRequestString} timeout={2000}>
-            {({ copied, copy }) => (
-              <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-                <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
-                  {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
-                </ActionIcon>
-              </Tooltip>
-            )}
-          </CopyButton>
-        }
-      />
-    </InputWrapper>
+              )}
+            </>
+          }
+          leftSectionWidth={80}
+          leftSection={
+            <Group gap="xs">
+              <CopyButton value={exportRequestString} timeout={2000}>
+                {({ copied, copy }) => (
+                  <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+                    <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
+                      {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </CopyButton>
+              <Popover withArrow position="top" radius="md" shadow="xl">
+                <Popover.Dropdown w="50%">
+                  <ScrollArea offsetScrollbars>
+                    <Box>{exportRequestString.split('_').join('\n')}</Box>
+                  </ScrollArea>
+                </Popover.Dropdown>
+                <Popover.Target>
+                  <Tooltip label="View export url" withArrow position="right">
+                    <ActionIcon variant="subtle" color="gray">
+                      <IconZoomScan />
+                    </ActionIcon>
+                  </Tooltip>
+                </Popover.Target>
+              </Popover>
+            </Group>
+          }
+        />
+      </InputWrapper>
+    </Card>
   );
 }

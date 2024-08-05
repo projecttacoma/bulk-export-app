@@ -2,14 +2,10 @@ import {
   Button,
   Mark,
   Modal,
-  Group,
   Divider,
   Text,
   MultiSelect,
-  ComboboxItem,
   Tooltip,
-  Title,
-  Badge,
   Grid,
   Card,
   MultiSelectProps,
@@ -18,10 +14,10 @@ import {
 import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { activeTypeElementParamsState, TypeElement } from '@/state/type-element-params-state';
+import { createComboBoxData } from '@/util/multiselectUtil';
+import { MandatoryElementList } from './mandatory-elements';
 
 import globalClasses from '@/app/global.module.css';
-import { mandatoryElements } from '../../../data/mandatoryElements';
-import { supportedElements } from '../../../data/supportedElements';
 
 export interface ElementsModalProps {
   resourceType: string;
@@ -29,38 +25,9 @@ export interface ElementsModalProps {
   editing: boolean;
 }
 
-function MandatoryElementList({ resourceType }: { resourceType: string }) {
-  const noMandatoryElements = mandatoryElements[resourceType].length === 0;
-
-  return (
-    <Tooltip
-      label="Mandatory elements will always be exported from the server"
-      disabled={noMandatoryElements}
-      withArrow
-      openDelay={1000}
-      position="left"
-    >
-      <Grid align="center" bg="white">
-        <Grid.Col span="content">
-          <Title order={4} fw={600}>
-            Mandatory Elements:
-          </Title>
-        </Grid.Col>
-        <Grid.Col span={'auto'}>
-          <Group>
-            {mandatoryElements[resourceType].map(element => (
-              <Badge key={element} size="md">
-                {element}
-              </Badge>
-            ))}
-            {noMandatoryElements && 'There are no mandatory elements on this resource type.'}
-          </Group>
-        </Grid.Col>
-      </Grid>
-    </Tooltip>
-  );
-}
-
+/*
+ * Elements Modal component to select elements to export on a given resource type
+ */
 export default function ElementsModal({ resourceType, closeModal, editing }: ElementsModalProps) {
   const [activeTypeElements, setActiveTypeElements] = useRecoilState(activeTypeElementParamsState);
   const previousSelectedOptions = activeTypeElements.find(value => value.type === resourceType);
@@ -68,23 +35,21 @@ export default function ElementsModal({ resourceType, closeModal, editing }: Ele
 
   const multiselectData = createComboBoxData(resourceType);
 
-  const renderData: MultiSelectProps['renderOption'] = ({ option }) =>
-    option.disabled ? (
-      <Tooltip
-        position="right"
-        withArrow
-        label={
-          <>
-            <Mark className={globalClasses.blueText}>{option.label}</Mark> is a Mandatory Element on
-            <Mark className={globalClasses.blueText}> {resourceType}</Mark> resource.
-          </>
-        }
-      >
-        <Text>{option.label}</Text>
-      </Tooltip>
-    ) : (
+  const renderData: MultiSelectProps['renderOption'] = ({ option }) => (
+    <Tooltip
+      position="right"
+      withArrow
+      disabled={!option.disabled}
+      label={
+        <>
+          <Mark className={globalClasses.blueText}>{option.label}</Mark> is a Mandatory Element on
+          <Mark className={globalClasses.blueText}> {resourceType}</Mark> resource.
+        </>
+      }
+    >
       <Text>{option.label}</Text>
-    );
+    </Tooltip>
+  );
   return (
     <>
       <Modal.Header>
@@ -101,7 +66,7 @@ export default function ElementsModal({ resourceType, closeModal, editing }: Ele
               <MandatoryElementList resourceType={resourceType} />
             </Card>
           </GridCol>
-          <Grid.Col span="auto">
+          <GridCol span="auto">
             <Card>
               <MultiSelect
                 label="Select Elements"
@@ -115,7 +80,7 @@ export default function ElementsModal({ resourceType, closeModal, editing }: Ele
                 renderOption={renderData}
               />
             </Card>
-          </Grid.Col>
+          </GridCol>
           <GridCol span={{ base: 12, lg: 3 }}>
             <Card p={0}>
               <Button
@@ -127,11 +92,11 @@ export default function ElementsModal({ resourceType, closeModal, editing }: Ele
                     type: resourceType,
                     elements: selectedOptions
                   };
-                  const removedOthers = activeTypeElements.filter(value => value.type !== newTypeElement.type);
+                  const newActiveTypeElements = activeTypeElements.filter(value => value.type !== newTypeElement.type);
 
-                  removedOthers.push(newTypeElement);
+                  newActiveTypeElements.push(newTypeElement);
 
-                  setActiveTypeElements(removedOthers);
+                  setActiveTypeElements(newActiveTypeElements);
                   closeModal();
                 }}
               >
@@ -143,8 +108,7 @@ export default function ElementsModal({ resourceType, closeModal, editing }: Ele
                   variant="subtle"
                   color="red"
                   onClick={() => {
-                    const removedOthers = activeTypeElements.filter(value => value.type !== resourceType);
-                    setActiveTypeElements(removedOthers);
+                    setActiveTypeElements(activeTypeElements.filter(value => value.type !== resourceType));
                     closeModal();
                   }}
                 >
@@ -157,20 +121,4 @@ export default function ElementsModal({ resourceType, closeModal, editing }: Ele
       </Modal.Body>
     </>
   );
-}
-
-function createComboBoxData(resourceType: string) {
-  const compareComboBoxItems = (a: ComboboxItem, b: ComboboxItem) => {
-    return Number(a.disabled) - Number(b.disabled);
-  };
-
-  return supportedElements[resourceType]
-    .map((element: string) => {
-      return {
-        value: element,
-        disabled: mandatoryElements[resourceType].includes(element),
-        label: element
-      } as ComboboxItem;
-    })
-    .sort((a: ComboboxItem, b: ComboboxItem) => compareComboBoxItems(a, b));
 }
