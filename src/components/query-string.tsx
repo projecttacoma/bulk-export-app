@@ -27,7 +27,7 @@ import Link from 'next/link';
 import { activeElementParamsState } from '@/state/element-params-state';
 import { activeTypeElementParamsState } from '@/state/type-element-params-state';
 import { bulkServerURLState } from '@/state/bulk-server-url-state';
-import { activeTypeFilterParamsState } from '@/state/type-filter-params-state';
+import { activeTypeFiltersState } from '@/state/selectors/type-filter-selectors';
 
 /*
  * Component to visualize the Bulk-export request string.
@@ -39,7 +39,7 @@ export default function QueryString() {
   const typeParams = useRecoilValue(activeTypeParamsState);
   const typeElementParams = useRecoilValue(activeTypeElementParamsState);
   const elementParams = useRecoilValue(activeElementParamsState);
-  const typeFilterParams = useRecoilValue(activeTypeFilterParamsState);
+  const activeTypeFilters = useRecoilValue(activeTypeFiltersState);
 
   const searchParams = useSearchParams();
   const exportType = searchParams.get('exportType') as SupportedExportTypes;
@@ -49,7 +49,7 @@ export default function QueryString() {
     type: typeParams,
     element: elementParams,
     typeElement: typeElementParams,
-    typeFilter: typeFilterParams
+    typeFilter: activeTypeFilters
   };
   const exportRequestString = buildExportRequestString({
     baseUrl: bulkExportBaseURL,
@@ -131,7 +131,7 @@ export default function QueryString() {
               <Popover withArrow position="top" radius="md" shadow="xl">
                 <Popover.Dropdown w="50%">
                   <ScrollArea offsetScrollbars>
-                    <Box>{exportRequestString.split('_').join('\n')}</Box>
+                    <Box>{exportRequestString.split('_').join('\n_')}</Box>
                   </ScrollArea>
                 </Popover.Dropdown>
                 <Popover.Target>

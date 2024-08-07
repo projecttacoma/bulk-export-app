@@ -6,14 +6,16 @@ import classes from '@/app/global.module.css';
 import TypeFilterTable from './type-filter-table';
 import { notifications } from '@mantine/notifications';
 import { useRecoilState } from 'recoil';
-import { activeTypeFilterParamsState, TypeFilter } from '@/state/type-filter-params-state';
+import { typeFilterParamsState, TypeFilter } from '@/state/type-filter-params-state';
 
 /*
  * Component that displays input to create type filters, and shows active type filters.
  */
 export default function TypeFilterParamsPage() {
   const [filterInputValue, setFilterInputValue] = useState('');
-  const [activeTypeFilters, setActiveTypeFilters] = useRecoilState(activeTypeFilterParamsState);
+  const [activeTypeFilters, setActiveTypeFilters] = useRecoilState(typeFilterParamsState);
+
+  const sortTypeFilters = (arr: TypeFilter[]) => arr.sort((a, b) => (a.filter[0] < b.filter[0] ? -1 : 1));
 
   const addTypeFilter = () => {
     const duplicateFilter = activeTypeFilters.some(ty => ty.filter === filterInputValue);
@@ -25,8 +27,7 @@ export default function TypeFilterParamsPage() {
       });
       return;
     }
-
-    setActiveTypeFilters([...activeTypeFilters, { filter: filterInputValue, active: true } as TypeFilter]);
+    setActiveTypeFilters(prev => sortTypeFilters([...prev, { filter: filterInputValue, active: true } as TypeFilter]));
   };
 
   return (
@@ -55,7 +56,7 @@ export default function TypeFilterParamsPage() {
       <GridCol span={{ base: 12, xl: 7 }}>
         <Stack gap="sm">
           <Group justify="space-between">
-            <Title order={3}>Active Type Filters</Title>
+            <Title order={3}> Type Filters</Title>
           </Group>
           <Divider />
           <TypeFilterTable setFilterInput={setFilterInputValue} />
