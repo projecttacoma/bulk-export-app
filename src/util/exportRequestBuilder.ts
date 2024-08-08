@@ -58,10 +58,10 @@ function buildQueryString(queryParams: BuilderRequestQueryParams) {
 
     paramsArray.push('_elements=' + combinedElementStringArray.toString());
   }
-  if (queryParams.typeFilter.some(val => val.active)) {
-    const activeTypeFilters = queryParams.typeFilter.filter(typeFilter => typeFilter.active);
-    const encodedTypeFilters = activeTypeFilters.map(typeFilter => encodeURIComponent(typeFilter.filter));
-    paramsArray.push(`_typeFilter=${encodedTypeFilters.toString()}`);
+  if (queryParams.typeFilter.length !== 0) {
+    paramsArray.push(
+      `_typeFilter=${queryParams.typeFilter.map(typeFilter => encodeURIComponent(typeFilter.filter)).toString()}`
+    );
   }
 
   if (paramsArray.length === 0) return;

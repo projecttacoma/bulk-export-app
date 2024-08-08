@@ -20,14 +20,22 @@ export function createComboBoxData(resourceType: string) {
 /*
  * Resource type data from fhir-spec-tools in a ComboBox format.
  */
-export const resourceTypesDropdownData: ComboboxItem[] = Object.keys(PropertyPaths.parsedPropertyPaths).map(value => {
-  return {
-    label: value,
-    value: value
-  };
-});
+export const resourceTypesDropdownData: ComboboxItem[] = Object.keys(PropertyPaths.parsedPropertyPaths)
+  .filter(val => val !== 'ValueSet')
+  .map(value => {
+    return {
+      label: value,
+      value: value
+    };
+  });
 
 /*
  * All supported elements across all supported resource types from fhir-spec-tools
  */
-export const allSupportedElements = sortBy(uniq(Object.values(PropertyPaths.parsedPropertyPaths).flat()));
+export const allSupportedElements = sortBy(
+  uniq(
+    Object.entries(PropertyPaths.parsedPropertyPaths)
+      .filter(val => val[0] !== 'ValueSet')
+      .flatMap(val => val[1])
+  )
+);

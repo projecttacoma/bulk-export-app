@@ -5,20 +5,23 @@ import { ReactNode, useState } from 'react';
 import TypeFilterTable from './type-filter-table';
 import { notifications } from '@mantine/notifications';
 import { useRecoilState } from 'recoil';
-import { activeTypeFilterParamsState } from '@/state/type-filter-params-state';
+import { TypeFilter, typeFilterParamsState } from '@/state/type-filter-params-state';
 import { useDisclosure } from '@mantine/hooks';
 import TypeFilterModal from './type-filter-modal';
 import { PropertyPaths } from 'fhir-spec-tools';
 import classes from '@/app/global.module.css';
+import { createComboBoxData, resourceTypesDropdownData } from '@/util/multiselectUtil';
 
 /*
  * Component that displays input to create type filters, and shows active type filters.
  */
 export default function TypeFilterParamsPage() {
   const [filterInputValue, setFilterInputValue] = useState('');
-  const [activeTypeFilters, setActiveTypeFilters] = useRecoilState(activeTypeFilterParamsState);
+  const [activeTypeFilters, setActiveTypeFilters] = useRecoilState(typeFilterParamsState);
   const [opened, { open, close }] = useDisclosure(false);
   const [modalContent, setModalContent] = useState<ReactNode>();
+
+  const sortTypeFilters = (arr: TypeFilter[]) => arr.sort((a, b) => (a.filter[0] < b.filter[0] ? -1 : 1));
 
   const addTypeFilter = () => {
     const duplicateFilter = activeTypeFilters.some(ty => ty.filter === filterInputValue);
@@ -30,8 +33,7 @@ export default function TypeFilterParamsPage() {
       });
       return;
     }
-
-    setActiveTypeFilters([...activeTypeFilters, { filter: filterInputValue, active: true }]);
+    setActiveTypeFilters(prev => sortTypeFilters([...prev, { filter: filterInputValue, active: true } as TypeFilter]));
   };
 
   const handleSubmitValue = (value: string) => {
@@ -67,7 +69,7 @@ export default function TypeFilterParamsPage() {
               placeholder="Search for types"
               nothingFoundMessage="No types matching search found."
               description="Add type filters to selected type"
-              data={Object.keys(PropertyPaths.parsedPropertyPaths)}
+              data={resourceTypesDropdownData}
               value=""
               className={classes.MultiSelectStyles}
               onOptionSubmit={handleSubmitValue}

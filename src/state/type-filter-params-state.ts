@@ -8,7 +8,7 @@ export interface TypeFilter {
 /*
  * Recoil state to manage the Type Filter parameters.
  */
-export const activeTypeFilterParamsState = atom<TypeFilter[]>({
-  key: 'activeTypeFilterParamsState',
+export const typeFilterParamsState = atom<TypeFilter[]>({
+  key: 'typeFilterParamsState',
   default: []
 });

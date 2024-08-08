@@ -1,5 +1,5 @@
 'use client';
-import { Card, Center, GridCol, Paper, rem, Select, Stack, Title } from '@mantine/core';
+import { Card, Center, GridCol, rem, Select, Stack, Title } from '@mantine/core';
 import { useState } from 'react';
 import BuildQueryButton from './build-query-button';
 import { capitalize } from 'lodash';

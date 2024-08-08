@@ -47,7 +47,7 @@ export default function HomePage() {
   const setBulkExportURL = useSetRecoilState(bulkServerURLState);
 
   const field = useField({
-    initialValue: `${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}`,
+    initialValue: process.env.NEXT_PUBLIC_HOST ? `${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}` : '',
     validate: async url => {
       notifications.clean();
 

@@ -12,7 +12,7 @@ import {
   Group
 } from '@mantine/core';
 import { useState } from 'react';
-import { activeTypeFilterParamsState } from '@/state/type-filter-params-state';
+import { typeFilterParamsState } from '@/state/type-filter-params-state';
 import { useRecoilState } from 'recoil';
 import { notifications } from '@mantine/notifications';
 import { TypeFilterParam } from './type-filter-parameter-classes';
@@ -31,7 +31,7 @@ export default function TypeFilterModal({ resourceType, closeModal, editingTypeF
   const [createdTypeParams, setCreatedTypeParams] = useState<TypeFilterParam[]>(
     editingTypeFilter ? createPreviouslyCreatedFilters(resourceType, editingTypeFilter).previouslyCreatedParameters : []
   );
-  const [typeFilters, setTypeFilters] = useRecoilState(activeTypeFilterParamsState);
+  const [typeFilters, setTypeFilters] = useRecoilState(typeFilterParamsState);
 
   const createTypeFilter = () => {
     const elementFilters = createdTypeParams.map(filter => filter.toTypeFilterString());

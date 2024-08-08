@@ -23,7 +23,7 @@ export default function QueryBuilder() {
           <QueryString />
         </Suspense>
       </Center>
-      <Card mt="xl">
+      <Card>
         <Container fluid m="xl">
           <Flex align="center" mb="lg">
             <Title mr="sm">Parameters</Title>

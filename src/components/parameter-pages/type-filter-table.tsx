@@ -1,4 +1,4 @@
-import { activeTypeFilterParamsState, TypeFilter } from '@/state/type-filter-params-state';
+import { TypeFilter, typeFilterParamsState } from '@/state/type-filter-params-state';
 import {
   Button,
   Checkbox,
@@ -18,8 +18,9 @@ import {
 } from '@mantine/core';
 import { IconCopy, IconEdit } from '@tabler/icons-react';
 import { Dispatch, ReactNode, SetStateAction } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import TypeFilterModal from './type-filter-modal';
+import { activeTypeFiltersState, inactiveTypeFiltersState } from '@/state/selectors/type-filter-selectors';
 
 export default function TypeFilterTable({
   setFilterInput,
@@ -32,29 +33,31 @@ export default function TypeFilterTable({
   closeModal: () => void;
   openModal: () => void;
 }) {
-  const [activeTypeFilters, setActiveTypeFilters] = useRecoilState(activeTypeFilterParamsState);
+  const [typeFilters, setTypeFilters] = useRecoilState(typeFilterParamsState);
+  const activeTypeFilters = useRecoilValue(activeTypeFiltersState);
+  const inactiveTypeFilters = useRecoilValue(inactiveTypeFiltersState);
 
-  const toggleCheckbox = (thisTypeFilter: TypeFilter) => {
-    const toggledList: TypeFilter[] = activeTypeFilters.map(activeFilter => {
+  const toggleTypeFilter = (thisTypeFilter: TypeFilter) => {
+    const toggledList = typeFilters.map(typeFilter => {
       return {
-        filter: activeFilter.filter,
-        active: activeFilter.filter === thisTypeFilter.filter ? !activeFilter.active : activeFilter.active
-      };
+        filter: typeFilter.filter,
+        active: typeFilter.filter === thisTypeFilter.filter ? !typeFilter.active : typeFilter.active
+      } as TypeFilter;
     });
 
-    setActiveTypeFilters(toggledList);
+    setTypeFilters(toggledList);
   };
 
   const toggleAll = () => {
-    if (activeTypeFilters.filter(typeFilter => !typeFilter.active).length === 0)
-      setActiveTypeFilters(
-        activeTypeFilters.map(typeFilter => {
+    if (inactiveTypeFilters.length === 0)
+      setTypeFilters(
+        typeFilters.map(typeFilter => {
           return { filter: typeFilter.filter, active: false };
         })
       );
     else
-      setActiveTypeFilters(
-        activeTypeFilters.map(typeFilter => {
+      setTypeFilters(
+        typeFilters.map(typeFilter => {
           return { filter: typeFilter.filter, active: true };
         })
       );
@@ -66,12 +69,9 @@ export default function TypeFilterTable({
         <TableTr>
           <TableTh>
             <Checkbox
-              checked={activeTypeFilters.filter(val => !val.active).length === 0 && activeTypeFilters.length !== 0}
-              disabled={activeTypeFilters.length === 0}
-              indeterminate={
-                activeTypeFilters.filter(val => val.active).length >= 1 &&
-                activeTypeFilters.filter(val => !val.active).length !== 0
-              }
+              checked={inactiveTypeFilters.length === 0 && typeFilters.length > 0}
+              disabled={typeFilters.length === 0}
+              indeterminate={activeTypeFilters.length > 0 && inactiveTypeFilters.length > 0}
               onClick={() => toggleAll()}
             />
           </TableTh>
@@ -81,13 +81,13 @@ export default function TypeFilterTable({
         </TableTr>
       </TableThead>
       <TableTbody>
-        {activeTypeFilters.map(typeFilter => (
+        {typeFilters.map(typeFilter => (
           <TableTr key={typeFilter.filter} bg={typeFilter.active ? 'var(--mantine-color-blue-light)' : undefined}>
             <TableTd>
               <Checkbox
                 aria-label="Select row"
                 checked={typeFilter.active}
-                onChange={() => toggleCheckbox(typeFilter)}
+                onChange={() => toggleTypeFilter(typeFilter)}
               />
             </TableTd>
             <TableTd c="blue.9" fw={700}>
@@ -118,9 +118,7 @@ export default function TypeFilterTable({
                 </ActionIcon>
                 <CloseButton
                   onClick={() =>
-                    setActiveTypeFilters(
-                      activeTypeFilters.filter(activeFilter => activeFilter.filter !== typeFilter.filter)
-                    )
+                    setTypeFilters(typeFilters.filter(typeFilter => typeFilter.filter !== typeFilter.filter))
                   }
                 />
               </Group>
@@ -135,7 +133,7 @@ export default function TypeFilterTable({
           </Text>
         )}
         <Flex justify="right">
-          <Button color="red" onClick={() => setActiveTypeFilters([])} disabled={activeTypeFilters.length === 0}>
+          <Button color="red" onClick={() => setTypeFilters([])} disabled={activeTypeFilters.length === 0}>
             Remove All
           </Button>
         </Flex>

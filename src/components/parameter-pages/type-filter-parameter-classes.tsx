@@ -1,7 +1,5 @@
 import { Select, TextInput, Text, Title, Card, Group, MultiSelectProps, Tooltip } from '@mantine/core';
 import { DateValue, DateTimePicker } from '@mantine/dates';
-import { choiceTypes } from 'fhir-spec-tools/build/data/choiceTypes';
-import { parsedPrimaryDatePaths } from 'fhir-spec-tools/build/data/primaryDatePaths';
 import { SearchParameters } from '../../../data/searchParameters';
 
 export abstract class TypeFilterParam {
