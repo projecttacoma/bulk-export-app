@@ -21,7 +21,8 @@ const theme = createTheme({
     Card: Card.extend({
       defaultProps: {
         radius: 'md',
-        padding: 'xl'
+        padding: 'xl',
+        shadow: 'md'
       }
     })
   }

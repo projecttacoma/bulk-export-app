@@ -1,5 +1,6 @@
 import { SupportedExportTypes } from '@/components/query-selector/export-type';
 import { TypeElement } from '@/state/type-element-params-state';
+import { TypeFilter } from '@/state/type-filter-params-state';
 
 /*
  * Parameters to build export request string.
@@ -18,7 +19,7 @@ export interface BuilderRequestQueryParams {
   type: string[];
   element: string[];
   typeElement: TypeElement[];
-  typeFilter?: string[]; // may not be string[] in the future
+  typeFilter: TypeFilter[];
 }
 
 /*
@@ -56,6 +57,11 @@ function buildQueryString(queryParams: BuilderRequestQueryParams) {
     const combinedElementStringArray = typeElementStringArray.concat(queryParams.element);
 
     paramsArray.push('_elements=' + combinedElementStringArray.toString());
+  }
+  if (queryParams.typeFilter.length !== 0) {
+    paramsArray.push(
+      `_typeFilter=${queryParams.typeFilter.map(typeFilter => encodeURIComponent(typeFilter.filter)).toString()}`
+    );
   }
 
   if (paramsArray.length === 0) return;

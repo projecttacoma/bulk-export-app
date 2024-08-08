@@ -1,10 +1,11 @@
-import { Center, Container, Flex, Paper, Tabs, TabsList, TabsPanel, TabsTab, Title, Tooltip } from '@mantine/core';
+import { Card, Center, Container, Flex, Tabs, TabsList, TabsPanel, TabsTab, Title, Tooltip } from '@mantine/core';
 import QueryString from '@/components/query-string';
 import TypeParamsPage from '@/components/parameter-pages/type-params-page';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { SupportedExportTypes } from '@/components/query-selector/export-type';
 import { Suspense } from 'react';
 import ElementParamsPage from '@/components/parameter-pages/elements-params-page';
+import TypeFilterParamsPage from '@/components/parameter-pages/type-filter-params-page';
 
 /*
  * Properties of the query string that can be passed to this page
@@ -22,7 +23,7 @@ export default function QueryBuilder() {
           <QueryString />
         </Suspense>
       </Center>
-      <Paper shadow="md" radius="lg" p="sm">
+      <Card>
         <Container fluid m="xl">
           <Flex align="center" mb="lg">
             <Title mr="sm">Parameters</Title>
@@ -54,11 +55,11 @@ export default function QueryBuilder() {
               <ElementParamsPage />
             </TabsPanel>
             <TabsPanel ml="xl" value="type-filters-tab">
-              Type Filters Tab coming soon...
+              <TypeFilterParamsPage />
             </TabsPanel>
           </Tabs>
         </Container>
-      </Paper>
+      </Card>
     </>
   );
 }

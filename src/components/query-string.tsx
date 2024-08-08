@@ -27,6 +27,7 @@ import Link from 'next/link';
 import { activeElementParamsState } from '@/state/element-params-state';
 import { activeTypeElementParamsState } from '@/state/type-element-params-state';
 import { bulkServerURLState } from '@/state/bulk-server-url-state';
+import { activeTypeFiltersState } from '@/state/selectors/type-filter-selectors';
 
 /*
  * Component to visualize the Bulk-export request string.
@@ -38,6 +39,7 @@ export default function QueryString() {
   const typeParams = useRecoilValue(activeTypeParamsState);
   const typeElementParams = useRecoilValue(activeTypeElementParamsState);
   const elementParams = useRecoilValue(activeElementParamsState);
+  const activeTypeFilters = useRecoilValue(activeTypeFiltersState);
 
   const searchParams = useSearchParams();
   const exportType = searchParams.get('exportType') as SupportedExportTypes;
@@ -46,9 +48,9 @@ export default function QueryString() {
   const queryParams: BuilderRequestQueryParams = {
     type: typeParams,
     element: elementParams,
-    typeElement: typeElementParams
+    typeElement: typeElementParams,
+    typeFilter: activeTypeFilters
   };
-
   const exportRequestString = buildExportRequestString({
     baseUrl: bulkExportBaseURL,
     exportType: exportType,
@@ -68,7 +70,7 @@ export default function QueryString() {
   };
 
   return (
-    <Card w="75%">
+    <Card w="75%" shadow="none">
       <InputWrapper>
         <Center mb="md">
           <Input.Label>
@@ -129,7 +131,7 @@ export default function QueryString() {
               <Popover withArrow position="top" radius="md" shadow="xl">
                 <Popover.Dropdown w="50%">
                   <ScrollArea offsetScrollbars>
-                    <Box>{exportRequestString.split('_').join('\n')}</Box>
+                    <Box>{exportRequestString.split('_').join('\n_')}</Box>
                   </ScrollArea>
                 </Popover.Dropdown>
                 <Popover.Target>
