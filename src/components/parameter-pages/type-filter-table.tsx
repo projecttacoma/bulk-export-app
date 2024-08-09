@@ -37,31 +37,21 @@ export default function TypeFilterTable({
   const activeTypeFilters = useRecoilValue(activeTypeFiltersState);
   const inactiveTypeFilters = useRecoilValue(inactiveTypeFiltersState);
 
-  const toggleTypeFilter = (thisTypeFilter: TypeFilter) => {
-    const toggledList = typeFilters.map(typeFilter => {
-      return {
-        filter: typeFilter.filter,
-        active: typeFilter.filter === thisTypeFilter.filter ? !typeFilter.active : typeFilter.active
-      } as TypeFilter;
-    });
+  const toggleTypeFilter = (thisTypeFilter: TypeFilter) =>
+    setTypeFilters(
+      typeFilters.map(
+        typeFilter =>
+          ({
+            filter: typeFilter.filter,
+            active: typeFilter.filter === thisTypeFilter.filter ? !typeFilter.active : typeFilter.active
+          }) as TypeFilter
+      )
+    );
 
-    setTypeFilters(toggledList);
-  };
-
-  const toggleAll = () => {
-    if (inactiveTypeFilters.length === 0)
-      setTypeFilters(
-        typeFilters.map(typeFilter => {
-          return { filter: typeFilter.filter, active: false };
-        })
-      );
-    else
-      setTypeFilters(
-        typeFilters.map(typeFilter => {
-          return { filter: typeFilter.filter, active: true };
-        })
-      );
-  };
+  const toggleAll = () =>
+    inactiveTypeFilters.length === 0
+      ? setTypeFilters(typeFilters.map(typeFilter => ({ filter: typeFilter.filter, active: false })))
+      : setTypeFilters(typeFilters.map(typeFilter => ({ filter: typeFilter.filter, active: true })));
 
   return (
     <Table withTableBorder>
@@ -81,8 +71,8 @@ export default function TypeFilterTable({
         </TableTr>
       </TableThead>
       <TableTbody>
-        {typeFilters.map(typeFilter => (
-          <TableTr key={typeFilter.filter} bg={typeFilter.active ? 'var(--mantine-color-blue-light)' : undefined}>
+        {typeFilters.map((typeFilter, index) => (
+          <TableTr key={index} bg={typeFilter.active ? 'var(--mantine-color-blue-light)' : undefined}>
             <TableTd>
               <Checkbox
                 aria-label="Select row"
@@ -118,7 +108,7 @@ export default function TypeFilterTable({
                 </ActionIcon>
                 <CloseButton
                   onClick={() =>
-                    setTypeFilters(typeFilters.filter(typeFilter => typeFilter.filter !== typeFilter.filter))
+                    setTypeFilters(typeFilters.filter(prevTypeFilter => prevTypeFilter.filter !== typeFilter.filter))
                   }
                 />
               </Group>
@@ -127,7 +117,7 @@ export default function TypeFilterTable({
         ))}
       </TableTbody>
       <TableCaption>
-        {activeTypeFilters.length === 0 && (
+        {typeFilters.length === 0 && (
           <Text mb="lg" c="gray">
             No type filters created
           </Text>

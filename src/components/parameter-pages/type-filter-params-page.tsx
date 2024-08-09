@@ -1,16 +1,15 @@
 'use client';
 
 import { Button, Divider, Grid, GridCol, Group, Modal, Select, Stack, TextInput, Title } from '@mantine/core';
-import { ReactNode, useState } from 'react';
-import TypeFilterTable from './type-filter-table';
 import { notifications } from '@mantine/notifications';
+import { useDisclosure } from '@mantine/hooks';
+import { ReactNode, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { TypeFilter, typeFilterParamsState } from '@/state/type-filter-params-state';
-import { useDisclosure } from '@mantine/hooks';
+import { resourceTypesDropdownData } from '@/util/multiselectUtil';
 import TypeFilterModal from './type-filter-modal';
-import { PropertyPaths } from 'fhir-spec-tools';
+import TypeFilterTable from './type-filter-table';
 import classes from '@/app/global.module.css';
-import { createComboBoxData, resourceTypesDropdownData } from '@/util/multiselectUtil';
 
 /*
  * Component that displays input to create type filters, and shows active type filters.
