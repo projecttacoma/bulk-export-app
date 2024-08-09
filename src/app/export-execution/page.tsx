@@ -65,7 +65,7 @@ export default function ExecutionPage() {
 
   return (
     <Grid>
-      <GridCol span={6}>
+      <GridCol span={12}>
         <Card padding="xl" radius="md">
           <Title>Bulk Export Request Accepted</Title>
           <Group>
@@ -74,11 +74,6 @@ export default function ExecutionPage() {
             </Title>
             <Anchor href={contentLocation}>{contentLocation}</Anchor>
           </Group>
-        </Card>
-      </GridCol>
-      <GridCol span={{ base: 12, lg: 6 }}>
-        <Card padding="xl" radius="md">
-          <ExportStatusInfo logs={pollingLogs} bulkDataCompleted={!bulkDataLoading} />
         </Card>
       </GridCol>
       <GridCol span="auto">
@@ -94,6 +89,11 @@ export default function ExecutionPage() {
           ) : (
             <RequestedFiles files={bulkExportData} opened={requestedFilesOpened} />
           )}
+        </Card>
+      </GridCol>
+      <GridCol span={{ base: 12, lg: 6 }}>
+        <Card padding="xl" radius="md">
+          <ExportStatusInfo logs={pollingLogs} bulkDataCompleted={!bulkDataLoading} />
         </Card>
       </GridCol>
     </Grid>
