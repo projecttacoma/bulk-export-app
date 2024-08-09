@@ -69,6 +69,16 @@ export default function TypeFilterModal({ resourceType, closeModal, editingTypeF
         });
   };
 
+  const resourceSearchParams = searchParameters[resourceType];
+  if (!resourceSearchParams) {
+    notifications.show({
+      title: 'Cannot Edit this Type Filter',
+      message: `Type filter: ${editingTypeFilter} is incorrectly formatted`,
+      color: 'red'
+    });
+    closeModal();
+    return;
+  }
   return (
     <>
       <Modal.Header>
@@ -89,7 +99,7 @@ export default function TypeFilterModal({ resourceType, closeModal, editingTypeF
               nothingFoundMessage="No elements matching search found."
               hidePickedOptions
               value={activeElements}
-              data={Object.keys(searchParameters[resourceType])}
+              data={Object.keys(resourceSearchParams)}
               onChange={setActiveElements}
               onOptionSubmit={element =>
                 setCreatedTypeParams([
