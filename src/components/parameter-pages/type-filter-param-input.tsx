@@ -1,7 +1,7 @@
 import { MultiSelectProps, Tooltip, Card, Group, Title, Select, TextInput, Text } from '@mantine/core';
 import { DateValue, DateTimePicker } from '@mantine/dates';
+import { searchParameters } from 'fhir-spec-tools/build/data/searchParameters';
 import { useEffect, useState } from 'react';
-import { SearchParameters } from '../../../data/searchParameters';
 
 const dateComparatorsWithText: Record<string, string> = {
   eq: 'Equals',
@@ -50,7 +50,7 @@ export function TypeFilterParamInput({
   date,
   comparator
 }: TypeFilterParamInputProps) {
-  switch (SearchParameters[type][element]) {
+  switch (searchParameters[type][element]) {
     case 'date':
       return (
         <TypeFilterDateInput

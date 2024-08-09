@@ -16,14 +16,18 @@ import React from 'react';
 import { useRecoilState } from 'recoil';
 import { TypeFilterParamInput } from './type-filter-param-input';
 import { typeFilterParamsState } from '@/state/type-filter-params-state';
-import { SearchParameters } from '../../../data/searchParameters';
 import classes from '@/app/global.module.css';
+import { searchParameters } from 'fhir-spec-tools/build/data/searchParameters';
 
 export interface TypeFilterModalProps {
   resourceType: string;
   closeModal: () => void;
   editingTypeFilter?: string;
 }
+
+/*
+ * Component for selecting type filters and entering values
+ */
 export default function TypeFilterModal({ resourceType, closeModal, editingTypeFilter }: TypeFilterModalProps) {
   const [stagedTypeFilters, setStagedTypeFilters] = useState<Record<string, string>>({});
 
@@ -85,7 +89,7 @@ export default function TypeFilterModal({ resourceType, closeModal, editingTypeF
               nothingFoundMessage="No elements matching search found."
               hidePickedOptions
               value={activeElements}
-              data={Object.keys(SearchParameters[resourceType])}
+              data={Object.keys(searchParameters[resourceType])}
               onChange={setActiveElements}
               onOptionSubmit={element =>
                 setCreatedTypeParams([
