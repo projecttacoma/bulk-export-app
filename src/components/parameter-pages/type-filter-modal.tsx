@@ -11,42 +11,39 @@ import {
   Group
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { ReactElement, useState } from 'react';
+import { useState } from 'react';
 import React from 'react';
 import { useRecoilState } from 'recoil';
-import { TypeFilterParamInput } from './type-filter-param-input';
+import { TypeFilterData, TypeFilterParamInput } from './type-filter-param-input';
 import { typeFilterParamsState } from '@/state/type-filter-params-state';
-import classes from '@/app/global.module.css';
 import { searchParameters } from 'fhir-spec-tools/build/data/searchParameters';
+import classes from '@/app/global.module.css';
 
 export interface TypeFilterModalProps {
   resourceType: string;
   closeModal: () => void;
   editingTypeFilter?: string;
 }
-
 /*
  * Component for selecting type filters and entering values
  */
 export default function TypeFilterModal({ resourceType, closeModal, editingTypeFilter }: TypeFilterModalProps) {
   const [stagedTypeFilters, setStagedTypeFilters] = useState<Record<string, string>>({});
 
-  const createTypeFilter = (element: string, val: string) =>
-    setStagedTypeFilters(prev => ({ ...prev, [element]: val }));
-
-  const prevTypeFilter = editingTypeFilter
-    ? createPreviouslyCreatedFilters(resourceType, editingTypeFilter, createTypeFilter)
-    : undefined;
+  const prevTypeFilter = editingTypeFilter ? createPreviouslyCreatedFilter(resourceType, editingTypeFilter) : undefined;
 
   const [activeElements, setActiveElements] = useState<string[]>(prevTypeFilter?.elements ?? []);
-  const [createdTypeParams, setCreatedTypeParams] = useState<ReactElement[]>(prevTypeFilter?.typeFilters ?? []);
+  const [createdTypeParams, setCreatedTypeParams] = useState<TypeFilterData[]>(prevTypeFilter?.typeFilters ?? []);
 
   const [typeFilters, setTypeFilters] = useRecoilState(typeFilterParamsState);
 
+  const createTypeFilter = (element: string, val: string) =>
+    setStagedTypeFilters(prev => ({ ...prev, [element]: val }));
+
   const handleConfirm = () => {
-    const staged = Object.values(stagedTypeFilters).filter(filter => filter !== '');
-    const filter = `${resourceType}?${staged.join('&')}`;
-    const noValues = staged.join() === '';
+    const stagedFilterValues = Object.values(stagedTypeFilters).filter(filter => filter !== '');
+    const combinedTypeFilter = `${resourceType}?${stagedFilterValues.join('&')}`;
+    const noValues = stagedFilterValues.join() === '';
 
     if (noValues) {
       notifications.show({
@@ -56,16 +53,20 @@ export default function TypeFilterModal({ resourceType, closeModal, editingTypeF
       });
       return;
     }
-    setTypeFilters(prev => [...prev.filter(tyf => tyf.filter !== editingTypeFilter), { filter: filter, active: true }]);
+
+    setTypeFilters(prev => [
+      ...prev.filter(tyf => tyf.filter !== editingTypeFilter),
+      { filter: combinedTypeFilter, active: true }
+    ]);
 
     editingTypeFilter
       ? notifications.show({
           title: 'Updated type filter',
-          message: filter
+          message: combinedTypeFilter
         })
       : notifications.show({
           title: 'Created type filter',
-          message: filter
+          message: combinedTypeFilter
         });
   };
 
@@ -102,10 +103,7 @@ export default function TypeFilterModal({ resourceType, closeModal, editingTypeF
               data={Object.keys(resourceSearchParams)}
               onChange={setActiveElements}
               onOptionSubmit={element =>
-                setCreatedTypeParams([
-                  ...createdTypeParams,
-                  <TypeFilterParamInput createFilter={createTypeFilter} type={resourceType} element={element} />
-                ])
+                setCreatedTypeParams([...createdTypeParams, { type: resourceType, element: element } as TypeFilterData])
               }
               onClear={() => {
                 setStagedTypeFilters({});
@@ -116,7 +114,7 @@ export default function TypeFilterModal({ resourceType, closeModal, editingTypeF
                   delete prev[element];
                   return prev;
                 });
-                setCreatedTypeParams(createdTypeParams.filter(filter => filter.props.element !== element));
+                setCreatedTypeParams(createdTypeParams.filter(filter => filter.element !== element));
               }}
             />
           </Card>
@@ -125,8 +123,16 @@ export default function TypeFilterModal({ resourceType, closeModal, editingTypeF
               <Stack>
                 <Title order={3}>Input Filter Values</Title>
                 <ScrollAreaAutosize mah={400} mx="auto" scrollbars="y" pl="lg" pr="lg" w="100%">
-                  {createdTypeParams.map((Filter, key) => (
-                    <React.Fragment key={`${key}`}>{Filter}</React.Fragment>
+                  {createdTypeParams.map((filter, key) => (
+                    <TypeFilterParamInput
+                      key={key}
+                      type={filter.type}
+                      element={filter.element}
+                      createFilter={createTypeFilter}
+                      date={filter.date}
+                      value={filter.value}
+                      comparator={filter.comparator}
+                    />
                   ))}
                 </ScrollAreaAutosize>
               </Stack>
@@ -168,11 +174,7 @@ export default function TypeFilterModal({ resourceType, closeModal, editingTypeF
   );
 }
 
-function createPreviouslyCreatedFilters(
-  type: string,
-  typeFilter: string,
-  createFilter: (element: string, filter: string) => void
-) {
+function createPreviouslyCreatedFilter(type: string, typeFilter: string) {
   const pattern = /[?&]([^=]+)=([^&]+)/g;
   const queryParams: Record<string, string> = {};
   let match;
@@ -182,16 +184,16 @@ function createPreviouslyCreatedFilters(
 
   const elements = Object.keys(queryParams);
 
-  const typeFilters = elements.map(element => (
-    <TypeFilterParamInput
-      createFilter={createFilter}
-      type={type}
-      element={element}
-      value={queryParams[element]}
-      date={new Date(queryParams[element].substring(2))}
-      comparator={queryParams[element].substring(0, 2)}
-    />
-  ));
+  const typeFilters = elements.map(
+    element =>
+      ({
+        type: type,
+        element: element,
+        value: queryParams[element],
+        date: new Date(queryParams[element].substring(2)),
+        comparator: queryParams[element].substring(0, 2)
+      }) as TypeFilterData
+  );
 
   return { typeFilters, elements };
 }

@@ -89,7 +89,7 @@ export default function TypeFilterParamsPage() {
           />
         </Stack>
       </GridCol>
-      <Modal.Root opened={opened} onClose={close} size="75%" radius="md">
+      <Modal.Root opened={opened} onClose={close} size="75%" radius="md" aria-modal aria-hidden="false">
         <Modal.Overlay />
         <Modal.Content>{modalContent}</Modal.Content>
       </Modal.Root>

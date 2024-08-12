@@ -15,13 +15,16 @@ const dateComparatorsWithText: Record<string, string> = {
   ap: 'Approximately'
 };
 
-export interface TypeFilterParamInputProps {
+export interface TypeFilterData {
   type: string;
   element: string;
-  createFilter: (element: string, filter: string) => void;
   date?: DateValue;
   comparator?: string;
   value?: string;
+}
+
+export interface TypeFilterParamInputProps extends TypeFilterData {
+  createFilter: (element: string, filter: string) => void;
 }
 
 export interface TypeFilterDateInputProps {
@@ -77,13 +80,13 @@ function TypeFilterDateInput(props: TypeFilterDateInputProps) {
       </Tooltip>
     );
   };
-  const [compInput, setCompInput] = useState<string | null>(props.comparator);
-  const [dateInput, setDateInput] = useState<DateValue>(props.date);
+  const [selectedComparator, setSelectedComparator] = useState<string | null>(props.comparator);
+  const [selectedDate, setSelectedDate] = useState(props.date);
 
   useEffect(() => {
-    if (compInput && dateInput)
-      props.createFilter(props.element, `${props.element}=${compInput}${dateInput?.toISOString()}`);
-  }, [compInput, dateInput]);
+    if (selectedComparator && selectedDate)
+      props.createFilter(props.element, `${props.element}=${selectedComparator}${selectedDate?.toISOString()}`);
+  }, [selectedComparator, selectedDate]);
 
   return (
     <Card pl="sm" pr="sm" mt="sm" mb="sm" pt="xs" pb="xs" shadow="none" withBorder>
@@ -98,22 +101,23 @@ function TypeFilterDateInput(props: TypeFilterDateInputProps) {
         </Title>
         <Group grow>
           <Select
-            renderOption={renderOption}
-            value={compInput}
-            allowDeselect={false}
-            radius="md"
             size="md"
+            radius="md"
+            allowDeselect={false}
             data={Object.keys(dateComparatorsWithText)}
-            onChange={setCompInput}
+            value={selectedComparator}
+            renderOption={renderOption}
+            onChange={setSelectedComparator}
           />
           <DateTimePicker
-            valueFormat="DD MMM YYYY hh:mm A"
-            defaultValue={props.date}
-            dropdownType="modal"
             size="md"
             radius="md"
-            onChange={setDateInput}
+            dropdownType="modal"
+            valueFormat="MMM DD YYYY - hh:mm A"
             placeholder="Pick date and time"
+            defaultLevel="decade"
+            defaultValue={props.date}
+            onChange={setSelectedDate}
           />
         </Group>
       </Group>
