@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, createTheme, MantineProvider, MultiSelect, Select } from '@mantine/core';
+import { Card, createTheme, MantineProvider, MultiSelect, Select, Tooltip } from '@mantine/core';
 import { DatesProvider } from '@mantine/dates';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
@@ -37,6 +37,12 @@ const theme = createTheme({
         radius: 'md',
         padding: 'xl',
         shadow: 'md'
+      }
+    }),
+    Tooltip: Tooltip.extend({
+      defaultProps: {
+        openDelay: 500,
+        withArrow: true
       }
     })
   }

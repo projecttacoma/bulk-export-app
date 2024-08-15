@@ -11,13 +11,13 @@ import {
   Card,
   Modal,
   Loader,
-  Text
+  Progress
 } from '@mantine/core';
 import { IconFileDownload, IconFileSearch } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { filesize } from 'filesize';
 import ResourceFilePreview from './resource-file-preview';
-import { BulkExportResponse } from '@/app/export-execution/page';
+import { BulkExportResponse, TelemetryDataProps } from '@/app/export-execution/page';
 import { parseNdjson } from '@/util/ndjsonParsers';
 import { useDisclosure } from '@mantine/hooks';
 import { Resource } from 'fhir/r4';
@@ -28,16 +28,19 @@ export interface ResourceFileInfo {
   size: number;
   numResources: number;
   objectArray: Resource[];
+  timeToFinish?: number;
 }
 
 export interface RequestedFilesProps {
   files: BulkExportResponse[];
   opened: boolean;
+  setTelemData: Dispatch<SetStateAction<TelemetryDataProps | undefined>>;
 }
 
 // Component for the collapsible section with the filenames and buttons to download them.
-export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
+export default function RequestedFiles({ files, opened, setTelemData }: RequestedFilesProps) {
   const [fileSizeData, setFileSizeData] = useState<ResourceFileInfo[]>([]);
+  const [timeToAllFiles, setTimeAllFiles] = useState<number>();
   const [totalFileSize, setTotalFileSize] = useState(0);
   const [previewedFile, setPreviewedFile] = useState<ResourceFileInfo>();
   const [jsonModalOpened, { open, close }] = useDisclosure(false);
@@ -49,28 +52,39 @@ export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
   useEffect(() => {
     setLoading(true);
     let totalFileBytes = 0;
+    const startAll = performance.now();
     Promise.all(
-      files.map(file =>
-        fetch(file.url)
+      files.map(file => {
+        const startThis = performance.now();
+        return fetch(file.url)
           .then(response => response.blob())
           .then(data => data.text())
           .then(ndjsonData => {
-            const fileSizeData: ResourceFileInfo = {
+            const thisFileData: ResourceFileInfo = {
               name: file.type,
               size: ndjsonData.length,
               url: file.url,
               numResources: ndjsonData.split('\n').length,
-              objectArray: parseNdjson(ndjsonData)
+              objectArray: parseNdjson(ndjsonData),
+              timeToFinish: performance.now() - startThis
             };
             totalFileBytes += ndjsonData.length;
-            return fileSizeData;
-          })
-      )
+            setFileSizeData(previousData => [...previousData, thisFileData]);
+            return thisFileData;
+          });
+      })
     )
       .then(fileSizes => {
-        setFileSizeData(fileSizes);
+        setFileSizeData(fileSizes.sort((a, b) => Number(a.name[0]) - Number(b.name[0])));
         setTotalFileSize(totalFileBytes);
         setLoading(false);
+        const endAll = performance.now();
+        setTimeAllFiles(endAll - startAll);
+        setTelemData({
+          totalFileSize: totalFileBytes,
+          numFiles: fileSizes.length,
+          timeAllFiles: endAll - startAll
+        } as TelemetryDataProps);
       })
       .catch(error => console.error('Error: ', error));
   }, []);
@@ -78,6 +92,8 @@ export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
   return (
     <Collapse in={opened} mt={0}>
       <Stack gap="sm">
+        {loading && <Progress animated value={fileSizeData.length * 5} transitionDuration={500} />}
+
         {noFilesFound && (
           <>
             <Title order={2} ta="center">
@@ -88,25 +104,6 @@ export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
             </Title>
           </>
         )}
-        {loading ? (
-          <Center>
-            <Title order={3} mr="lg" c="gray.6">
-              Loading content
-            </Title>
-            <Loader />
-          </Center>
-        ) : (
-          <Center>
-            <Card>
-              <Title order={4}>
-                Total Size of Exported Files:{' '}
-                <Text span inherit c="blue.9" inline>
-                  {filesize(totalFileSize)}
-                </Text>
-              </Title>
-            </Card>
-          </Center>
-        )}
         {fileSizeData.map(file => {
           return (
             <Card key={file.name} p="md" ml="sm" mr="sm" radius="lg" shadow="sm" withBorder>
@@ -115,17 +112,22 @@ export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
                   {file.name}
                 </Title>
                 <Group>
-                  <Tooltip label={`Number of exported "${file.name}" resources`} openDelay={500} withArrow>
+                  <Tooltip label={`Time to download and parse data from "${file.name}" resources`}>
+                    <Badge fz={14} size="md" variant="outline" color="dark.4">
+                      {file.timeToFinish?.toFixed(0)}ms
+                    </Badge>
+                  </Tooltip>
+                  <Tooltip label={`Number of exported "${file.name}" resources`}>
                     <Badge fz={14} size="md" variant="outline" color="dark.4">
                       {file.numResources} {file.numResources === 1 ? 'Resource' : 'Resources'}
                     </Badge>
                   </Tooltip>
-                  <Tooltip label="Size of exported .ndjson file" openDelay={500} withArrow>
+                  <Tooltip label="Size of exported .ndjson file">
                     <Badge fz={15} variant="light" size="lg" color="dark.6">
                       {filesize(file.size)}
                     </Badge>
                   </Tooltip>
-                  <Tooltip label={`Preview ${file.name}.ndjson`} openDelay={500} withArrow>
+                  <Tooltip label={`Preview ${file.name}.ndjson`}>
                     <ActionIcon
                       size="lg"
                       radius="md"
@@ -138,7 +140,7 @@ export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
                       <IconFileSearch />
                     </ActionIcon>
                   </Tooltip>
-                  <Tooltip label={`Download ${file.name}.ndjson`} openDelay={500} withArrow>
+                  <Tooltip label={`Download ${file.name}.ndjson`}>
                     <ActionIcon component="a" href={file.url} size="lg" radius="md">
                       <IconFileDownload />
                     </ActionIcon>
@@ -148,6 +150,11 @@ export default function RequestedFiles({ files, opened }: RequestedFilesProps) {
             </Card>
           );
         })}
+        {loading && (
+          <Stack align="center">
+            <Loader type="dots" />
+          </Stack>
+        )}
       </Stack>
       <Modal opened={jsonModalOpened} onClose={close} size={1000} radius="md">
         {previewedFile && <ResourceFilePreview file={previewedFile} />}
