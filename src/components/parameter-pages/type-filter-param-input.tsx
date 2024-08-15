@@ -1,7 +1,8 @@
-import { MultiSelectProps, Tooltip, Card, Group, Title, Select, TextInput, Text } from '@mantine/core';
-import { DateValue, DateTimePicker } from '@mantine/dates';
+import { MultiSelectProps, Tooltip, Card, Group, Title, Select, TextInput, Text, rem, ActionIcon } from '@mantine/core';
+import { DateValue, DatePicker, TimeInput } from '@mantine/dates';
+import { IconClock, IconX } from '@tabler/icons-react';
 import { searchParameters } from 'fhir-spec-tools/build/data/searchParameters';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const dateComparatorsWithText: Record<string, string> = {
   eq: 'Equals',
@@ -18,13 +19,11 @@ const dateComparatorsWithText: Record<string, string> = {
 export interface TypeFilterData {
   type: string;
   element: string;
-  date?: DateValue;
-  comparator?: string;
   value?: string;
 }
 
 export interface TypeFilterParamInputProps extends TypeFilterData {
-  createFilter: (element: string, filter: string) => void;
+  addFilter: (element: string, value: string) => void;
 }
 
 export interface TypeFilterDateInputProps {
@@ -32,40 +31,33 @@ export interface TypeFilterDateInputProps {
   element: string;
   comparator: string;
   date: DateValue;
-  createFilter: (element: string, filter: string) => void;
+  addFilter: (element: string, value: string) => void;
 }
 
 export interface TypeFilterOpenInputProps {
   type: string;
   element: string;
   value: string;
-  createFilter: (element: string, filter: string) => void;
+  addFilter: (element: string, value: string) => void;
 }
 
 /*
  * Parent component to render and handle logic with all kids of type filter inputs
  */
-export function TypeFilterParamInput({
-  type,
-  element,
-  createFilter,
-  value,
-  date,
-  comparator
-}: TypeFilterParamInputProps) {
+export function TypeFilterParamInput({ type, element, addFilter, value }: TypeFilterParamInputProps) {
   switch (searchParameters[type][element]) {
     case 'date':
       return (
         <TypeFilterDateInput
           type={type}
           element={element}
-          date={date ?? null}
-          comparator={comparator ?? 'eq'}
-          createFilter={createFilter}
+          date={value ? new Date(value.substring(2)) : null}
+          comparator={value ? value.substring(0, 2) : 'eq'}
+          addFilter={addFilter}
         />
       );
     default:
-      return <TypeFilterOpenInput type={type} element={element} value={value ?? ''} createFilter={createFilter} />;
+      return <TypeFilterOpenInput type={type} element={element} value={value ?? ''} addFilter={addFilter} />;
   }
 }
 
@@ -73,6 +65,29 @@ export function TypeFilterParamInput({
  * Component to render and handle logic with type filter inputs that are DateTime inputs
  */
 function TypeFilterDateInput(props: TypeFilterDateInputProps) {
+  const [selectedComparator, setSelectedComparator] = useState<string | null>(props.comparator);
+  const [selectedDate, setSelectedDate] = useState(props.date);
+  const [selectedTime, setSelectedTime] = useState(
+    props.date?.toLocaleTimeString('en-US', {
+      hour12: false
+    }) ?? ''
+  );
+
+  const onBlurEffect = (noSelectedTime: boolean) => {
+    if (selectedComparator && selectedDate) {
+      let dateISOTime: string;
+      if (noSelectedTime) {
+        dateISOTime = selectedDate.toISOString().split('T')[0];
+      } else {
+        const [hours, minutes, seconds] = selectedTime.split(':').map(Number);
+        selectedDate.setHours(hours, minutes, seconds);
+
+        dateISOTime = selectedDate.toISOString();
+      }
+      props.addFilter(props.element, `${selectedComparator}${dateISOTime}`);
+    }
+  };
+
   const renderOption: MultiSelectProps['renderOption'] = ({ option }) => {
     return (
       <Tooltip label={dateComparatorsWithText[option.value]} position="right" withArrow>
@@ -80,17 +95,10 @@ function TypeFilterDateInput(props: TypeFilterDateInputProps) {
       </Tooltip>
     );
   };
-  const [selectedComparator, setSelectedComparator] = useState<string | null>(props.comparator);
-  const [selectedDate, setSelectedDate] = useState(props.date);
-
-  useEffect(() => {
-    if (selectedComparator && selectedDate)
-      props.createFilter(props.element, `${props.element}=${selectedComparator}${selectedDate?.toISOString()}`);
-  }, [selectedComparator, selectedDate]);
 
   return (
     <Card pl="sm" pr="sm" mt="sm" mb="sm" pt="xs" pb="xs" shadow="none" withBorder>
-      <Group grow align="center">
+      <Group justify="space-between">
         <Title fw={600} order={5}>
           <Text c="blue.9" inherit span pr="sm">
             {props.element}
@@ -99,25 +107,48 @@ function TypeFilterDateInput(props: TypeFilterDateInputProps) {
             =
           </Text>
         </Title>
-        <Group grow>
+        <Group gap="xl" justify="center" align="center">
           <Select
-            size="md"
-            radius="md"
+            size="sm"
+            onBlur={() => onBlurEffect(selectedTime === '')}
+            label="comparator"
+            required
+            w={100}
             allowDeselect={false}
             data={Object.keys(dateComparatorsWithText)}
             value={selectedComparator}
             renderOption={renderOption}
             onChange={setSelectedComparator}
           />
-          <DateTimePicker
-            size="md"
-            radius="md"
-            dropdownType="modal"
-            valueFormat="MMM DD YYYY - hh:mm A"
-            placeholder="Pick date and time"
-            defaultLevel="decade"
+          <DatePicker
+            size="sm"
+            defaultLevel={props.date ? 'month' : 'decade'}
+            defaultDate={props.date ?? undefined}
             defaultValue={props.date}
             onChange={setSelectedDate}
+            onBlur={() => onBlurEffect(selectedTime === '')}
+          />
+          <TimeInput
+            size="sm"
+            label="time"
+            inputWrapperOrder={['label', 'input', 'description']}
+            description="optional"
+            withSeconds
+            value={selectedTime}
+            leftSection={<IconClock style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}
+            onChange={event => setSelectedTime(event.currentTarget.value)}
+            onBlur={() => onBlurEffect(selectedTime === '')}
+            rightSection={
+              <ActionIcon
+                variant="transparent"
+                onClick={() => {
+                  setSelectedTime('');
+                  onBlurEffect(true);
+                }}
+              >
+                <IconX color="gray" />
+              </ActionIcon>
+            }
           />
         </Group>
       </Group>
@@ -131,10 +162,6 @@ function TypeFilterDateInput(props: TypeFilterDateInputProps) {
 function TypeFilterOpenInput(props: TypeFilterOpenInputProps) {
   const [textVal, setTextVal] = useState<string>(props.value);
 
-  useEffect(() => {
-    if (textVal) props.createFilter(props.element, `${props.element}=${textVal.trim()}`);
-  }, [textVal]);
-
   return (
     <Card pl="sm" pr="sm" mt="sm" mb="sm" pt="xs" pb="xs" shadow="none" withBorder>
       <Group grow align="center">
@@ -147,6 +174,9 @@ function TypeFilterOpenInput(props: TypeFilterOpenInputProps) {
           </Text>
         </Title>
         <TextInput
+          onBlur={() => {
+            if (textVal) props.addFilter(props.element, textVal.trim());
+          }}
           onChange={event => setTextVal(event.currentTarget.value)}
           placeholder="Filter value"
           defaultValue={props.value}

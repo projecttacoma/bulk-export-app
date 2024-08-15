@@ -1,15 +1,15 @@
 'use client';
 
-import { Button, Divider, Grid, GridCol, Group, Modal, Select, Stack, TextInput, Title } from '@mantine/core';
+import { Button, Divider, Grid, GridCol, Group, Mark, Select, Stack, TextInput, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { useDisclosure } from '@mantine/hooks';
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { TypeFilter, typeFilterParamsState } from '@/state/type-filter-params-state';
 import { resourceTypesDropdownData } from '@/util/multiselectUtil';
 import TypeFilterModal from './type-filter-modal';
 import TypeFilterTable from './type-filter-table';
 import classes from '@/app/global.module.css';
+import { modals } from '@mantine/modals';
 
 /*
  * Component that displays input to create type filters, and shows active type filters.
@@ -17,8 +17,6 @@ import classes from '@/app/global.module.css';
 export default function TypeFilterParamsPage() {
   const [filterInputValue, setFilterInputValue] = useState('');
   const [activeTypeFilters, setActiveTypeFilters] = useRecoilState(typeFilterParamsState);
-  const [opened, { open, close }] = useDisclosure(false);
-  const [modalContent, setModalContent] = useState<ReactNode>();
 
   const sortTypeFilters = (arr: TypeFilter[]) => arr.sort((a, b) => (a.filter[0] < b.filter[0] ? -1 : 1));
 
@@ -35,10 +33,6 @@ export default function TypeFilterParamsPage() {
     setActiveTypeFilters(prev => sortTypeFilters([...prev, { filter: filterInputValue, active: true } as TypeFilter]));
   };
 
-  const handleSubmitValue = (value: string) => {
-    setModalContent(<TypeFilterModal resourceType={value} closeModal={close} />);
-    open();
-  };
   return (
     <Grid gutter="lg">
       <GridCol span={12}>
@@ -71,7 +65,20 @@ export default function TypeFilterParamsPage() {
               data={resourceTypesDropdownData}
               value=""
               className={classes.MultiSelectStyles}
-              onOptionSubmit={handleSubmitValue}
+              onOptionSubmit={value => {
+                modals.open({
+                  title: (
+                    <>
+                      Create Type Filter on <Mark className={classes.blueText}>{value}</Mark> Resource
+                    </>
+                  ),
+                  children: <TypeFilterModal resourceType={value} />,
+                  size: '75%',
+                  classNames: {
+                    title: classes.modalHeader
+                  }
+                });
+              }}
               onClear={() => setActiveTypeFilters([])}
             />
           </Group>
@@ -81,18 +88,9 @@ export default function TypeFilterParamsPage() {
         <Stack gap="sm">
           <Title order={3}>Active Type Filters</Title>
           <Divider />
-          <TypeFilterTable
-            setFilterInput={setFilterInputValue}
-            setModalContext={setModalContent}
-            closeModal={close}
-            openModal={open}
-          />
+          <TypeFilterTable setFilterInput={setFilterInputValue} />
         </Stack>
       </GridCol>
-      <Modal.Root opened={opened} onClose={close} size="75%" radius="md" aria-modal aria-hidden="false">
-        <Modal.Overlay />
-        <Modal.Content>{modalContent}</Modal.Content>
-      </Modal.Root>
     </Grid>
   );
 }

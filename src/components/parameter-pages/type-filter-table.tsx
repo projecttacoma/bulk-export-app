@@ -17,22 +17,14 @@ import {
   Group
 } from '@mantine/core';
 import { IconCopy, IconEdit } from '@tabler/icons-react';
-import { Dispatch, ReactNode, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import TypeFilterModal from './type-filter-modal';
 import { activeTypeFiltersState, inactiveTypeFiltersState } from '@/state/selectors/type-filter-selectors';
+import { modals } from '@mantine/modals';
+import classes from '@/app/global.module.css';
 
-export default function TypeFilterTable({
-  setFilterInput,
-  setModalContext,
-  closeModal,
-  openModal
-}: {
-  setFilterInput: Dispatch<SetStateAction<string>>;
-  setModalContext: Dispatch<SetStateAction<ReactNode>>;
-  closeModal: () => void;
-  openModal: () => void;
-}) {
+export default function TypeFilterTable({ setFilterInput }: { setFilterInput: Dispatch<SetStateAction<string>> }) {
   const [typeFilters, setTypeFilters] = useRecoilState(typeFilterParamsState);
   const activeTypeFilters = useRecoilValue(activeTypeFiltersState);
   const inactiveTypeFilters = useRecoilValue(inactiveTypeFiltersState);
@@ -95,14 +87,27 @@ export default function TypeFilterTable({
                   <IconEdit
                     color="blue"
                     onClick={() => {
-                      setModalContext(
-                        <TypeFilterModal
-                          resourceType={typeFilter.filter.split('?')[0]}
-                          closeModal={closeModal}
-                          editingTypeFilter={typeFilter.filter}
-                        />
-                      );
-                      openModal();
+                      modals.open({
+                        title: (
+                          <>
+                            Edit Type Filter on{' '}
+                            <Text span inherit c="blue.9">
+                              {typeFilter.filter.split('?')[0]}
+                            </Text>{' '}
+                            Resource
+                          </>
+                        ),
+                        children: (
+                          <TypeFilterModal
+                            resourceType={typeFilter.filter.split('?')[0]}
+                            editingTypeFilter={typeFilter.filter}
+                          />
+                        ),
+                        size: '75%',
+                        classNames: {
+                          title: classes.modalHeader
+                        }
+                      });
                     }}
                   ></IconEdit>
                 </ActionIcon>

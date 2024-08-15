@@ -2,6 +2,7 @@
 
 import { Card, createTheme, MantineProvider, MultiSelect, Select } from '@mantine/core';
 import { DatesProvider } from '@mantine/dates';
+import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
 import React from 'react';
 import { RecoilRoot } from 'recoil';
@@ -47,10 +48,14 @@ const theme = createTheme({
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <MantineProvider theme={theme}>
-      <Notifications />
-      <DatesProvider settings={{ locale: 'ru', firstDayOfWeek: 0, weekendDays: [0], timezone: 'UTC' }}>
-        <RecoilRoot>{children}</RecoilRoot>
-      </DatesProvider>
+      <RecoilRoot>
+        <ModalsProvider>
+          <Notifications />
+          <DatesProvider settings={{ locale: 'ru', firstDayOfWeek: 0, weekendDays: [0], timezone: 'UTC' }}>
+            {children}
+          </DatesProvider>
+        </ModalsProvider>
+      </RecoilRoot>
     </MantineProvider>
   );
 }
