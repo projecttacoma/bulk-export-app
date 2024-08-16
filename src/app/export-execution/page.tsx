@@ -17,7 +17,7 @@ import {
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import RequestedFiles from '@/components/export-execution/requested-files';
-import { IconChevronUp, IconChevronDown, IconInfoCircleFilled, IconInfoCircle } from '@tabler/icons-react';
+import { IconChevronUp, IconChevronDown, IconInfoCircle } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import ExportStatusInfo from '@/components/export-execution/export-status-info';
 import { filesize } from 'filesize';
@@ -89,11 +89,13 @@ export default function ExecutionPage() {
 
   return (
     <Grid>
-      <GridCol span={{ base: 12, lg: 6 }}>
+      <GridCol span={{ base: 12, lg: 4 }}>
         <Stack>
           <Card padding="xl" radius="md">
-            <Group align="flex-start">
-              <Title mb="lg">Content Location</Title>
+            <Group align="flex-start" gap="sm">
+              <Title order={2} mb="lg">
+                Content Location
+              </Title>
               <Tooltip label={'Location of the files on the server'}>
                 <IconInfoCircle color="gray" />
               </Tooltip>
@@ -137,13 +139,13 @@ function TelemetryData({
 }) {
   const [telemOpen, { toggle }] = useDisclosure(true);
 
-  const serverTimeToExport = !exportTime?.end && !exportTime?.start ? undefined : exportTime?.end - exportTime?.start;
+  const serverTimeToExport = (exportTime?.end ?? 0) - (exportTime?.start ?? 0);
 
   return (
     <>
       <Group justify="space-between" onClick={toggle}>
         <Group align="flex-end">
-          <Title>Telemetry Data</Title>
+          <Title order={2}>Telemetry Data</Title>
         </Group>
 
         {telemOpen ? <IconChevronUp size={50} /> : <IconChevronDown size={50} />}
@@ -151,15 +153,43 @@ function TelemetryData({
       <Collapse in={telemOpen}>
         {telemetryData && serverTimeToExport ? (
           <Stack mt="lg">
-            <Text>Total number of files: {telemetryData?.numFiles}</Text>
-            <Text>Total filesize: {filesize(telemetryData?.totalFileSize ?? 0)}</Text>
-            <Text>Time to download and parse files: {telemetryData?.timeAllFiles.toFixed(0)}ms</Text>
             <Text>
-              Download Speed: {filesize((telemetryData?.totalFileSize / telemetryData?.timeAllFiles) * 1000)}/s
+              Total number of files:{' '}
+              <Text span inherit fw={600}>
+                {telemetryData?.numFiles}
+              </Text>
+            </Text>
+            <Text>
+              Total filesize:{' '}
+              <Text span inherit fw={600}>
+                {filesize(telemetryData?.totalFileSize ?? 0)}
+              </Text>
+            </Text>
+            <Text>
+              Time to download and parse files:{' '}
+              <Text span inherit fw={600}>
+                {telemetryData?.timeAllFiles.toFixed(0)}ms
+              </Text>
+            </Text>
+            <Text>
+              Download Speed (filesize / time to parse):{' '}
+              <Text span inherit fw={600}>
+                {filesize((telemetryData?.totalFileSize / telemetryData?.timeAllFiles) * 1000)}/s
+              </Text>
             </Text>
 
-            <Text>Server time to export: {serverTimeToExport.toFixed(0)}ms</Text>
-            <Text>Server export speed: {filesize((telemetryData.totalFileSize / serverTimeToExport) * 1000)}/s</Text>
+            <Text>
+              Server export time (from kickoff request to request complete):{' '}
+              <Text span inherit fw={600}>
+                {serverTimeToExport.toFixed(0)}ms
+              </Text>
+            </Text>
+            <Text>
+              Server export speed (total file fize / server time to export):{' '}
+              <Text span inherit fw={600}>
+                {filesize((telemetryData.totalFileSize / serverTimeToExport) * 1000)}/s
+              </Text>
+            </Text>
           </Stack>
         ) : (
           <Center>

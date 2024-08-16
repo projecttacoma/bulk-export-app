@@ -1,4 +1,4 @@
-import { SupportedExportTypes } from '@/components/query-selector/export-type';
+import { SupportedExportTypes } from '@/app/page';
 import { TypeElement } from '@/state/type-element-params-state';
 import { TypeFilter } from '@/state/type-filter-params-state';
 

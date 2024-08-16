@@ -2,7 +2,7 @@ import { Card, Center, Container, Flex, Tabs, TabsList, TabsPanel, TabsTab, Titl
 import QueryString from '@/components/query-string';
 import TypeParamsPage from '@/components/parameter-pages/type-params-page';
 import { IconInfoCircle } from '@tabler/icons-react';
-import { SupportedExportTypes } from '@/components/query-selector/export-type';
+import { SupportedExportTypes } from '../page';
 import { Suspense } from 'react';
 import ElementParamsPage from '@/components/parameter-pages/elements-params-page';
 import TypeFilterParamsPage from '@/components/parameter-pages/type-filter-params-page';

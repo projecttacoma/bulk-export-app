@@ -1,4 +1,15 @@
-import { Title, Collapse, Group, Card, Badge, Flex, Tooltip } from '@mantine/core';
+import {
+  Title,
+  Collapse,
+  Group,
+  Badge,
+  Tooltip,
+  Accordion,
+  AccordionItem,
+  AccordionControl,
+  AccordionPanel,
+  Text
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { PollingLog } from '@/state/polling-logs-state';
 import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';
@@ -13,50 +24,47 @@ export default function ExportStatusInfo({ logs, bulkDataCompleted }: ExportStat
   const [opened, { toggle }] = useDisclosure(true);
 
   const items = logs.map((log, index) => (
-    <Card key={index} p="md" m="sm" radius="lg" withBorder>
-      <Group justify="space-between">
-        <Badge size="lg" variant="outline">
-          Log {index + 1}
-        </Badge>
-        <Tooltip label="Time this export request took place">
-          <Badge size="lg" variant="outline">
-            {log.exportRequestDateTime}
+    <AccordionItem value={log.xProgress + log.exportRequestDateTime}>
+      <AccordionControl>
+        <Group align="center">
+          <Badge size="md" variant="outline">
+            Log {index + 1}
           </Badge>
-        </Tooltip>
-      </Group>
-      <Title order={2} ta="center" fw={600}>
-        {log.xProgress}
-      </Title>
-      <Flex justify="flex-end">
-        <Tooltip label="Time (in seconds) to wait until next export request is sent">
-          <Badge
-            size="lg"
-            pr={0}
-            variant="outline"
-            rightSection={
-              <Badge circle size="lg">
-                {log.retryAfter}
-              </Badge>
-            }
-          >
-            Retry after
-          </Badge>
-        </Tooltip>
-      </Flex>
-    </Card>
+          <Title order={3} ta="center" fw={600}>
+            {log.xProgress}
+          </Title>
+        </Group>
+      </AccordionControl>
+      <AccordionPanel>
+        <Group gap="sm" align="flex-end">
+          <Text fw={600}>Time:</Text>
+          <Tooltip label="Time this export request took place">
+            <Badge size="md" variant="outline" mb={1}>
+              {log.exportRequestDateTime}
+            </Badge>
+          </Tooltip>
+          <Text fw={600}>Retry After:</Text>
+          <Tooltip label="Time (in seconds) to wait until next export request is sent">
+            <Badge size="md" variant="outline" mb={1}>
+              {log.retryAfter}s
+            </Badge>
+          </Tooltip>
+        </Group>
+      </AccordionPanel>
+    </AccordionItem>
   ));
 
   return (
     <>
       <Group onClick={toggle} justify="space-between">
         <Group align="flex-end">
-          <Title>Export Status</Title>
+          <Title order={2}>Export Status</Title>
           {bulkDataCompleted ? (
-            <Badge size="xl" color="green" mb={4}>
+            <Badge size="lg" color="green" mb={4}>
               Completed
             </Badge>
           ) : (
-            <Badge size="xl" color="blue" mb={4}>
+            <Badge size="lg" color="blue" mb={4}>
               In Progress
             </Badge>
           )}
@@ -64,7 +72,7 @@ export default function ExportStatusInfo({ logs, bulkDataCompleted }: ExportStat
         {opened ? <IconChevronUp size={50} /> : <IconChevronDown size={50} />}
       </Group>
       <Collapse in={opened}>
-        {items}
+        <Accordion variant="contained">{items}</Accordion>
         {logs.length === 0 && (
           <>
             <Title order={2} ta="center">

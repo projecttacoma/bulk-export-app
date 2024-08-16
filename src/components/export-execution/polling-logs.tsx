@@ -1,4 +1,4 @@
-import { PollingLog } from '@/app/export-execution/page';
+import { PollingLog } from '@/state/polling-logs-state';
 import { Title, Collapse, Stack, Group, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';

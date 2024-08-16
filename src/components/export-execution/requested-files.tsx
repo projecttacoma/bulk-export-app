@@ -1,6 +1,5 @@
 import '@mantine/code-highlight/styles.css';
 import {
-  Center,
   Group,
   Title,
   Collapse,
@@ -40,8 +39,6 @@ export interface RequestedFilesProps {
 // Component for the collapsible section with the filenames and buttons to download them.
 export default function RequestedFiles({ files, opened, setTelemData }: RequestedFilesProps) {
   const [fileSizeData, setFileSizeData] = useState<ResourceFileInfo[]>([]);
-  const [timeToAllFiles, setTimeAllFiles] = useState<number>();
-  const [totalFileSize, setTotalFileSize] = useState(0);
   const [previewedFile, setPreviewedFile] = useState<ResourceFileInfo>();
   const [jsonModalOpened, { open, close }] = useDisclosure(false);
 
@@ -76,10 +73,8 @@ export default function RequestedFiles({ files, opened, setTelemData }: Requeste
     )
       .then(fileSizes => {
         setFileSizeData(fileSizes.sort((a, b) => Number(a.name[0]) - Number(b.name[0])));
-        setTotalFileSize(totalFileBytes);
         setLoading(false);
         const endAll = performance.now();
-        setTimeAllFiles(endAll - startAll);
         setTelemData({
           totalFileSize: totalFileBytes,
           numFiles: fileSizes.length,
