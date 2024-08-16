@@ -12,6 +12,7 @@ export interface TypeFilterModalProps {
   resourceType: string;
   editingTypeFilter?: string;
 }
+
 /*
  * Component for selecting type filters and entering values
  */

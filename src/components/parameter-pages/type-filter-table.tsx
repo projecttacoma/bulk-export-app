@@ -59,7 +59,7 @@ export default function TypeFilterTable({ setFilterInput }: { setFilterInput: Di
           </TableTh>
           <TableTh>Resource Type</TableTh>
           <TableTh>Type Filter</TableTh>
-          <TableTh></TableTh>
+          <TableTh />
         </TableTr>
       </TableThead>
       <TableTbody>
