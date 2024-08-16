@@ -128,7 +128,7 @@ export default function TypeFilterTable({ setFilterInput }: { setFilterInput: Di
           </Text>
         )}
         <Flex justify="right">
-          <Button color="red" onClick={() => setTypeFilters([])} disabled={activeTypeFilters.length === 0}>
+          <Button color="red" onClick={() => setTypeFilters([])} disabled={typeFilters.length === 0}>
             Remove All
           </Button>
         </Flex>
