@@ -51,7 +51,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <RecoilRoot>
         <ModalsProvider>
           <Notifications />
-          <DatesProvider settings={{ locale: 'ru', firstDayOfWeek: 0, weekendDays: [0], timezone: 'UTC' }}>
+          <DatesProvider settings={{ locale: 'en', firstDayOfWeek: 0, weekendDays: [0], timezone: 'UTC' }}>
             {children}
           </DatesProvider>
         </ModalsProvider>
