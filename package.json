@@ -26,7 +26,7 @@
     "fhir-spec-tools": "^0.2.0",
     "filesize": "^10.1.2",
     "ndjson": "^2.0.0",
-    "next": "14.2.3",
+    "next": "14.2.10",
     "react": "^18",
     "react-dom": "^18",
     "recoil": "^0.7.7",
