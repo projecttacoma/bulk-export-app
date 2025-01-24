@@ -6,6 +6,7 @@ import { SupportedExportTypes } from '@/components/query-selector/export-type';
 import { Suspense } from 'react';
 import ElementParamsPage from '@/components/parameter-pages/elements-params-page';
 import TypeFilterParamsPage from '@/components/parameter-pages/type-filter-params-page';
+import OrganizeOutputByPatientSwitch from '@/components/parameter-pages/organize-output-by-swtich';
 
 /*
  * Properties of the query string that can be passed to this page
@@ -58,6 +59,22 @@ export default function QueryBuilder() {
               <TypeFilterParamsPage />
             </TabsPanel>
           </Tabs>
+        </Container>
+      </Card>
+      <Card>
+        <Container fluid m="xl">
+          <Flex align="center" mb="lg">
+            <Title mr="sm">Organize Output By Patient</Title>
+            <Tooltip
+              position="right"
+              withArrow
+              transitionProps={{ duration: 200 }}
+              label="Set organizeOutputBy to Patient"
+            >
+              <IconInfoCircle color="gray" />
+            </Tooltip>
+          </Flex>
+          <OrganizeOutputByPatientSwitch />
         </Container>
       </Card>
     </>
