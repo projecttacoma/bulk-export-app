@@ -1,7 +1,7 @@
 'use client';
 
 import { organizeOutputByPatientState } from '@/state/organize-output-by-patient-state';
-import { Switch } from '@mantine/core';
+import { Code, Switch, Text } from '@mantine/core';
 import { useRecoilState } from 'recoil';
 
 export default function OrganizeOutputByPatientSwitch() {
@@ -9,7 +9,11 @@ export default function OrganizeOutputByPatientSwitch() {
 
   return (
     <Switch
-      label="Add organizeOutputBy=Patient to the query string"
+      label={
+        <Text>
+          Add <Code>organizeOutputBy=Patient</Code>to the query string?
+        </Text>
+      }
       onLabel="YES"
       offLabel="NO"
       size="lg"
