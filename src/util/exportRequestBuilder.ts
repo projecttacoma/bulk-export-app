@@ -20,6 +20,7 @@ export interface BuilderRequestQueryParams {
   element: string[];
   typeElement: TypeElement[];
   typeFilter: TypeFilter[];
+  organizeOutputByPatient: boolean;
 }
 
 /*
@@ -62,6 +63,10 @@ function buildQueryString(queryParams: BuilderRequestQueryParams) {
     paramsArray.push(
       `_typeFilter=${queryParams.typeFilter.map(typeFilter => encodeURIComponent(typeFilter.filter)).toString()}`
     );
+  }
+
+  if (queryParams.organizeOutputByPatient === true) {
+    paramsArray.push(`organizeOutputBy=Patient`);
   }
 
   if (paramsArray.length === 0) return;

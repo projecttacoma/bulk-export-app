@@ -28,6 +28,7 @@ import { activeElementParamsState } from '@/state/element-params-state';
 import { activeTypeElementParamsState } from '@/state/type-element-params-state';
 import { bulkServerURLState } from '@/state/bulk-server-url-state';
 import { activeTypeFiltersState } from '@/state/selectors/type-filter-selectors';
+import { organizeOutputByPatientState } from '@/state/organize-output-by-patient-state';
 
 /*
  * Component to visualize the Bulk-export request string.
@@ -40,6 +41,7 @@ export default function QueryString() {
   const typeElementParams = useRecoilValue(activeTypeElementParamsState);
   const elementParams = useRecoilValue(activeElementParamsState);
   const activeTypeFilters = useRecoilValue(activeTypeFiltersState);
+  const organizeOutputByPatient = useRecoilValue(organizeOutputByPatientState);
 
   const searchParams = useSearchParams();
   const exportType = searchParams.get('exportType') as SupportedExportTypes;
@@ -49,7 +51,8 @@ export default function QueryString() {
     type: typeParams,
     element: elementParams,
     typeElement: typeElementParams,
-    typeFilter: activeTypeFilters
+    typeFilter: activeTypeFilters,
+    organizeOutputByPatient: organizeOutputByPatient
   };
   const exportRequestString = buildExportRequestString({
     baseUrl: bulkExportBaseURL,
