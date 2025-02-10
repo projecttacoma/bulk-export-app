@@ -4,7 +4,7 @@ import { useState } from 'react';
 import BuildQueryButton from './build-query-button';
 import { capitalize } from 'lodash';
 
-export type SupportedExportTypes = 'patient' | 'group' | 'system';
+export type SupportedExportTypes = 'patient' | 'group' | 'system' | 'measure';
 
 export interface ExportTypeProps {
   exportType: SupportedExportTypes;

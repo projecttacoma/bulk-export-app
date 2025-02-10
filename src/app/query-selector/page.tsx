@@ -37,6 +37,7 @@ export default function QuerySelector() {
           gutter={{ base: 5, xs: 'md', md: 'lg', xl: 50 }}
           style={{ margin: rem(60) }}
         >
+          <ExportType exportType="measure" />
           <ExportType exportType="patient" />
           <ExportType exportType="group" dropdownData={dropdownData} />
           <ExportType exportType="system" />

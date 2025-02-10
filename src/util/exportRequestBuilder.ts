@@ -40,7 +40,7 @@ export function buildExportRequestString(request: BuilderRequest) {
  */
 function buildExportPath(exportType: SupportedExportTypes, id?: string) {
   if (exportType === 'system') return '/$export';
-  else if (exportType === 'patient') return '/Patient/$export';
+  else if (exportType === 'patient' || exportType === 'measure') return '/Patient/$export';
   else if (exportType === 'group') return `/Group/${id}/$export`;
 }
 
