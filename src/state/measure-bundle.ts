@@ -5,7 +5,7 @@ interface MeasureBundleStateType {
   displayMap: Record<string, string>;
   fileName: string;
   isFile: boolean;
-  selectedMeasureId: string | null;
+  groupText: string;
 }
 
 /**
@@ -18,6 +18,6 @@ export const measureBundleState = atom<MeasureBundleStateType>({
     displayMap: {},
     fileName: '',
     isFile: false,
-    selectedMeasureId: null
+    groupText: 'No group content'
   }
 });

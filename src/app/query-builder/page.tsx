@@ -44,9 +44,8 @@ export interface SearchParamsProps {
 export default function QueryBuilder() {
   const searchParams = useSearchParams();
   const [measureBundle, setMeasureBundle] = useRecoilState(measureBundleState);
-  const [groupText, setGroupText] = useState('No measure bundle content'); //TODO: probably change to selector?
   const bulkExportBaseURL = useRecoilValue(bulkServerURLState);
-  const [groupId, setGroupId] = useState(null); //TODO: maybe use recoil?
+  const [groupId, setGroupId] = useState(null);
 
   const rejectUpload = (message: string) => {
     showNotification({
@@ -60,7 +59,7 @@ export default function QueryBuilder() {
   const createGroup = () => {
     fetch(`${bulkExportBaseURL}/Group`, {
       method: 'POST',
-      body: groupText,
+      body: measureBundle.groupText,
       headers: { 'Content-Type': 'application/json+fhir' }
     })
       .then(response => response.json())
@@ -97,15 +96,6 @@ export default function QueryBuilder() {
         return;
       }
 
-      setMeasureBundle(mb => ({
-        ...mb,
-        fileName: file.name,
-        content: bundle,
-        isFile: true,
-        selectedMeasureId: null,
-        displayMap: {}
-      }));
-
       showNotification({
         icon: <IconCircleCheck />,
         title: 'Upload Success',
@@ -113,9 +103,9 @@ export default function QueryBuilder() {
         color: 'green'
       });
 
+      let text = 'No group content';
       try {
-        const text = JSON.stringify(await group(bundle), null, 2);
-        setGroupText(text);
+        text = JSON.stringify(await group(bundle), null, 2);
       } catch (err) {
         console.error(err);
         showNotification({
@@ -124,6 +114,15 @@ export default function QueryBuilder() {
           message: `Calculation failed with error: ${err}`,
           color: 'red'
         });
+      } finally {
+        setMeasureBundle(mb => ({
+          ...mb,
+          fileName: file.name,
+          content: bundle,
+          isFile: true,
+          displayMap: {},
+          groupText: text
+        }));
       }
     };
     reader.readAsText(file);
@@ -170,17 +169,21 @@ export default function QueryBuilder() {
               </Text>
             </Center>
           </Dropzone>
-          <ScrollArea.Autosize mah={600} mx="auto" scrollbars="y" bd="1px solid gray.2" mr="lg" ml="lg">
-            <CodeHighlight withCopyButton={true} code={groupText} language="json" />
+          <ScrollArea.Autosize mah={600} mx="auto" scrollbars="y" bd="1px solid gray.2" mr="lg" ml="lg" mt="lg" mb="lg">
+            <CodeHighlight withCopyButton={true} code={measureBundle.groupText} language="json" />
           </ScrollArea.Autosize>
           {groupId ? (
-            <Link href={`/query-builder?exportType=group&id=${groupId}`}>
-              <Button disabled={!groupId}>Group Export</Button>
-            </Link>
+            <Center>
+              <Link href={`/query-builder?exportType=group&id=${groupId}`}>
+                <Button disabled={!groupId}>Group Export</Button>
+              </Link>
+            </Center>
           ) : (
-            <Button disabled={groupText === 'No measure bundle content'} onClick={createGroup}>
-              Create
-            </Button>
+            <Center>
+              <Button disabled={measureBundle.groupText === 'No group content'} onClick={createGroup}>
+                Create
+              </Button>
+            </Center>
           )}
         </Card>
       ) : (
