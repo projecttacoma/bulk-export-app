@@ -40,6 +40,7 @@ export default function QuerySelector() {
           <ExportType exportType="patient" />
           <ExportType exportType="group" dropdownData={dropdownData} />
           <ExportType exportType="system" />
+          <ExportType exportType="measure-bundle"/>
         </Grid>
       )}
     </>

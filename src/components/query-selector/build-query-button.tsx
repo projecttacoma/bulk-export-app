@@ -12,16 +12,18 @@ export interface BuildQueryButtonProps {
  *  navigates to the next page, and creates the query string
  */
 export default function BuildQueryButton({ queryId, exportType }: BuildQueryButtonProps) {
-  const buttonEnabled = exportType !== 'group' || queryId !== null;
+  const buttonEnabled = !['group', 'measure-bundle'].includes(exportType) || queryId !== null;
 
   return (
     <Center>
-      <Tooltip label="Please select an ID" disabled={buttonEnabled}>
+      <Tooltip 
+        label={exportType === 'group' ? 'Please select an ID' : exportType === 'measure-bundle' ? 'Please upload a Measure Bundle' : ''}
+        disabled={buttonEnabled}>
         <Button
           component={Link}
           href={{
             pathname: '/query-builder',
-            query: exportType !== 'group' ? { exportType: exportType } : { exportType: exportType, id: queryId }
+            query: !['group', 'measure-bundle'].includes(exportType) ? { exportType: exportType } : { exportType: exportType, id: queryId }
           }}
           data-disabled={!buttonEnabled}
           onClick={event => {

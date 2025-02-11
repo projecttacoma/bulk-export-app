@@ -1,0 +1,3 @@
+[submodule "src/util/fqm-bulk-utils"]
+	path = src/util/fqm-bulk-utils
+	url = https://github.com/projecttacoma/fqm-bulk-utils.git

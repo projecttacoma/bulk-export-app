@@ -42,6 +42,7 @@ function buildExportPath(exportType: SupportedExportTypes, id?: string) {
   if (exportType === 'system') return '/$export';
   else if (exportType === 'patient') return '/Patient/$export';
   else if (exportType === 'group') return `/Group/${id}/$export`;
+  else if (exportType === 'measure-bundle') return `/MeasureBundle/${id}/$export`;
 }
 
 /*

@@ -3,8 +3,10 @@ import { Card, Center, GridCol, rem, Select, Stack, Title } from '@mantine/core'
 import { useState } from 'react';
 import BuildQueryButton from './build-query-button';
 import { capitalize } from 'lodash';
+import MeasureFileUpload from './measure-file-upload';
 
-export type SupportedExportTypes = 'patient' | 'group' | 'system';
+
+export type SupportedExportTypes = 'patient' | 'group' | 'system' | 'measure-bundle';
 
 export interface ExportTypeProps {
   exportType: SupportedExportTypes;
@@ -16,6 +18,10 @@ export interface ExportTypeProps {
  */
 export default function ExportType({ exportType, dropdownData }: ExportTypeProps) {
   const [queryId, setQueryId] = useState<string | null>(null);
+
+  const handleQueryIdChange = (newQueryId: string | null) => {
+    setQueryId(newQueryId);
+  };
 
   return (
     <GridCol span={{ base: 12, md: 6, lg: 3 }} style={{ minWidth: rem(600) }}>
@@ -36,6 +42,9 @@ export default function ExportType({ exportType, dropdownData }: ExportTypeProps
               value={queryId}
               onChange={setQueryId}
             />
+          )}
+          {exportType === 'measure-bundle' && (
+            <MeasureFileUpload onQueryIdChange={handleQueryIdChange}/>
           )}
           <BuildQueryButton queryId={queryId} exportType={exportType} />
         </Stack>
