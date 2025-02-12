@@ -2,33 +2,45 @@ import { Center, Text } from '@mantine/core';
 import { Dropzone, DropzoneProps } from '@mantine/dropzone';
 import { showNotification } from '@mantine/notifications';
 import { IconAlertCircle, IconFileCheck, IconFileImport } from '@tabler/icons-react';
+import { bulkQueries } from 'fqm-bulk-utils';
 import { useState } from 'react';
-// import { bulkQueries } from '@/util/fqm-bulk-utils/src';
 
 interface MeasureFileUploadProps extends Partial<DropzoneProps> {
   onQueryIdChange: (queryId: string | null) => void;
 }
 
 export default function MeasureFileUpload({ onQueryIdChange, ...props }: MeasureFileUploadProps) {
-  const [fileContent, setFileContent] = useState<string | null>(null);
   const [dropStatus, setDropStatus] = useState<'idle' | 'accept' | 'reject'>('idle');
-  // const [queriesResult, setQueriesResult] = useState<string | null>(null);
-  const [queryId, setQueryId] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
 
+  const rejectUpload = (message: string) => {
+    setDropStatus('reject');
+    showNotification({
+      icon: <IconAlertCircle />,
+      title: 'Bundle upload failed',
+      message: `There was an issue uploading your bundle: ${message}`,
+      color: 'red'
+    });
+  };
 
   const handleFileRead = (file: File) => {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const jsonContent = JSON.parse(reader.result as string);
-        setFileContent(JSON.stringify(jsonContent, null, 2));
-        setDropStatus('accept');
+        const bundle = JSON.parse(reader.result as string) as fhir4.Bundle;
 
-       //TODO: need to use fqm-bulk-utils and pass in  reader.result
-       // then whatever is returned set that as the newQueryId
-       const newQueryId = '!measure-bundle-string-goes-here!'; 
-       onQueryIdChange(newQueryId);
+        // check to see if its a bundle
+        const measures = bundle.entry?.filter(r => r?.resource?.resourceType === 'Measure');
+        if (bundle.resourceType !== 'Bundle') {
+          rejectUpload('Uploaded file must be a JSON FHIR Resource of type "Bundle"');
+          return;
+        } else if (!measures || measures.length !== 1) {
+          rejectUpload('Uploaded bundle must contain exactly one resource of type "Measure"');
+          return;
+        }
 
+        handleBundleProcessing(bundle);
+        setFileName(file.name);
       } catch (error) {
         setDropStatus('reject');
         showNotification({
@@ -36,32 +48,33 @@ export default function MeasureFileUpload({ onQueryIdChange, ...props }: Measure
           icon: <IconAlertCircle />,
           title: 'Invalid JSON',
           message: 'The uploaded file is not valid JSON.',
-          color: 'red',
+          color: 'red'
         });
       }
     };
     reader.readAsText(file);
   };
 
-  // const handleBundleProcessing = async (bundle: any) => {
-  //   try {
-  //     const queries = await bulkQueries(bundle);
-  //     setQueriesResult(JSON.stringify(queries, null, 2));
-  //   } catch (error) {
-  //     console.error('Error processing bundle:', error);
-  //     showNotification({
-  //       id: 'bundle-processing-error',
-  //       icon: <IconAlertCircle />,
-  //       title: 'Processing Error',
-  //       message: 'An error occurred while processing the bundle.',
-  //       color: 'red',
-  //     });
-  //   }
-  // };
+  const handleBundleProcessing = async (bundle: fhir4.Bundle) => {
+    try {
+      const queries = await bulkQueries(bundle);
+      onQueryIdChange(queries);
+      setDropStatus('accept');
+    } catch (error) {
+      console.error('Error processing bundle:', error);
+      showNotification({
+        id: 'bundle-processing-error',
+        icon: <IconAlertCircle />,
+        title: 'Processing Error',
+        message: 'An error occurred while processing the bundle.',
+        color: 'red'
+      });
+    }
+  };
 
   return (
     <Dropzone
-      onDrop={(files) => {
+      onDrop={files => {
         setDropStatus('accept');
         handleFileRead(files[0]);
       }}
@@ -76,45 +89,34 @@ export default function MeasureFileUpload({ onQueryIdChange, ...props }: Measure
             dropStatus === 'accept'
               ? 'var(--mantine-color-green-6)'
               : dropStatus === 'reject'
-              ? 'var(--mantine-color-red-6)'
-              : 'var(--mantine-color-dimmed)'
+                ? 'var(--mantine-color-red-6)'
+                : 'var(--mantine-color-dimmed)'
           }`,
           borderRadius: 7,
           padding: 30,
-          transition: 'border-color 0.2s ease',
-        },
+          transition: 'border-color 0.2s ease'
+        }
       }}
     >
       <Center style={{ paddingBottom: 10 }}>
-        {dropStatus === 'accept' && (
-          <IconFileCheck size={52} color='var(--mantine-color-green-6)' stroke={1.5} />
-        )}
-        {dropStatus === 'reject' && (
-          <IconAlertCircle size={52} color='var(--mantine-color-red-6)' stroke={1.5} />
-        )}
-        {dropStatus === 'idle' && (
-          <IconFileImport size={52} color='var(--mantine-color-dimmed)' stroke={1.5} />
-        )}
+        {dropStatus === 'accept' && <IconFileCheck size={52} color="var(--mantine-color-green-6)" stroke={1.5} />}
+        {dropStatus === 'reject' && <IconAlertCircle size={52} color="var(--mantine-color-red-6)" stroke={1.5} />}
+        {dropStatus === 'idle' && <IconFileImport size={52} color="var(--mantine-color-dimmed)" stroke={1.5} />}
       </Center>
-      <Text ta='center' size='l' inline c={dropStatus === 'accept' ? 'green' : ''}>
-        Drag Measure Bundle JSON file here
-      </Text>
-      <Text ta='center' size='sm' c={dropStatus === 'accept' ? 'green' : 'dimmed'} inline mt={7}>
-        or click to select file
-      </Text>
-      {/* {fileContent && (
+      {fileName ? (
+        <Text ta="center" size="l" inline c={'green'}>
+          {fileName}
+        </Text>
+      ) : (
         <>
-          <Text ta='center' mt={20} fw={700}>
-            Processing Bundle...
+          <Text ta="center" size="l" inline>
+            Drag Measure Bundle JSON file here
           </Text>
-          {handleBundleProcessing(JSON.parse(fileContent))}
+          <Text ta="center" size="sm" c={'dimmed'} inline mt={7}>
+            or click to select file
+          </Text>
         </>
       )}
-      {queriesResult && (
-        <Text ta='center' mt={20} style={{ whiteSpace: 'pre-wrap' }}>
-          {queriesResult}
-        </Text>
-      )} */}
     </Dropzone>
   );
 }

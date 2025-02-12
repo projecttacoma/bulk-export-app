@@ -5,7 +5,6 @@ import BuildQueryButton from './build-query-button';
 import { capitalize } from 'lodash';
 import MeasureFileUpload from './measure-file-upload';
 
-
 export type SupportedExportTypes = 'patient' | 'group' | 'system' | 'measure-bundle';
 
 export interface ExportTypeProps {
@@ -43,9 +42,7 @@ export default function ExportType({ exportType, dropdownData }: ExportTypeProps
               onChange={setQueryId}
             />
           )}
-          {exportType === 'measure-bundle' && (
-            <MeasureFileUpload onQueryIdChange={handleQueryIdChange}/>
-          )}
+          {exportType === 'measure-bundle' && <MeasureFileUpload onQueryIdChange={handleQueryIdChange} />}
           <BuildQueryButton queryId={queryId} exportType={exportType} />
         </Stack>
       </Card>
