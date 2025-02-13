@@ -1,6 +1,8 @@
 import { Center, Tooltip, Button } from '@mantine/core';
 import Link from 'next/link';
 import { SupportedExportTypes } from './export-type';
+import { measureBundleState } from '@/state/measure-bundle';
+import { useRecoilValue } from 'recoil';
 
 export interface BuildQueryButtonProps {
   queryId: string | null;
@@ -12,7 +14,9 @@ export interface BuildQueryButtonProps {
  *  navigates to the next page, and creates the query string
  */
 export default function BuildQueryButton({ queryId, exportType }: BuildQueryButtonProps) {
-  const buttonEnabled = !['group', 'measure-bundle'].includes(exportType) || queryId !== null;
+  const measureBundle = useRecoilValue(measureBundleState);
+  const buttonEnabled =
+    exportType === 'group' ? queryId !== null : exportType !== 'measure-bundle' || measureBundle.content !== null;
 
   return (
     <Center>
@@ -30,9 +34,7 @@ export default function BuildQueryButton({ queryId, exportType }: BuildQueryButt
           component={Link}
           href={{
             pathname: '/query-builder',
-            query: !['group', 'measure-bundle'].includes(exportType)
-              ? { exportType: exportType }
-              : { exportType: exportType, id: queryId }
+            query: exportType !== 'group' ? { exportType: exportType } : { exportType: exportType, id: queryId }
           }}
           data-disabled={!buttonEnabled}
           onClick={event => {

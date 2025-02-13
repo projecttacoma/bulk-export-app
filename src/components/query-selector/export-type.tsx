@@ -18,10 +18,6 @@ export interface ExportTypeProps {
 export default function ExportType({ exportType, dropdownData }: ExportTypeProps) {
   const [queryId, setQueryId] = useState<string | null>(null);
 
-  const handleQueryIdChange = (newQueryId: string | null) => {
-    setQueryId(newQueryId);
-  };
-
   return (
     <GridCol span={{ base: 12, md: 6, lg: 3 }} style={{ minWidth: rem(600) }}>
       <Card radius="xl">
@@ -42,7 +38,7 @@ export default function ExportType({ exportType, dropdownData }: ExportTypeProps
               onChange={setQueryId}
             />
           )}
-          {exportType === 'measure-bundle' && <MeasureFileUpload onQueryIdChange={handleQueryIdChange} />}
+          {exportType === 'measure-bundle' && <MeasureFileUpload />}
           <BuildQueryButton queryId={queryId} exportType={exportType} />
         </Stack>
       </Card>

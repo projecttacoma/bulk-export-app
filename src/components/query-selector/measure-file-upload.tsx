@@ -1,17 +1,15 @@
+import { measureBundleState } from '@/state/measure-bundle';
 import { Center, Text } from '@mantine/core';
-import { Dropzone, DropzoneProps } from '@mantine/dropzone';
+import { Dropzone } from '@mantine/dropzone';
 import { showNotification } from '@mantine/notifications';
 import { IconAlertCircle, IconFileCheck, IconFileImport } from '@tabler/icons-react';
-import { bulkQueries } from 'fqm-bulk-utils';
+import { bulkQueries, group } from 'fqm-bulk-utils';
 import { useState } from 'react';
+import { useRecoilState } from 'recoil';
 
-interface MeasureFileUploadProps extends Partial<DropzoneProps> {
-  onQueryIdChange: (queryId: string | null) => void;
-}
-
-export default function MeasureFileUpload({ onQueryIdChange, ...props }: MeasureFileUploadProps) {
+export default function MeasureFileUpload() {
   const [dropStatus, setDropStatus] = useState<'idle' | 'accept' | 'reject'>('idle');
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [measureBundle, setMeasureBundle] = useRecoilState(measureBundleState);
 
   const rejectUpload = (message: string) => {
     setDropStatus('reject');
@@ -39,8 +37,7 @@ export default function MeasureFileUpload({ onQueryIdChange, ...props }: Measure
           return;
         }
 
-        handleBundleProcessing(bundle);
-        setFileName(file.name);
+        handleBundleProcessing(bundle, file.name);
       } catch (error) {
         setDropStatus('reject');
         showNotification({
@@ -55,10 +52,13 @@ export default function MeasureFileUpload({ onQueryIdChange, ...props }: Measure
     reader.readAsText(file);
   };
 
-  const handleBundleProcessing = async (bundle: fhir4.Bundle) => {
+  const handleBundleProcessing = async (bundle: fhir4.Bundle, fileName: string) => {
+    let text = 'No group content';
+    let queries = '';
+
     try {
-      const queries = await bulkQueries(bundle);
-      onQueryIdChange(queries);
+      text = JSON.stringify(await group(bundle), null, 2);
+      queries = await bulkQueries(bundle);
       setDropStatus('accept');
     } catch (error) {
       console.error('Error processing bundle:', error);
@@ -69,6 +69,16 @@ export default function MeasureFileUpload({ onQueryIdChange, ...props }: Measure
         message: 'An error occurred while processing the bundle.',
         color: 'red'
       });
+    } finally {
+      setMeasureBundle(mb => ({
+        ...mb,
+        fileName: fileName,
+        content: bundle,
+        isFile: true,
+        displayMap: {},
+        groupText: text,
+        queryText: queries
+      }));
     }
   };
 
@@ -81,7 +91,6 @@ export default function MeasureFileUpload({ onQueryIdChange, ...props }: Measure
       onReject={() => setDropStatus('reject')}
       accept={['application/json']}
       multiple={false}
-      {...props}
       styles={{
         root: {
           cursor: 'pointer',
@@ -103,9 +112,9 @@ export default function MeasureFileUpload({ onQueryIdChange, ...props }: Measure
         {dropStatus === 'reject' && <IconAlertCircle size={52} color="var(--mantine-color-red-6)" stroke={1.5} />}
         {dropStatus === 'idle' && <IconFileImport size={52} color="var(--mantine-color-dimmed)" stroke={1.5} />}
       </Center>
-      {fileName ? (
+      {measureBundle.fileName ? (
         <Text ta="center" size="l" inline c={'green'}>
-          {fileName}
+          {measureBundle.fileName}
         </Text>
       ) : (
         <>

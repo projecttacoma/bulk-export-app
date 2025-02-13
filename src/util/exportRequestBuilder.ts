@@ -10,6 +10,7 @@ export interface BuilderRequest {
   exportType: SupportedExportTypes;
   queryParams: BuilderRequestQueryParams;
   id?: string;
+  customParams?: string;
 }
 
 /*
@@ -28,11 +29,15 @@ export interface BuilderRequestQueryParams {
  * Note: currently only supports type parameters and elements.
  */
 export function buildExportRequestString(request: BuilderRequest) {
-  const { baseUrl, exportType, id, queryParams } = request;
+  const { baseUrl, exportType, id, queryParams, customParams } = request;
   const exportPath = buildExportPath(exportType, id);
   const queryString = buildQueryString(queryParams) ?? '';
+  const customQueries = customParams ?? '';
 
-  return baseUrl + exportPath + queryString;
+  if (queryString || customQueries) {
+    return baseUrl + exportPath + '?' + queryString + customQueries;
+  }
+  return baseUrl + exportPath;
 }
 
 /*
@@ -42,7 +47,7 @@ function buildExportPath(exportType: SupportedExportTypes, id?: string) {
   if (exportType === 'system') return '/$export';
   else if (exportType === 'patient') return '/Patient/$export';
   else if (exportType === 'group') return `/Group/${id}/$export`;
-  else if (exportType === 'measure-bundle') return `/MeasureBundle/${id}/$export`;
+  else if (exportType === 'measure-bundle') return `/Patient/$export`;
 }
 
 /*
@@ -72,5 +77,5 @@ function buildQueryString(queryParams: BuilderRequestQueryParams) {
 
   if (paramsArray.length === 0) return;
 
-  return '?' + paramsArray.join('&');
+  return paramsArray.join('&');
 }
