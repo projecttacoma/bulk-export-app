@@ -27,7 +27,6 @@ export default function MeasureFileUpload() {
       try {
         const bundle = JSON.parse(reader.result as string) as fhir4.Bundle;
 
-        // check to see if its a bundle
         const measures = bundle.entry?.filter(r => r?.resource?.resourceType === 'Measure');
         if (bundle.resourceType !== 'Bundle') {
           rejectUpload('Uploaded file must be a JSON FHIR Resource of type "Bundle"');
