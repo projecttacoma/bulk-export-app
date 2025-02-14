@@ -56,8 +56,32 @@ export default function MeasureFileUpload() {
     let queries = '';
 
     try {
-      text = JSON.stringify(await group(bundle), null, 2);
-      queries = await bulkQueries(bundle);
+      try {
+        text = JSON.stringify(await group(bundle), null, 2);
+      } catch {
+        console.error('Error processing bundle: No group content in bundle');
+        showNotification({
+          id: 'bundle-processing-error',
+          icon: <IconAlertCircle />,
+          title: 'Group Content Processing Error',
+          message: 'An error occurred while processing the group content.',
+          color: 'red'
+        });
+      }
+
+      try {
+        queries = await bulkQueries(bundle);
+      } catch {
+        console.error('Error processing bundle: failed to populate queryText');
+        showNotification({
+          id: 'bundle-processing-error',
+          icon: <IconAlertCircle />,
+          title: 'Query Text Processing Error',
+          message: 'An error occurred while trying to populate queryText',
+          color: 'red'
+        });
+      }
+
       setDropStatus('accept');
     } catch (error) {
       console.error('Error processing bundle:', error);
