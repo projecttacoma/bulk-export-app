@@ -8,11 +8,20 @@ import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 
 export default function MeasureFileUpload() {
-  const [dropStatus, setDropStatus] = useState<'idle' | 'accept' | 'reject'>('idle');
+  // const [dropStatus, setDropStatus] = useState<'idle' | 'accept' | 'reject'>('idle');
+  const [loading, setLoading] = useState<boolean>();
   const [measureBundle, setMeasureBundle] = useRecoilState(measureBundleState);
 
+  const updateDropStatus = (status: 'idle' | 'accept' | 'reject') => {
+    setMeasureBundle(mb => ({
+      ...mb,
+      status: status
+    }));
+    setLoading(false);
+  };
+
   const rejectUpload = (message: string) => {
-    setDropStatus('reject');
+    updateDropStatus('reject');
     showNotification({
       icon: <IconAlertCircle />,
       title: 'Bundle upload failed',
@@ -38,7 +47,7 @@ export default function MeasureFileUpload() {
 
         handleBundleProcessing(bundle, file.name);
       } catch (error) {
-        setDropStatus('reject');
+        updateDropStatus('reject');
         showNotification({
           id: 'invalid-json',
           icon: <IconAlertCircle />,
@@ -83,7 +92,7 @@ export default function MeasureFileUpload() {
 
     // Only setting content if groupText or queryText is populated
     if (text !== 'No group content' || queries !== '') {
-      setDropStatus('accept');
+      updateDropStatus('accept');
 
       setMeasureBundle(mb => ({
         ...mb,
@@ -95,28 +104,29 @@ export default function MeasureFileUpload() {
         queryText: queries
       }));
     } else {
-      setDropStatus('reject');
+      updateDropStatus('reject');
     }
   };
 
   return (
     <Dropzone
+      loading={loading}
       onDrop={files => {
-        setDropStatus('accept');
+        setLoading(true);
         handleFileRead(files[0]);
       }}
-      onReject={() => setDropStatus('reject')}
+      onReject={() => updateDropStatus('reject')}
       accept={['application/json']}
       multiple={false}
       styles={{
         root: {
           cursor: 'pointer',
           border: `2px dashed ${
-            dropStatus === 'accept'
-              ? 'var(--mantine-color-green-6)'
-              : dropStatus === 'reject'
+            measureBundle.status === 'idle'
+              ? 'var(--mantine-color-dimmed)'
+              : measureBundle.status === 'reject'
                 ? 'var(--mantine-color-red-6)'
-                : 'var(--mantine-color-dimmed)'
+                : 'var(--mantine-color-green-6'
           }`,
           borderRadius: 7,
           padding: 30,
@@ -125,12 +135,23 @@ export default function MeasureFileUpload() {
       }}
     >
       <Center style={{ paddingBottom: 10 }}>
-        {dropStatus === 'accept' && <IconFileCheck size={52} color="var(--mantine-color-green-6)" stroke={1.5} />}
-        {dropStatus === 'reject' && <IconAlertCircle size={52} color="var(--mantine-color-red-6)" stroke={1.5} />}
-        {dropStatus === 'idle' && <IconFileImport size={52} color="var(--mantine-color-dimmed)" stroke={1.5} />}
+        {measureBundle.status === 'accept' && (
+          <IconFileCheck size={52} color="var(--mantine-color-green-6)" stroke={1.5} />
+        )}
+        {measureBundle.status === 'reject' && (
+          <IconAlertCircle size={52} color="var(--mantine-color-red-6)" stroke={1.5} />
+        )}
+        {measureBundle.status === 'idle' && (
+          <IconFileImport size={52} color="var(--mantine-color-dimmed)" stroke={1.5} />
+        )}
       </Center>
-      {measureBundle.fileName ? (
-        <Text ta="center" size="l" inline c={'green'}>
+      {measureBundle.status !== 'idle' ? (
+        <Text
+          ta="center"
+          size="l"
+          inline
+          c={measureBundle.status === 'accept' ? 'var(--mantine-color-green-6)' : 'var(--mantine-color-red-6)'}
+        >
           {measureBundle.fileName}
         </Text>
       ) : (
@@ -138,7 +159,7 @@ export default function MeasureFileUpload() {
           <Text ta="center" size="l" inline>
             Drag Measure Bundle JSON file here
           </Text>
-          <Text ta="center" size="sm" c={'dimmed'} inline mt={7}>
+          <Text ta="center" size="sm" c={'var(--mantine-color-dimmed)'} inline mt={7}>
             or click to select file
           </Text>
         </>

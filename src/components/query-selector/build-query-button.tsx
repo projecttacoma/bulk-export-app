@@ -16,7 +16,7 @@ export interface BuildQueryButtonProps {
 export default function BuildQueryButton({ queryId, exportType }: BuildQueryButtonProps) {
   const measureBundle = useRecoilValue(measureBundleState);
   const buttonEnabled =
-    exportType === 'group' ? queryId !== null : exportType !== 'measure-bundle' || measureBundle.content !== null;
+    exportType === 'group' ? queryId !== null : exportType !== 'measure-bundle' || measureBundle.status === 'accept';
 
   return (
     <Center>

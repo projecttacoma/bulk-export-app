@@ -7,6 +7,7 @@ interface MeasureBundleStateType {
   isFile: boolean;
   groupText: string;
   queryText: string;
+  status: 'idle' | 'accept' | 'reject';
 }
 
 /**
@@ -20,6 +21,7 @@ export const measureBundleState = atom<MeasureBundleStateType>({
     fileName: '',
     isFile: false,
     groupText: 'No group content',
-    queryText: ''
+    queryText: '',
+    status: 'idle'
   }
 });
