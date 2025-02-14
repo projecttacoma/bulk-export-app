@@ -81,26 +81,22 @@ export default function MeasureFileUpload() {
       });
     }
 
-    setDropStatus('accept');
-    // } catch (error) {
-    //   console.error('Error processing bundle:', error);
-    //   showNotification({
-    //     id: 'bundle-processing-error',
-    //     icon: <IconAlertCircle />,
-    //     title: 'Processing Error',
-    //     message: 'An error occurred while processing the bundle.',
-    //     color: 'red'
-    //   });
+    // Only setting content if groupText or queryText is populated
+    if (text !== 'No group content' || queries !== '') {
+      setDropStatus('accept');
 
-    setMeasureBundle(mb => ({
-      ...mb,
-      fileName: fileName,
-      content: bundle,
-      isFile: true,
-      displayMap: {},
-      groupText: text,
-      queryText: queries
-    }));
+      setMeasureBundle(mb => ({
+        ...mb,
+        fileName: fileName,
+        content: bundle,
+        isFile: true,
+        displayMap: {},
+        groupText: text,
+        queryText: queries
+      }));
+    } else {
+      setDropStatus('reject');
+    }
   };
 
   return (
@@ -115,12 +111,13 @@ export default function MeasureFileUpload() {
       styles={{
         root: {
           cursor: 'pointer',
-          border: `2px dashed ${dropStatus === 'accept'
+          border: `2px dashed ${
+            dropStatus === 'accept'
               ? 'var(--mantine-color-green-6)'
               : dropStatus === 'reject'
                 ? 'var(--mantine-color-red-6)'
                 : 'var(--mantine-color-dimmed)'
-            }`,
+          }`,
           borderRadius: 7,
           padding: 30,
           transition: 'border-color 0.2s ease'
