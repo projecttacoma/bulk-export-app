@@ -36,7 +36,7 @@ export function buildExportRequestString(request: BuilderRequest) {
 
   if (queryString || customQueries) {
     if (exportType === 'measure-bundle') {
-      return baseUrl + exportPath + '?' + queryString + customQueries;
+      return baseUrl + exportPath + '?' + queryString + '&' + customQueries;
     }
     return baseUrl + exportPath + '?' + queryString;
   }
