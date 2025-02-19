@@ -64,7 +64,7 @@ export default function QueryBuilder() {
         console.error(err);
         showNotification({
           icon: <IconAlertCircle />,
-          title: 'Group creation failed',
+          title: 'Group Creation Failed',
           message: `Group creation failed with error: ${err}`,
           color: 'red'
         });
