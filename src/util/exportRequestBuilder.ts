@@ -34,16 +34,16 @@ export function buildExportRequestString(request: BuilderRequest) {
   const queryString = buildQueryString(queryParams) ?? '';
   const customQueries = customParams ?? '';
 
-  if(exportType === 'measure-bundle' && customQueries){
+  if (exportType === 'measure-bundle' && customQueries) {
     // handle custom queries
-    if(queryString){
+    if (queryString) {
       return baseUrl + exportPath + '?' + queryString + '&' + customQueries;
     }
     return baseUrl + exportPath + '?' + customQueries;
   }
 
   // handle regular queries
-  if(queryString){
+  if (queryString) {
     return baseUrl + exportPath + '?' + queryString;
   }
   return baseUrl + exportPath;
