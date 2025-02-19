@@ -8,7 +8,6 @@ import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 
 export default function MeasureFileUpload() {
-  // const [dropStatus, setDropStatus] = useState<'idle' | 'accept' | 'reject'>('idle');
   const [loading, setLoading] = useState<boolean>();
   const [measureBundle, setMeasureBundle] = useRecoilState(measureBundleState);
 
@@ -33,6 +32,11 @@ export default function MeasureFileUpload() {
   const handleFileRead = (file: File) => {
     const reader = new FileReader();
     reader.onload = () => {
+      // set initial title for display, in case file is rejected
+      setMeasureBundle(mb => ({
+        ...mb,
+        fileName: file.name
+      }));
       try {
         const bundle = JSON.parse(reader.result as string) as fhir4.Bundle;
 
