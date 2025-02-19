@@ -35,7 +35,10 @@ export function buildExportRequestString(request: BuilderRequest) {
   const customQueries = customParams ?? '';
 
   if (queryString || customQueries) {
-    return baseUrl + exportPath + '?' + queryString + customQueries;
+    if (exportType === 'measure-bundle') {
+      return baseUrl + exportPath + '?' + customQueries;
+    }
+    return baseUrl + exportPath + '?' + queryString;
   }
   return baseUrl + exportPath;
 }
