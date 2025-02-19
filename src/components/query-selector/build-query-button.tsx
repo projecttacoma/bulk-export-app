@@ -1,6 +1,8 @@
 import { Center, Tooltip, Button } from '@mantine/core';
 import Link from 'next/link';
 import { SupportedExportTypes } from './export-type';
+import { measureBundleState } from '@/state/measure-bundle';
+import { useRecoilValue } from 'recoil';
 
 export interface BuildQueryButtonProps {
   queryId: string | null;
@@ -12,11 +14,22 @@ export interface BuildQueryButtonProps {
  *  navigates to the next page, and creates the query string
  */
 export default function BuildQueryButton({ queryId, exportType }: BuildQueryButtonProps) {
-  const buttonEnabled = exportType !== 'group' || queryId !== null;
+  const measureBundle = useRecoilValue(measureBundleState);
+  const buttonEnabled =
+    exportType === 'group' ? queryId !== null : exportType !== 'measure-bundle' || measureBundle.status === 'accept';
 
   return (
     <Center>
-      <Tooltip label="Please select an ID" disabled={buttonEnabled}>
+      <Tooltip
+        label={
+          exportType === 'group'
+            ? 'Please select an ID'
+            : exportType === 'measure-bundle'
+              ? 'Please upload a Measure Bundle'
+              : ''
+        }
+        disabled={buttonEnabled}
+      >
         <Button
           component={Link}
           href={{
